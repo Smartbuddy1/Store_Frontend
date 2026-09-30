@@ -1,0 +1,7526 @@
+{
+  "1. DASHBOARD": [
+    {
+      "STORE MANAGEMENT DASHBOARD\r\nIN-CHARGE: MR. DINESH NAHIRE": "TOTAL ITEMS",
+      "__EMPTY": "LOW STOCK",
+      "__EMPTY_1": "OUT OF STOCK",
+      "__EMPTY_2": "TOTAL QTY IN",
+      "__EMPTY_3": "TOTAL QTY OUT"
+    },
+    {
+      "STORE MANAGEMENT DASHBOARD\r\nIN-CHARGE: MR. DINESH NAHIRE": 265,
+      "__EMPTY": 32,
+      "__EMPTY_1": 125,
+      "__EMPTY_2": 7839,
+      "__EMPTY_3": 0
+    },
+    {
+      "STORE MANAGEMENT DASHBOARD\r\nIN-CHARGE: MR. DINESH NAHIRE": "Categories",
+      "__EMPTY_1": "HelpersIN",
+      "__EMPTY_3": "HelpersOUT"
+    },
+    {
+      "STORE MANAGEMENT DASHBOARD\r\nIN-CHARGE: MR. DINESH NAHIRE": "Electrical",
+      "__EMPTY_1": "Mr. Suhas Bachhav",
+      "__EMPTY_3": "Mr. Dipak Choudhri"
+    },
+    {
+      "STORE MANAGEMENT DASHBOARD\r\nIN-CHARGE: MR. DINESH NAHIRE": "Mechanical",
+      "__EMPTY_1": "Ms. Kaveri Gangurde",
+      "__EMPTY_3": "Mr. Kunal"
+    },
+    {
+      "STORE MANAGEMENT DASHBOARD\r\nIN-CHARGE: MR. DINESH NAHIRE": "Plumbing"
+    },
+    {
+      "STORE MANAGEMENT DASHBOARD\r\nIN-CHARGE: MR. DINESH NAHIRE": "Electronics"
+    }
+  ],
+  "2. ITEM MASTER": [
+    {
+      "Item Code": "E-001",
+      "Item Name": "CWX-VALVE- 1 inch",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-002",
+      "Item Name": "CWX -VALVE-0.5inch",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-003",
+      "Item Name": "STRIKE LOCK",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-004",
+      "Item Name": "COIN ACCEPTER",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-005",
+      "Item Name": "PIR SENSOR",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-006",
+      "Item Name": "LDR SENSOR",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-007",
+      "Item Name": "PUSH BOTTON",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-008",
+      "Item Name": "LIMIT SWITCH",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-009",
+      "Item Name": "FAN ORPAT",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-010",
+      "Item Name": "ELCB+MCB+32AMP",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-011",
+      "Item Name": "SMPS 12V",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-012",
+      "Item Name": "BATTERY 12V 26A",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-013",
+      "Item Name": "UPS V GUARD",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-014",
+      "Item Name": "BAZZER",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-015",
+      "Item Name": "LIMIT SWITCH SMALL",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-016",
+      "Item Name": "PRESSURE PUMP",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-017",
+      "Item Name": "LIGHT 3W (ROUND)",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-018",
+      "Item Name": "LIGHT 2W GREEN",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-019",
+      "Item Name": "LIGHT 2W RED",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-020",
+      "Item Name": "TOP PLUG 6 A",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-021",
+      "Item Name": "TOP PLUG 16A",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-022",
+      "Item Name": "SWITCH 6A",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-023",
+      "Item Name": "SOCKET 6A 3PIN",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-024",
+      "Item Name": "BOX 3M WITH PLATE",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-025",
+      "Item Name": "GSM ANTENA",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-026",
+      "Item Name": "PCB",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-027",
+      "Item Name": "LCD",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-028",
+      "Item Name": "EARTHING PATE",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-029",
+      "Item Name": "EARTING WIRE",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-030",
+      "Item Name": "EARTHING POWDER",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-031",
+      "Item Name": "MCB 4POLE 20A",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-032",
+      "Item Name": "MCB 4 POLE 32A",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-033",
+      "Item Name": "MCB 3POLE 20A",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-034",
+      "Item Name": "MCB 1 POLE 16A",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-035",
+      "Item Name": "MCB 1 POLE 10A",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-036",
+      "Item Name": "MCB 3POLE 16A",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-037",
+      "Item Name": "MCB 1 POLE 32A",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-038",
+      "Item Name": "WATER LEVEL SENSOR",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-039",
+      "Item Name": "WIRE 0..5 YELLOW",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-040",
+      "Item Name": "WIRE 0.5 BLUE",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-041",
+      "Item Name": "WIRE 0.5 BLACK",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-042",
+      "Item Name": "WIRE 0.5 GAREY",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-043",
+      "Item Name": "WIRE 0.5 GREEN",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-044",
+      "Item Name": "WIRE 0.5 ORANGE",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-045",
+      "Item Name": "WIRE 0.5 RED",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-046",
+      "Item Name": "WIRE 0.5 WHIT",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-047",
+      "Item Name": "WIRE 2 COR 736 BLACK",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-048",
+      "Item Name": "WIRE 0.5 BROWN",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-049",
+      "Item Name": "WIRE 3COR 7-36 SHI GARY",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-050",
+      "Item Name": "WIRE 2COR 0.5",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-051",
+      "Item Name": "WIRE 1MM BULE",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-052",
+      "Item Name": "WIRE 1 MM 3 COR",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-053",
+      "Item Name": "WIRE 3 COR 7-36 BLACK",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-054",
+      "Item Name": "CHANEEL PATTI",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-055",
+      "Item Name": "BAZZER LAMP",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-056",
+      "Item Name": "CABLE GALAN",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-057",
+      "Item Name": "CAMERA 4G",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-058",
+      "Item Name": "CAMERA HOME",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-059",
+      "Item Name": "HMI",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-060",
+      "Item Name": "HARNESS PUSH BOTTON",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-061",
+      "Item Name": "LUG",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-062",
+      "Item Name": "LACQUR ALA 100",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-063",
+      "Item Name": "MCB 16A DP",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-064",
+      "Item Name": "MCB BOX PVC 4P",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-065",
+      "Item Name": "POWER SUPPLY",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-066",
+      "Item Name": "PVC CONNECTOR 2X3",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-067",
+      "Item Name": "PVC PIPE 20MM BALCK",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-068",
+      "Item Name": "RELAY 12V DC",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-069",
+      "Item Name": "RELAY AC",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-070",
+      "Item Name": "SOLENOID",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-071",
+      "Item Name": "CABLE TRAY 15X15 PVC",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-072",
+      "Item Name": "EMERGENCY PUSH BOTTON",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-073",
+      "Item Name": "EMERGNCY PUSH BOTTON COVER",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-074",
+      "Item Name": "CC TV CAMERA",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-075",
+      "Item Name": "DVR SET",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-076",
+      "Item Name": "SOLAR PANEL",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-001",
+      "Item Name": "SS SHEET 3000X1500 1.2 MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-002",
+      "Item Name": "SS SHEET 316 1500X2500 1.2MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-003",
+      "Item Name": "SS SHEET 316 1500X1800 1.2MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-004",
+      "Item Name": "SS SHEET 8X4 1MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-005",
+      "Item Name": "G I SHEET 8X4 1.2MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-006",
+      "Item Name": "ACP PANNEL SILVER 8X4",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-007",
+      "Item Name": "ACP PANNEL SILVER 10X4",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-008",
+      "Item Name": "AC PANNEL SILVER 12X4",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-009",
+      "Item Name": "AC PANNEL BALCK 12X4",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-010",
+      "Item Name": "GI PIPE 50X50 1.6 MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-011",
+      "Item Name": "GI PIPE 40X40 1.2MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-012",
+      "Item Name": "GI PIPE 25X25 1.2 MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-013",
+      "Item Name": "GI PIPE 20X20 1.2MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-014",
+      "Item Name": "GI PIPE 25X50 1.2 MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-015",
+      "Item Name": "M/S PIPE 20X20 1.2 MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-016",
+      "Item Name": "SS PIPE 50X50 1.5MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-017",
+      "Item Name": "SS PIPE 316 50X50 1.5MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-018",
+      "Item Name": "SS ROUND PIPE 316 50'1.2MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-019",
+      "Item Name": "SS PIPE 20X20 1.2 MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-020",
+      "Item Name": "SS PIPE ROUND 50 1.2MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-021",
+      "Item Name": "SS 50 MM ELBOW",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-022",
+      "Item Name": "SS ELBOW 316 50MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-023",
+      "Item Name": "SS CANCIL 316 50MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-024",
+      "Item Name": "SS 50MM CANSHIL",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-025",
+      "Item Name": "BODY LOCK DOOR",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-026",
+      "Item Name": "TOWER BOLT",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-027",
+      "Item Name": "PANAL LOCK",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-028",
+      "Item Name": "SS HANDLE 8 INCH",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-029",
+      "Item Name": "SS HANDLE BIG",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-030",
+      "Item Name": "TEE CP 0.5 BRASS",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-031",
+      "Item Name": "FLUSH PATTI",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-032",
+      "Item Name": "INDIAN LAVATORY PAN",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-033",
+      "Item Name": "WESTERN COMMODE",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-034",
+      "Item Name": "URNIAL MALE",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-035",
+      "Item Name": "URNIAL  FEMALE",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-036",
+      "Item Name": "GI PIPE 50X50 2MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-037",
+      "Item Name": "ACP PANNEL TAP",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-038",
+      "Item Name": "S S PIPE 40X40 1.2 MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-039",
+      "Item Name": "CUTTING WHEEL 14 ''",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-040",
+      "Item Name": "CUTTING WHEEL",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-041",
+      "Item Name": "BUFFING WHEEL",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-042",
+      "Item Name": "GARNDING WHEEL",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-043",
+      "Item Name": "HINGS 5X12",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-044",
+      "Item Name": "SPARY SILVER",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-045",
+      "Item Name": "SILICONE WHITE",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-046",
+      "Item Name": "SILICONE BLACK",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-047",
+      "Item Name": "MCL",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-048",
+      "Item Name": "WELDING WIRE MS",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-049",
+      "Item Name": "S S PIPE 25X25 1.2MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-050",
+      "Item Name": "GRANDING WHEEL5",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-051",
+      "Item Name": "GANDING M-C 5",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-052",
+      "Item Name": "BATTERY DRILL M-C",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-053",
+      "Item Name": "BABY LATCH",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-054",
+      "Item Name": "SS PANL DOOR HANDL",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-055",
+      "Item Name": "GRANDER M-C",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-056",
+      "Item Name": "DIRLL M-C",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-057",
+      "Item Name": "GRANDER ROUND M-C",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-058",
+      "Item Name": "CUTTING M-C 14",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-059",
+      "Item Name": "SS WEDING WIRE",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-001",
+      "Item Name": "UPVC PIPE 1 INCH",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-002",
+      "Item Name": "UPVC PIPE 2 INCH",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-003",
+      "Item Name": "UPVC PIPE 0.5 INCH",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-004",
+      "Item Name": "UPVC 1 BRASS MT",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-005",
+      "Item Name": "UPVC 1 ELBOW",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-006",
+      "Item Name": "UPVC 1 BRASS ELBOW",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-007",
+      "Item Name": "UPVC 1 TEE",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-008",
+      "Item Name": "UPVC 1 CAPLER",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-009",
+      "Item Name": "UPVC 1 BRASS FT",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-010",
+      "Item Name": "UPVC 1 UNION",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-011",
+      "Item Name": "UPVC 1MT PLASTIC",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-012",
+      "Item Name": "UPAVC 1 TANK NIPPAL",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-013",
+      "Item Name": "UPVC 1 Y STRAINER",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-014",
+      "Item Name": "UPVC 1 BUSH 1X0.5",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-015",
+      "Item Name": "UPVC 1 BALL COCK",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-016",
+      "Item Name": "UPVC 2 UNION",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-017",
+      "Item Name": "UPVC 2 BALL COCK",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-018",
+      "Item Name": "UPVC 2CAPLING",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-019",
+      "Item Name": "UPVC 2 TEE",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-020",
+      "Item Name": "UPVC 2 TANK NOPPLE",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-021",
+      "Item Name": "UPVC 2X1 REDUCER",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-022",
+      "Item Name": "UPVC 2 ELBOW",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-023",
+      "Item Name": "UPVC 0.5 MT PLASTIC",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-024",
+      "Item Name": "UPVC 0.5 UNION",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-025",
+      "Item Name": "UPVC 0.5 BRASS FT",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-026",
+      "Item Name": "UPVC 0.5 BRASS MT",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-027",
+      "Item Name": "UPVC 0.5 BRASS ELBOW",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-028",
+      "Item Name": "UPVC0.5 TEE",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-029",
+      "Item Name": "UPVC 0.5 ELBOW",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-030",
+      "Item Name": "UPVC 0.5 COUPPLER",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-031",
+      "Item Name": "BOTTOL TRAP",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-032",
+      "Item Name": "PUSH COCK",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-033",
+      "Item Name": "SHOWER COCK",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-034",
+      "Item Name": "SHOWER PIPE TUB",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-035",
+      "Item Name": "HEX NIPPEL 0.5 BRASS",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-036",
+      "Item Name": "HEX NIPPEL 1 GI",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-037",
+      "Item Name": "SHOWER HEATH STAND",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-038",
+      "Item Name": "KOMBAD 4 INCH",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-039",
+      "Item Name": "WATER TANK 500",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-040",
+      "Item Name": "WATER TANK 400",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-041",
+      "Item Name": "SPRINKLER NOZZLE",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-042",
+      "Item Name": "EYE BOLT",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-043",
+      "Item Name": "UPVC 2X1 TEE",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-044",
+      "Item Name": "BASIN WATE COUPLER FLAT",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-045",
+      "Item Name": "SS HEX NIPPEL 0.5",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-046",
+      "Item Name": "TANK BALL COCK 0.5",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-047",
+      "Item Name": "TANK BALL",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-048",
+      "Item Name": "PVC PIPE 4 INCH",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-049",
+      "Item Name": "PVC 4 INCH ELBOW",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-050",
+      "Item Name": "PVC 4 INCH COPPLER",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-051",
+      "Item Name": "PVC 40MM PIPE",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-052",
+      "Item Name": "PVC 40 MM ELBOW",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-053",
+      "Item Name": "PVC 40 MM TEE",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-054",
+      "Item Name": "SS WATTI",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-055",
+      "Item Name": "SS HOOKE PANEL",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-056",
+      "Item Name": "ENGLISH TOLIAT TOP COVER",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-057",
+      "Item Name": "ENGLISH KOMDA 4",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-058",
+      "Item Name": "PVC CAPLING 4",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-059",
+      "Item Name": "PVC CPLING 2",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-060",
+      "Item Name": "PVC CAP 4",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-061",
+      "Item Name": "PVC REDUCER 2X 40 MM",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-062",
+      "Item Name": "PVC CAPLING 40 FT",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-063",
+      "Item Name": "PVC TEE 4",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-064",
+      "Item Name": "PVC TEE 2",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-065",
+      "Item Name": "PVC 2 ELBOW",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-066",
+      "Item Name": "UPVC SOLVENT",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-067",
+      "Item Name": "PVC 45 TEE 4",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "P-068",
+      "Item Name": "SS ZALI ACP PANNEL 8X6",
+      "Category": "Plumbing",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-060",
+      "Item Name": "MS PIPE 20X20 1.2 MM",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-061",
+      "Item Name": "SS CHEKERE PLAT 8X4 3000X1500",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-077",
+      "Item Name": "PCB  BOARDS",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-078",
+      "Item Name": "RELAY  PCB",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-079",
+      "Item Name": "GSM  ANTENNA",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-080",
+      "Item Name": "LCD  DISPLAY",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-081",
+      "Item Name": "FRP CABLE",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-082",
+      "Item Name": "PCB BIG CONNECTOR",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-083",
+      "Item Name": "PCB SMALL  CONNECTOR",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-084",
+      "Item Name": "32 AMP (ELCB)",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-085",
+      "Item Name": "SMPS 12V (2.1 AMP)",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-086",
+      "Item Name": "MCB 10 A 1P",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-087",
+      "Item Name": "MCB 16 A 2P",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-088",
+      "Item Name": "LIMIT SWITCH BIG",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-089",
+      "Item Name": "LIMIT SWITCH MICRO",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-090",
+      "Item Name": "LDR  SENSOR",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-091",
+      "Item Name": "PUSH  BUTTON",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-092",
+      "Item Name": "PB CONNECTOR",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-093",
+      "Item Name": "SOLENOID VALVE (0.5 inch)",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-094",
+      "Item Name": "SOLENOID VALVE (1 inch)",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-095",
+      "Item Name": "RED INDICATOR  (2watt)",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-096",
+      "Item Name": "GREEN INDICATOR  (2watt)",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-097",
+      "Item Name": "PANASONIC LIGHT  (3 watt)",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-098",
+      "Item Name": "ACTUATOR",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-099",
+      "Item Name": "COIN ACCEPTOR",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-100",
+      "Item Name": "BUZZER",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-101",
+      "Item Name": "EX-HUST FAN",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-102",
+      "Item Name": "TOP PIN 6 AMP",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-103",
+      "Item Name": "PLUG  BOARDS",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-104",
+      "Item Name": "SOCKET",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-105",
+      "Item Name": "SWITCH",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-106",
+      "Item Name": "MCB DB BOARD",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-107",
+      "Item Name": "E.CONTROL PANEL SS 316",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-108",
+      "Item Name": "E.CONTROL PANEL SS 304",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-109",
+      "Item Name": "INVERTER",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-110",
+      "Item Name": "BATTERY",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-111",
+      "Item Name": "EARTHING  PLATE",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-112",
+      "Item Name": "EARTHING  WIRE",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-113",
+      "Item Name": "1/2 HP PRESSURE MOTOR",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-114",
+      "Item Name": "SOLAR PLATE",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-115",
+      "Item Name": "CAMERA",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-116",
+      "Item Name": "DVR",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-117",
+      "Item Name": "HARD DISK",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-118",
+      "Item Name": "CCTV CABLE",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-119",
+      "Item Name": "FOUR WAY PIPE",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-120",
+      "Item Name": "ELBOW",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-121",
+      "Item Name": "TEE",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-122",
+      "Item Name": "RED WIRE 0.5",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-123",
+      "Item Name": "BLACK WIRE 0.6",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-124",
+      "Item Name": "WHITE WIRE 0.7",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-125",
+      "Item Name": "GRAY WIRE 0.8",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-126",
+      "Item Name": "BLUE WIRE 0.9",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-127",
+      "Item Name": "ORANGE WIRE 0.10",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-128",
+      "Item Name": "GREEN  WIRE 0.11",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-129",
+      "Item Name": "BROWN  WIRE 0.11",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-130",
+      "Item Name": "YELLOW  WIRE 0.11",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-131",
+      "Item Name": "2 CORE -BLACK",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-132",
+      "Item Name": "3 CORE -BLACK",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-133",
+      "Item Name": "3 CORE -GRAY",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-134",
+      "Item Name": "3 CORE -BLACK 1.5sq mm.",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "E-135",
+      "Item Name": "EMERGENCY BUTTON",
+      "Category": "Electronics",
+      "Minimum Stock": 5
+    },
+    {
+      "Item Code": "M-062",
+      "Item Name": "Screw",
+      "Category": "Mechanical",
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    },
+    {
+      "Minimum Stock": 5
+    }
+  ],
+  "3. STOCK IN": [
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-001",
+      "Item Name (Auto)": "CWX-VALVE- 1 inch",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 10,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-002",
+      "Item Name (Auto)": "CWX -VALVE-0.5inch",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 46,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-003",
+      "Item Name (Auto)": "STRIKE LOCK",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 182,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-004",
+      "Item Name (Auto)": "COIN ACCEPTER",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 13,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-005",
+      "Item Name (Auto)": "PIR SENSOR",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 71,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-006",
+      "Item Name (Auto)": "LDR SENSOR",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 74,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-007",
+      "Item Name (Auto)": "PUSH BOTTON",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 86,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-008",
+      "Item Name (Auto)": "LIMIT SWITCH",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 10,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-009",
+      "Item Name (Auto)": "FAN ORPAT",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 10,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-010",
+      "Item Name (Auto)": "ELCB+MCB+32AMP",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 32,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-011",
+      "Item Name (Auto)": "SMPS 12V",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 121,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-012",
+      "Item Name (Auto)": "BATTERY 12V 26A",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 9,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-013",
+      "Item Name (Auto)": "UPS V GUARD",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 8,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-014",
+      "Item Name (Auto)": "BAZZER",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 19,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-015",
+      "Item Name (Auto)": "LIMIT SWITCH SMALL",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 17,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-016",
+      "Item Name (Auto)": "PRESSURE PUMP",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 1,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-017",
+      "Item Name (Auto)": "LIGHT 3W (ROUND)",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 32,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-018",
+      "Item Name (Auto)": "LIGHT 2W GREEN",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 38,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-019",
+      "Item Name (Auto)": "LIGHT 2W RED",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 46,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-020",
+      "Item Name (Auto)": "TOP PLUG 6 A",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 38,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-021",
+      "Item Name (Auto)": "TOP PLUG 16A",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 60,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-022",
+      "Item Name (Auto)": "SWITCH 6A",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 31,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-023",
+      "Item Name (Auto)": "SOCKET 6A 3PIN",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 28,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-024",
+      "Item Name (Auto)": "BOX 3M WITH PLATE",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 31,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-028",
+      "Item Name (Auto)": "EARTHING PATE",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 19,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-029",
+      "Item Name (Auto)": "EARTING WIRE",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 2,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-031",
+      "Item Name (Auto)": "MCB 4POLE 20A",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 20,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-032",
+      "Item Name (Auto)": "MCB 4 POLE 32A",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 4,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-033",
+      "Item Name (Auto)": "MCB 3POLE 20A",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 23,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-034",
+      "Item Name (Auto)": "MCB 1 POLE 16A",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 2,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-035",
+      "Item Name (Auto)": "MCB 1 POLE 10A",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 25,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-036",
+      "Item Name (Auto)": "MCB 3POLE 16A",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 1,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-037",
+      "Item Name (Auto)": "MCB 1 POLE 32A",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 8,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-038",
+      "Item Name (Auto)": "WATER LEVEL SENSOR",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 66,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-054",
+      "Item Name (Auto)": "CHANEEL PATTI",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 5,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-055",
+      "Item Name (Auto)": "BAZZER LAMP",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 4,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-056",
+      "Item Name (Auto)": "CABLE GALAN",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 10,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-057",
+      "Item Name (Auto)": "CAMERA 4G",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 3,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-058",
+      "Item Name (Auto)": "CAMERA HOME",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 2,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-059",
+      "Item Name (Auto)": "HMI",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 1,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-060",
+      "Item Name (Auto)": "HARNESS PUSH BOTTON",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 50,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-061",
+      "Item Name (Auto)": "LUG",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 1000,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-063",
+      "Item Name (Auto)": "MCB 16A DP",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 11,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-064",
+      "Item Name (Auto)": "MCB BOX PVC 4P",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 11,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-067",
+      "Item Name (Auto)": "PVC PIPE 20MM BALCK",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 85,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-068",
+      "Item Name (Auto)": "RELAY 12V DC",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 3,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-072",
+      "Item Name (Auto)": "EMERGENCY PUSH BOTTON",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 29,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-073",
+      "Item Name (Auto)": "EMERGNCY PUSH BOTTON COVER",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 24,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-074",
+      "Item Name (Auto)": "CC TV CAMERA",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 9,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-075",
+      "Item Name (Auto)": "DVR SET",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 2,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-076",
+      "Item Name (Auto)": "SOLAR PANEL",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 60,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-001",
+      "Item Name (Auto)": "SS SHEET 3000X1500 1.2 MM",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 82,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-004",
+      "Item Name (Auto)": "SS SHEET 8X4 1MM",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 1,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-005",
+      "Item Name (Auto)": "G I SHEET 8X4 1.2MM",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 1,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-006",
+      "Item Name (Auto)": "ACP PANNEL SILVER 8X4",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 10,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-007",
+      "Item Name (Auto)": "ACP PANNEL SILVER 10X4",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 9,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-008",
+      "Item Name (Auto)": "AC PANNEL SILVER 12X4",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 8,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-009",
+      "Item Name (Auto)": "AC PANNEL BALCK 12X4",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 5,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-010",
+      "Item Name (Auto)": "GI PIPE 50X50 1.6 MM",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 3,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-011",
+      "Item Name (Auto)": "GI PIPE 40X40 1.2MM",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 2,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-012",
+      "Item Name (Auto)": "GI PIPE 25X25 1.2 MM",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 17,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-014",
+      "Item Name (Auto)": "GI PIPE 25X50 1.2 MM",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 5,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-016",
+      "Item Name (Auto)": "SS PIPE 50X50 1.5MM",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 4,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-019",
+      "Item Name (Auto)": "SS PIPE 20X20 1.2 MM",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 24,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-020",
+      "Item Name (Auto)": "SS PIPE ROUND 50 1.2MM",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 15,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-021",
+      "Item Name (Auto)": "SS 50 MM ELBOW",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 5,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-024",
+      "Item Name (Auto)": "SS 50MM CANSHIL",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 5,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-025",
+      "Item Name (Auto)": "BODY LOCK DOOR",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 51,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-026",
+      "Item Name (Auto)": "TOWER BOLT",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 14,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-027",
+      "Item Name (Auto)": "PANAL LOCK",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 50,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-028",
+      "Item Name (Auto)": "SS HANDLE 8 INCH",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 27,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-032",
+      "Item Name (Auto)": "INDIAN LAVATORY PAN",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 27,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-033",
+      "Item Name (Auto)": "WESTERN COMMODE",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 10,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-034",
+      "Item Name (Auto)": "URNIAL MALE",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 1,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-035",
+      "Item Name (Auto)": "URNIAL  FEMALE",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 2,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-053",
+      "Item Name (Auto)": "BABY LATCH",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 46,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "P-039",
+      "Item Name (Auto)": "WATER TANK 500",
+      "Category (Auto)": "Plumbing",
+      "Quantity Added": 12,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "P-040",
+      "Item Name (Auto)": "WATER TANK 400",
+      "Category (Auto)": "Plumbing",
+      "Quantity Added": 3,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "P-055",
+      "Item Name (Auto)": "SS HOOKE PANEL",
+      "Category (Auto)": "Plumbing",
+      "Quantity Added": 60,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "P-056",
+      "Item Name (Auto)": "ENGLISH TOLIAT TOP COVER",
+      "Category (Auto)": "Plumbing",
+      "Quantity Added": 5,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-060",
+      "Item Name (Auto)": "MS PIPE 20X20 1.2 MM",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 21,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "M-061",
+      "Item Name (Auto)": "SS CHEKERE PLAT 8X4 3000X1500",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 40,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-077",
+      "Item Name (Auto)": "PCB  BOARDS",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 53,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-078",
+      "Item Name (Auto)": "RELAY  PCB",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 100,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-079",
+      "Item Name (Auto)": "GSM  ANTENNA",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 100,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-080",
+      "Item Name (Auto)": "LCD  DISPLAY",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 60,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-081",
+      "Item Name (Auto)": "FRP CABLE",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 100,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-082",
+      "Item Name (Auto)": "PCB BIG CONNECTOR",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 70,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-083",
+      "Item Name (Auto)": "PCB SMALL  CONNECTOR",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 140,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-084",
+      "Item Name (Auto)": "32 AMP (ELCB)",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 31,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-085",
+      "Item Name (Auto)": "SMPS 12V (2.1 AMP)",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 73,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-086",
+      "Item Name (Auto)": "MCB 10 A 1P",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 23,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-087",
+      "Item Name (Auto)": "MCB 16 A 2P",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 5,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-088",
+      "Item Name (Auto)": "LIMIT SWITCH BIG",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 9,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-089",
+      "Item Name (Auto)": "LIMIT SWITCH MICRO",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 13,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-090",
+      "Item Name (Auto)": "LDR  SENSOR",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 63,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-091",
+      "Item Name (Auto)": "PUSH  BUTTON",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 73,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-092",
+      "Item Name (Auto)": "PB CONNECTOR",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 33,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-093",
+      "Item Name (Auto)": "SOLENOID VALVE (0.5 inch)",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 16,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-094",
+      "Item Name (Auto)": "SOLENOID VALVE (1 inch)",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 207,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-095",
+      "Item Name (Auto)": "RED INDICATOR  (2watt)",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 32,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-096",
+      "Item Name (Auto)": "GREEN INDICATOR  (2watt)",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 26,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-097",
+      "Item Name (Auto)": "PANASONIC LIGHT  (3 watt)",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 116,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-098",
+      "Item Name (Auto)": "ACTUATOR",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 90,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-099",
+      "Item Name (Auto)": "COIN ACCEPTOR",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 5,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-100",
+      "Item Name (Auto)": "BUZZER",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 15,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-101",
+      "Item Name (Auto)": "EX-HUST FAN",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 6,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-102",
+      "Item Name (Auto)": "TOP PIN 6 AMP",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 24,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-103",
+      "Item Name (Auto)": "PLUG  BOARDS",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 15,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-104",
+      "Item Name (Auto)": "SOCKET",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 30,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-105",
+      "Item Name (Auto)": "SWITCH",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 11,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-106",
+      "Item Name (Auto)": "MCB DB BOARD",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 11,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-107",
+      "Item Name (Auto)": "E.CONTROL PANEL SS 316",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 28,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-109",
+      "Item Name (Auto)": "INVERTER",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 2,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-110",
+      "Item Name (Auto)": "BATTERY",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 3,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-111",
+      "Item Name (Auto)": "EARTHING  PLATE",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 33,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-112",
+      "Item Name (Auto)": "EARTHING  WIRE",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 19,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-113",
+      "Item Name (Auto)": "1/2 HP PRESSURE MOTOR",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 4,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-114",
+      "Item Name (Auto)": "SOLAR PLATE",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 56,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-115",
+      "Item Name (Auto)": "CAMERA",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 8,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-116",
+      "Item Name (Auto)": "DVR",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 3,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-117",
+      "Item Name (Auto)": "HARD DISK",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 3,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-118",
+      "Item Name (Auto)": "CCTV CABLE",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 90,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-119",
+      "Item Name (Auto)": "FOUR WAY PIPE",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 18,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-120",
+      "Item Name (Auto)": "ELBOW",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 90,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-121",
+      "Item Name (Auto)": "TEE",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 37,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-122",
+      "Item Name (Auto)": "RED WIRE 0.5",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 200,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-123",
+      "Item Name (Auto)": "BLACK WIRE 0.6",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 200,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-124",
+      "Item Name (Auto)": "WHITE WIRE 0.7",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 100,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-125",
+      "Item Name (Auto)": "GRAY WIRE 0.8",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 300,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-126",
+      "Item Name (Auto)": "BLUE WIRE 0.9",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 200,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-127",
+      "Item Name (Auto)": "ORANGE WIRE 0.10",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 300,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-128",
+      "Item Name (Auto)": "GREEN  WIRE 0.11",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 300,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-129",
+      "Item Name (Auto)": "BROWN  WIRE 0.11",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 300,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-130",
+      "Item Name (Auto)": "YELLOW  WIRE 0.11",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 200,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-131",
+      "Item Name (Auto)": "2 CORE -BLACK",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 100,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-132",
+      "Item Name (Auto)": "3 CORE -BLACK",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 200,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-133",
+      "Item Name (Auto)": "3 CORE -GRAY",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 300,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-21",
+      "Item Code": "E-135",
+      "Item Name (Auto)": "EMERGENCY BUTTON",
+      "Category (Auto)": "Electronics",
+      "Quantity Added": 38,
+      "Handover From": "System Migration"
+    },
+    {
+      "Date": "2026-09-22",
+      "Item Code": "M-062",
+      "Item Name (Auto)": "Screw",
+      "Category (Auto)": "Mechanical",
+      "Quantity Added": 100,
+      "Handover From": "Mr. Suhas Bachhav"
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    }
+  ],
+  "4. STOCK OUT": [
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    },
+    {
+      "Item Name (Auto)": "",
+      "Category (Auto)": ""
+    }
+  ],
+  "5. CURRENT STOCK": [
+    {
+      "Item Code": "E-001",
+      "Item Name": "CWX-VALVE- 1 inch",
+      "Category": "Electronics",
+      "Total IN": 10,
+      "Total OUT": 0,
+      "Current Stock": 10,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-002",
+      "Item Name": "CWX -VALVE-0.5inch",
+      "Category": "Electronics",
+      "Total IN": 46,
+      "Total OUT": 0,
+      "Current Stock": 46,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-003",
+      "Item Name": "STRIKE LOCK",
+      "Category": "Electronics",
+      "Total IN": 182,
+      "Total OUT": 0,
+      "Current Stock": 182,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-004",
+      "Item Name": "COIN ACCEPTER",
+      "Category": "Electronics",
+      "Total IN": 13,
+      "Total OUT": 0,
+      "Current Stock": 13,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-005",
+      "Item Name": "PIR SENSOR",
+      "Category": "Electronics",
+      "Total IN": 71,
+      "Total OUT": 0,
+      "Current Stock": 71,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-006",
+      "Item Name": "LDR SENSOR",
+      "Category": "Electronics",
+      "Total IN": 74,
+      "Total OUT": 0,
+      "Current Stock": 74,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-007",
+      "Item Name": "PUSH BOTTON",
+      "Category": "Electronics",
+      "Total IN": 86,
+      "Total OUT": 0,
+      "Current Stock": 86,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-008",
+      "Item Name": "LIMIT SWITCH",
+      "Category": "Electronics",
+      "Total IN": 10,
+      "Total OUT": 0,
+      "Current Stock": 10,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-009",
+      "Item Name": "FAN ORPAT",
+      "Category": "Electronics",
+      "Total IN": 10,
+      "Total OUT": 0,
+      "Current Stock": 10,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-010",
+      "Item Name": "ELCB+MCB+32AMP",
+      "Category": "Electronics",
+      "Total IN": 32,
+      "Total OUT": 0,
+      "Current Stock": 32,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-011",
+      "Item Name": "SMPS 12V",
+      "Category": "Electronics",
+      "Total IN": 121,
+      "Total OUT": 0,
+      "Current Stock": 121,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-012",
+      "Item Name": "BATTERY 12V 26A",
+      "Category": "Electronics",
+      "Total IN": 9,
+      "Total OUT": 0,
+      "Current Stock": 9,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-013",
+      "Item Name": "UPS V GUARD",
+      "Category": "Electronics",
+      "Total IN": 8,
+      "Total OUT": 0,
+      "Current Stock": 8,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-014",
+      "Item Name": "BAZZER",
+      "Category": "Electronics",
+      "Total IN": 19,
+      "Total OUT": 0,
+      "Current Stock": 19,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-015",
+      "Item Name": "LIMIT SWITCH SMALL",
+      "Category": "Electronics",
+      "Total IN": 17,
+      "Total OUT": 0,
+      "Current Stock": 17,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-016",
+      "Item Name": "PRESSURE PUMP",
+      "Category": "Electronics",
+      "Total IN": 1,
+      "Total OUT": 0,
+      "Current Stock": 1,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-017",
+      "Item Name": "LIGHT 3W (ROUND)",
+      "Category": "Electronics",
+      "Total IN": 32,
+      "Total OUT": 0,
+      "Current Stock": 32,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-018",
+      "Item Name": "LIGHT 2W GREEN",
+      "Category": "Electronics",
+      "Total IN": 38,
+      "Total OUT": 0,
+      "Current Stock": 38,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-019",
+      "Item Name": "LIGHT 2W RED",
+      "Category": "Electronics",
+      "Total IN": 46,
+      "Total OUT": 0,
+      "Current Stock": 46,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-020",
+      "Item Name": "TOP PLUG 6 A",
+      "Category": "Electronics",
+      "Total IN": 38,
+      "Total OUT": 0,
+      "Current Stock": 38,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-021",
+      "Item Name": "TOP PLUG 16A",
+      "Category": "Electronics",
+      "Total IN": 60,
+      "Total OUT": 0,
+      "Current Stock": 60,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-022",
+      "Item Name": "SWITCH 6A",
+      "Category": "Electronics",
+      "Total IN": 31,
+      "Total OUT": 0,
+      "Current Stock": 31,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-023",
+      "Item Name": "SOCKET 6A 3PIN",
+      "Category": "Electronics",
+      "Total IN": 28,
+      "Total OUT": 0,
+      "Current Stock": 28,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-024",
+      "Item Name": "BOX 3M WITH PLATE",
+      "Category": "Electronics",
+      "Total IN": 31,
+      "Total OUT": 0,
+      "Current Stock": 31,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-025",
+      "Item Name": "GSM ANTENA",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-026",
+      "Item Name": "PCB",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-027",
+      "Item Name": "LCD",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-028",
+      "Item Name": "EARTHING PATE",
+      "Category": "Electronics",
+      "Total IN": 19,
+      "Total OUT": 0,
+      "Current Stock": 19,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-029",
+      "Item Name": "EARTING WIRE",
+      "Category": "Electronics",
+      "Total IN": 2,
+      "Total OUT": 0,
+      "Current Stock": 2,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-030",
+      "Item Name": "EARTHING POWDER",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-031",
+      "Item Name": "MCB 4POLE 20A",
+      "Category": "Electronics",
+      "Total IN": 20,
+      "Total OUT": 0,
+      "Current Stock": 20,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-032",
+      "Item Name": "MCB 4 POLE 32A",
+      "Category": "Electronics",
+      "Total IN": 4,
+      "Total OUT": 0,
+      "Current Stock": 4,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-033",
+      "Item Name": "MCB 3POLE 20A",
+      "Category": "Electronics",
+      "Total IN": 23,
+      "Total OUT": 0,
+      "Current Stock": 23,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-034",
+      "Item Name": "MCB 1 POLE 16A",
+      "Category": "Electronics",
+      "Total IN": 2,
+      "Total OUT": 0,
+      "Current Stock": 2,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-035",
+      "Item Name": "MCB 1 POLE 10A",
+      "Category": "Electronics",
+      "Total IN": 25,
+      "Total OUT": 0,
+      "Current Stock": 25,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-036",
+      "Item Name": "MCB 3POLE 16A",
+      "Category": "Electronics",
+      "Total IN": 1,
+      "Total OUT": 0,
+      "Current Stock": 1,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-037",
+      "Item Name": "MCB 1 POLE 32A",
+      "Category": "Electronics",
+      "Total IN": 8,
+      "Total OUT": 0,
+      "Current Stock": 8,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-038",
+      "Item Name": "WATER LEVEL SENSOR",
+      "Category": "Electronics",
+      "Total IN": 66,
+      "Total OUT": 0,
+      "Current Stock": 66,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-039",
+      "Item Name": "WIRE 0..5 YELLOW",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-040",
+      "Item Name": "WIRE 0.5 BLUE",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-041",
+      "Item Name": "WIRE 0.5 BLACK",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-042",
+      "Item Name": "WIRE 0.5 GAREY",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-043",
+      "Item Name": "WIRE 0.5 GREEN",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-044",
+      "Item Name": "WIRE 0.5 ORANGE",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-045",
+      "Item Name": "WIRE 0.5 RED",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-046",
+      "Item Name": "WIRE 0.5 WHIT",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-047",
+      "Item Name": "WIRE 2 COR 736 BLACK",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-048",
+      "Item Name": "WIRE 0.5 BROWN",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-049",
+      "Item Name": "WIRE 3COR 7-36 SHI GARY",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-050",
+      "Item Name": "WIRE 2COR 0.5",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-051",
+      "Item Name": "WIRE 1MM BULE",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-052",
+      "Item Name": "WIRE 1 MM 3 COR",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-053",
+      "Item Name": "WIRE 3 COR 7-36 BLACK",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-054",
+      "Item Name": "CHANEEL PATTI",
+      "Category": "Electronics",
+      "Total IN": 5,
+      "Total OUT": 0,
+      "Current Stock": 5,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-055",
+      "Item Name": "BAZZER LAMP",
+      "Category": "Electronics",
+      "Total IN": 4,
+      "Total OUT": 0,
+      "Current Stock": 4,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-056",
+      "Item Name": "CABLE GALAN",
+      "Category": "Electronics",
+      "Total IN": 10,
+      "Total OUT": 0,
+      "Current Stock": 10,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-057",
+      "Item Name": "CAMERA 4G",
+      "Category": "Electronics",
+      "Total IN": 3,
+      "Total OUT": 0,
+      "Current Stock": 3,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-058",
+      "Item Name": "CAMERA HOME",
+      "Category": "Electronics",
+      "Total IN": 2,
+      "Total OUT": 0,
+      "Current Stock": 2,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-059",
+      "Item Name": "HMI",
+      "Category": "Electronics",
+      "Total IN": 1,
+      "Total OUT": 0,
+      "Current Stock": 1,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-060",
+      "Item Name": "HARNESS PUSH BOTTON",
+      "Category": "Electronics",
+      "Total IN": 50,
+      "Total OUT": 0,
+      "Current Stock": 50,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-061",
+      "Item Name": "LUG",
+      "Category": "Electronics",
+      "Total IN": 1000,
+      "Total OUT": 0,
+      "Current Stock": 1000,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-062",
+      "Item Name": "LACQUR ALA 100",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-063",
+      "Item Name": "MCB 16A DP",
+      "Category": "Electronics",
+      "Total IN": 11,
+      "Total OUT": 0,
+      "Current Stock": 11,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-064",
+      "Item Name": "MCB BOX PVC 4P",
+      "Category": "Electronics",
+      "Total IN": 11,
+      "Total OUT": 0,
+      "Current Stock": 11,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-065",
+      "Item Name": "POWER SUPPLY",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-066",
+      "Item Name": "PVC CONNECTOR 2X3",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-067",
+      "Item Name": "PVC PIPE 20MM BALCK",
+      "Category": "Electronics",
+      "Total IN": 85,
+      "Total OUT": 0,
+      "Current Stock": 85,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-068",
+      "Item Name": "RELAY 12V DC",
+      "Category": "Electronics",
+      "Total IN": 3,
+      "Total OUT": 0,
+      "Current Stock": 3,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-069",
+      "Item Name": "RELAY AC",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-070",
+      "Item Name": "SOLENOID",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-071",
+      "Item Name": "CABLE TRAY 15X15 PVC",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-072",
+      "Item Name": "EMERGENCY PUSH BOTTON",
+      "Category": "Electronics",
+      "Total IN": 29,
+      "Total OUT": 0,
+      "Current Stock": 29,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-073",
+      "Item Name": "EMERGNCY PUSH BOTTON COVER",
+      "Category": "Electronics",
+      "Total IN": 24,
+      "Total OUT": 0,
+      "Current Stock": 24,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-074",
+      "Item Name": "CC TV CAMERA",
+      "Category": "Electronics",
+      "Total IN": 9,
+      "Total OUT": 0,
+      "Current Stock": 9,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-075",
+      "Item Name": "DVR SET",
+      "Category": "Electronics",
+      "Total IN": 2,
+      "Total OUT": 0,
+      "Current Stock": 2,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-076",
+      "Item Name": "SOLAR PANEL",
+      "Category": "Electronics",
+      "Total IN": 60,
+      "Total OUT": 0,
+      "Current Stock": 60,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-001",
+      "Item Name": "SS SHEET 3000X1500 1.2 MM",
+      "Category": "Mechanical",
+      "Total IN": 82,
+      "Total OUT": 0,
+      "Current Stock": 82,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-002",
+      "Item Name": "SS SHEET 316 1500X2500 1.2MM",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-003",
+      "Item Name": "SS SHEET 316 1500X1800 1.2MM",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-004",
+      "Item Name": "SS SHEET 8X4 1MM",
+      "Category": "Mechanical",
+      "Total IN": 1,
+      "Total OUT": 0,
+      "Current Stock": 1,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "M-005",
+      "Item Name": "G I SHEET 8X4 1.2MM",
+      "Category": "Mechanical",
+      "Total IN": 1,
+      "Total OUT": 0,
+      "Current Stock": 1,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "M-006",
+      "Item Name": "ACP PANNEL SILVER 8X4",
+      "Category": "Mechanical",
+      "Total IN": 10,
+      "Total OUT": 0,
+      "Current Stock": 10,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-007",
+      "Item Name": "ACP PANNEL SILVER 10X4",
+      "Category": "Mechanical",
+      "Total IN": 9,
+      "Total OUT": 0,
+      "Current Stock": 9,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-008",
+      "Item Name": "AC PANNEL SILVER 12X4",
+      "Category": "Mechanical",
+      "Total IN": 8,
+      "Total OUT": 0,
+      "Current Stock": 8,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-009",
+      "Item Name": "AC PANNEL BALCK 12X4",
+      "Category": "Mechanical",
+      "Total IN": 5,
+      "Total OUT": 0,
+      "Current Stock": 5,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "M-010",
+      "Item Name": "GI PIPE 50X50 1.6 MM",
+      "Category": "Mechanical",
+      "Total IN": 3,
+      "Total OUT": 0,
+      "Current Stock": 3,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "M-011",
+      "Item Name": "GI PIPE 40X40 1.2MM",
+      "Category": "Mechanical",
+      "Total IN": 2,
+      "Total OUT": 0,
+      "Current Stock": 2,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "M-012",
+      "Item Name": "GI PIPE 25X25 1.2 MM",
+      "Category": "Mechanical",
+      "Total IN": 17,
+      "Total OUT": 0,
+      "Current Stock": 17,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-013",
+      "Item Name": "GI PIPE 20X20 1.2MM",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-014",
+      "Item Name": "GI PIPE 25X50 1.2 MM",
+      "Category": "Mechanical",
+      "Total IN": 5,
+      "Total OUT": 0,
+      "Current Stock": 5,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "M-015",
+      "Item Name": "M/S PIPE 20X20 1.2 MM",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-016",
+      "Item Name": "SS PIPE 50X50 1.5MM",
+      "Category": "Mechanical",
+      "Total IN": 4,
+      "Total OUT": 0,
+      "Current Stock": 4,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "M-017",
+      "Item Name": "SS PIPE 316 50X50 1.5MM",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-018",
+      "Item Name": "SS ROUND PIPE 316 50'1.2MM",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-019",
+      "Item Name": "SS PIPE 20X20 1.2 MM",
+      "Category": "Mechanical",
+      "Total IN": 24,
+      "Total OUT": 0,
+      "Current Stock": 24,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-020",
+      "Item Name": "SS PIPE ROUND 50 1.2MM",
+      "Category": "Mechanical",
+      "Total IN": 15,
+      "Total OUT": 0,
+      "Current Stock": 15,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-021",
+      "Item Name": "SS 50 MM ELBOW",
+      "Category": "Mechanical",
+      "Total IN": 5,
+      "Total OUT": 0,
+      "Current Stock": 5,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "M-022",
+      "Item Name": "SS ELBOW 316 50MM",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-023",
+      "Item Name": "SS CANCIL 316 50MM",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-024",
+      "Item Name": "SS 50MM CANSHIL",
+      "Category": "Mechanical",
+      "Total IN": 5,
+      "Total OUT": 0,
+      "Current Stock": 5,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "M-025",
+      "Item Name": "BODY LOCK DOOR",
+      "Category": "Mechanical",
+      "Total IN": 51,
+      "Total OUT": 0,
+      "Current Stock": 51,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-026",
+      "Item Name": "TOWER BOLT",
+      "Category": "Mechanical",
+      "Total IN": 14,
+      "Total OUT": 0,
+      "Current Stock": 14,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-027",
+      "Item Name": "PANAL LOCK",
+      "Category": "Mechanical",
+      "Total IN": 50,
+      "Total OUT": 0,
+      "Current Stock": 50,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-028",
+      "Item Name": "SS HANDLE 8 INCH",
+      "Category": "Mechanical",
+      "Total IN": 27,
+      "Total OUT": 0,
+      "Current Stock": 27,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-029",
+      "Item Name": "SS HANDLE BIG",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-030",
+      "Item Name": "TEE CP 0.5 BRASS",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-031",
+      "Item Name": "FLUSH PATTI",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-032",
+      "Item Name": "INDIAN LAVATORY PAN",
+      "Category": "Mechanical",
+      "Total IN": 27,
+      "Total OUT": 0,
+      "Current Stock": 27,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-033",
+      "Item Name": "WESTERN COMMODE",
+      "Category": "Mechanical",
+      "Total IN": 10,
+      "Total OUT": 0,
+      "Current Stock": 10,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-034",
+      "Item Name": "URNIAL MALE",
+      "Category": "Mechanical",
+      "Total IN": 1,
+      "Total OUT": 0,
+      "Current Stock": 1,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "M-035",
+      "Item Name": "URNIAL  FEMALE",
+      "Category": "Mechanical",
+      "Total IN": 2,
+      "Total OUT": 0,
+      "Current Stock": 2,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "M-036",
+      "Item Name": "GI PIPE 50X50 2MM",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-037",
+      "Item Name": "ACP PANNEL TAP",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-038",
+      "Item Name": "S S PIPE 40X40 1.2 MM",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-039",
+      "Item Name": "CUTTING WHEEL 14 ''",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-040",
+      "Item Name": "CUTTING WHEEL",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-041",
+      "Item Name": "BUFFING WHEEL",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-042",
+      "Item Name": "GARNDING WHEEL",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-043",
+      "Item Name": "HINGS 5X12",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-044",
+      "Item Name": "SPARY SILVER",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-045",
+      "Item Name": "SILICONE WHITE",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-046",
+      "Item Name": "SILICONE BLACK",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-047",
+      "Item Name": "MCL",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-048",
+      "Item Name": "WELDING WIRE MS",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-049",
+      "Item Name": "S S PIPE 25X25 1.2MM",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-050",
+      "Item Name": "GRANDING WHEEL5",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-051",
+      "Item Name": "GANDING M-C 5",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-052",
+      "Item Name": "BATTERY DRILL M-C",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-053",
+      "Item Name": "BABY LATCH",
+      "Category": "Mechanical",
+      "Total IN": 46,
+      "Total OUT": 0,
+      "Current Stock": 46,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-054",
+      "Item Name": "SS PANL DOOR HANDL",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-055",
+      "Item Name": "GRANDER M-C",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-056",
+      "Item Name": "DIRLL M-C",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-057",
+      "Item Name": "GRANDER ROUND M-C",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-058",
+      "Item Name": "CUTTING M-C 14",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-059",
+      "Item Name": "SS WEDING WIRE",
+      "Category": "Mechanical",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-001",
+      "Item Name": "UPVC PIPE 1 INCH",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-002",
+      "Item Name": "UPVC PIPE 2 INCH",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-003",
+      "Item Name": "UPVC PIPE 0.5 INCH",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-004",
+      "Item Name": "UPVC 1 BRASS MT",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-005",
+      "Item Name": "UPVC 1 ELBOW",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-006",
+      "Item Name": "UPVC 1 BRASS ELBOW",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-007",
+      "Item Name": "UPVC 1 TEE",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-008",
+      "Item Name": "UPVC 1 CAPLER",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-009",
+      "Item Name": "UPVC 1 BRASS FT",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-010",
+      "Item Name": "UPVC 1 UNION",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-011",
+      "Item Name": "UPVC 1MT PLASTIC",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-012",
+      "Item Name": "UPAVC 1 TANK NIPPAL",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-013",
+      "Item Name": "UPVC 1 Y STRAINER",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-014",
+      "Item Name": "UPVC 1 BUSH 1X0.5",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-015",
+      "Item Name": "UPVC 1 BALL COCK",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-016",
+      "Item Name": "UPVC 2 UNION",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-017",
+      "Item Name": "UPVC 2 BALL COCK",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-018",
+      "Item Name": "UPVC 2CAPLING",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-019",
+      "Item Name": "UPVC 2 TEE",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-020",
+      "Item Name": "UPVC 2 TANK NOPPLE",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-021",
+      "Item Name": "UPVC 2X1 REDUCER",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-022",
+      "Item Name": "UPVC 2 ELBOW",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-023",
+      "Item Name": "UPVC 0.5 MT PLASTIC",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-024",
+      "Item Name": "UPVC 0.5 UNION",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-025",
+      "Item Name": "UPVC 0.5 BRASS FT",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-026",
+      "Item Name": "UPVC 0.5 BRASS MT",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-027",
+      "Item Name": "UPVC 0.5 BRASS ELBOW",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-028",
+      "Item Name": "UPVC0.5 TEE",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-029",
+      "Item Name": "UPVC 0.5 ELBOW",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-030",
+      "Item Name": "UPVC 0.5 COUPPLER",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-031",
+      "Item Name": "BOTTOL TRAP",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-032",
+      "Item Name": "PUSH COCK",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-033",
+      "Item Name": "SHOWER COCK",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-034",
+      "Item Name": "SHOWER PIPE TUB",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-035",
+      "Item Name": "HEX NIPPEL 0.5 BRASS",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-036",
+      "Item Name": "HEX NIPPEL 1 GI",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-037",
+      "Item Name": "SHOWER HEATH STAND",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-038",
+      "Item Name": "KOMBAD 4 INCH",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-039",
+      "Item Name": "WATER TANK 500",
+      "Category": "Plumbing",
+      "Total IN": 12,
+      "Total OUT": 0,
+      "Current Stock": 12,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "P-040",
+      "Item Name": "WATER TANK 400",
+      "Category": "Plumbing",
+      "Total IN": 3,
+      "Total OUT": 0,
+      "Current Stock": 3,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "P-041",
+      "Item Name": "SPRINKLER NOZZLE",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-042",
+      "Item Name": "EYE BOLT",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-043",
+      "Item Name": "UPVC 2X1 TEE",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-044",
+      "Item Name": "BASIN WATE COUPLER FLAT",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-045",
+      "Item Name": "SS HEX NIPPEL 0.5",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-046",
+      "Item Name": "TANK BALL COCK 0.5",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-047",
+      "Item Name": "TANK BALL",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-048",
+      "Item Name": "PVC PIPE 4 INCH",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-049",
+      "Item Name": "PVC 4 INCH ELBOW",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-050",
+      "Item Name": "PVC 4 INCH COPPLER",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-051",
+      "Item Name": "PVC 40MM PIPE",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-052",
+      "Item Name": "PVC 40 MM ELBOW",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-053",
+      "Item Name": "PVC 40 MM TEE",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-054",
+      "Item Name": "SS WATTI",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-055",
+      "Item Name": "SS HOOKE PANEL",
+      "Category": "Plumbing",
+      "Total IN": 60,
+      "Total OUT": 0,
+      "Current Stock": 60,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "P-056",
+      "Item Name": "ENGLISH TOLIAT TOP COVER",
+      "Category": "Plumbing",
+      "Total IN": 5,
+      "Total OUT": 0,
+      "Current Stock": 5,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "P-057",
+      "Item Name": "ENGLISH KOMDA 4",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-058",
+      "Item Name": "PVC CAPLING 4",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-059",
+      "Item Name": "PVC CPLING 2",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-060",
+      "Item Name": "PVC CAP 4",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-061",
+      "Item Name": "PVC REDUCER 2X 40 MM",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-062",
+      "Item Name": "PVC CAPLING 40 FT",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-063",
+      "Item Name": "PVC TEE 4",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-064",
+      "Item Name": "PVC TEE 2",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-065",
+      "Item Name": "PVC 2 ELBOW",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-066",
+      "Item Name": "UPVC SOLVENT",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-067",
+      "Item Name": "PVC 45 TEE 4",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "P-068",
+      "Item Name": "SS ZALI ACP PANNEL 8X6",
+      "Category": "Plumbing",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "M-060",
+      "Item Name": "MS PIPE 20X20 1.2 MM",
+      "Category": "Mechanical",
+      "Total IN": 21,
+      "Total OUT": 0,
+      "Current Stock": 21,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-061",
+      "Item Name": "SS CHEKERE PLAT 8X4 3000X1500",
+      "Category": "Mechanical",
+      "Total IN": 40,
+      "Total OUT": 0,
+      "Current Stock": 40,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-077",
+      "Item Name": "PCB  BOARDS",
+      "Category": "Electronics",
+      "Total IN": 53,
+      "Total OUT": 0,
+      "Current Stock": 53,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-078",
+      "Item Name": "RELAY  PCB",
+      "Category": "Electronics",
+      "Total IN": 100,
+      "Total OUT": 0,
+      "Current Stock": 100,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-079",
+      "Item Name": "GSM  ANTENNA",
+      "Category": "Electronics",
+      "Total IN": 100,
+      "Total OUT": 0,
+      "Current Stock": 100,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-080",
+      "Item Name": "LCD  DISPLAY",
+      "Category": "Electronics",
+      "Total IN": 60,
+      "Total OUT": 0,
+      "Current Stock": 60,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-081",
+      "Item Name": "FRP CABLE",
+      "Category": "Electronics",
+      "Total IN": 100,
+      "Total OUT": 0,
+      "Current Stock": 100,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-082",
+      "Item Name": "PCB BIG CONNECTOR",
+      "Category": "Electronics",
+      "Total IN": 70,
+      "Total OUT": 0,
+      "Current Stock": 70,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-083",
+      "Item Name": "PCB SMALL  CONNECTOR",
+      "Category": "Electronics",
+      "Total IN": 140,
+      "Total OUT": 0,
+      "Current Stock": 140,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-084",
+      "Item Name": "32 AMP (ELCB)",
+      "Category": "Electronics",
+      "Total IN": 31,
+      "Total OUT": 0,
+      "Current Stock": 31,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-085",
+      "Item Name": "SMPS 12V (2.1 AMP)",
+      "Category": "Electronics",
+      "Total IN": 73,
+      "Total OUT": 0,
+      "Current Stock": 73,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-086",
+      "Item Name": "MCB 10 A 1P",
+      "Category": "Electronics",
+      "Total IN": 23,
+      "Total OUT": 0,
+      "Current Stock": 23,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-087",
+      "Item Name": "MCB 16 A 2P",
+      "Category": "Electronics",
+      "Total IN": 5,
+      "Total OUT": 0,
+      "Current Stock": 5,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-088",
+      "Item Name": "LIMIT SWITCH BIG",
+      "Category": "Electronics",
+      "Total IN": 9,
+      "Total OUT": 0,
+      "Current Stock": 9,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-089",
+      "Item Name": "LIMIT SWITCH MICRO",
+      "Category": "Electronics",
+      "Total IN": 13,
+      "Total OUT": 0,
+      "Current Stock": 13,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-090",
+      "Item Name": "LDR  SENSOR",
+      "Category": "Electronics",
+      "Total IN": 63,
+      "Total OUT": 0,
+      "Current Stock": 63,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-091",
+      "Item Name": "PUSH  BUTTON",
+      "Category": "Electronics",
+      "Total IN": 73,
+      "Total OUT": 0,
+      "Current Stock": 73,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-092",
+      "Item Name": "PB CONNECTOR",
+      "Category": "Electronics",
+      "Total IN": 33,
+      "Total OUT": 0,
+      "Current Stock": 33,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-093",
+      "Item Name": "SOLENOID VALVE (0.5 inch)",
+      "Category": "Electronics",
+      "Total IN": 16,
+      "Total OUT": 0,
+      "Current Stock": 16,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-094",
+      "Item Name": "SOLENOID VALVE (1 inch)",
+      "Category": "Electronics",
+      "Total IN": 207,
+      "Total OUT": 0,
+      "Current Stock": 207,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-095",
+      "Item Name": "RED INDICATOR  (2watt)",
+      "Category": "Electronics",
+      "Total IN": 32,
+      "Total OUT": 0,
+      "Current Stock": 32,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-096",
+      "Item Name": "GREEN INDICATOR  (2watt)",
+      "Category": "Electronics",
+      "Total IN": 26,
+      "Total OUT": 0,
+      "Current Stock": 26,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-097",
+      "Item Name": "PANASONIC LIGHT  (3 watt)",
+      "Category": "Electronics",
+      "Total IN": 116,
+      "Total OUT": 0,
+      "Current Stock": 116,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-098",
+      "Item Name": "ACTUATOR",
+      "Category": "Electronics",
+      "Total IN": 90,
+      "Total OUT": 0,
+      "Current Stock": 90,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-099",
+      "Item Name": "COIN ACCEPTOR",
+      "Category": "Electronics",
+      "Total IN": 5,
+      "Total OUT": 0,
+      "Current Stock": 5,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-100",
+      "Item Name": "BUZZER",
+      "Category": "Electronics",
+      "Total IN": 15,
+      "Total OUT": 0,
+      "Current Stock": 15,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-101",
+      "Item Name": "EX-HUST FAN",
+      "Category": "Electronics",
+      "Total IN": 6,
+      "Total OUT": 0,
+      "Current Stock": 6,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-102",
+      "Item Name": "TOP PIN 6 AMP",
+      "Category": "Electronics",
+      "Total IN": 24,
+      "Total OUT": 0,
+      "Current Stock": 24,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-103",
+      "Item Name": "PLUG  BOARDS",
+      "Category": "Electronics",
+      "Total IN": 15,
+      "Total OUT": 0,
+      "Current Stock": 15,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-104",
+      "Item Name": "SOCKET",
+      "Category": "Electronics",
+      "Total IN": 30,
+      "Total OUT": 0,
+      "Current Stock": 30,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-105",
+      "Item Name": "SWITCH",
+      "Category": "Electronics",
+      "Total IN": 11,
+      "Total OUT": 0,
+      "Current Stock": 11,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-106",
+      "Item Name": "MCB DB BOARD",
+      "Category": "Electronics",
+      "Total IN": 11,
+      "Total OUT": 0,
+      "Current Stock": 11,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-107",
+      "Item Name": "E.CONTROL PANEL SS 316",
+      "Category": "Electronics",
+      "Total IN": 28,
+      "Total OUT": 0,
+      "Current Stock": 28,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-108",
+      "Item Name": "E.CONTROL PANEL SS 304",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-109",
+      "Item Name": "INVERTER",
+      "Category": "Electronics",
+      "Total IN": 2,
+      "Total OUT": 0,
+      "Current Stock": 2,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-110",
+      "Item Name": "BATTERY",
+      "Category": "Electronics",
+      "Total IN": 3,
+      "Total OUT": 0,
+      "Current Stock": 3,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-111",
+      "Item Name": "EARTHING  PLATE",
+      "Category": "Electronics",
+      "Total IN": 33,
+      "Total OUT": 0,
+      "Current Stock": 33,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-112",
+      "Item Name": "EARTHING  WIRE",
+      "Category": "Electronics",
+      "Total IN": 19,
+      "Total OUT": 0,
+      "Current Stock": 19,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-113",
+      "Item Name": "1/2 HP PRESSURE MOTOR",
+      "Category": "Electronics",
+      "Total IN": 4,
+      "Total OUT": 0,
+      "Current Stock": 4,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-114",
+      "Item Name": "SOLAR PLATE",
+      "Category": "Electronics",
+      "Total IN": 56,
+      "Total OUT": 0,
+      "Current Stock": 56,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-115",
+      "Item Name": "CAMERA",
+      "Category": "Electronics",
+      "Total IN": 8,
+      "Total OUT": 0,
+      "Current Stock": 8,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-116",
+      "Item Name": "DVR",
+      "Category": "Electronics",
+      "Total IN": 3,
+      "Total OUT": 0,
+      "Current Stock": 3,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-117",
+      "Item Name": "HARD DISK",
+      "Category": "Electronics",
+      "Total IN": 3,
+      "Total OUT": 0,
+      "Current Stock": 3,
+      "Status": "LOW STOCK"
+    },
+    {
+      "Item Code": "E-118",
+      "Item Name": "CCTV CABLE",
+      "Category": "Electronics",
+      "Total IN": 90,
+      "Total OUT": 0,
+      "Current Stock": 90,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-119",
+      "Item Name": "FOUR WAY PIPE",
+      "Category": "Electronics",
+      "Total IN": 18,
+      "Total OUT": 0,
+      "Current Stock": 18,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-120",
+      "Item Name": "ELBOW",
+      "Category": "Electronics",
+      "Total IN": 90,
+      "Total OUT": 0,
+      "Current Stock": 90,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-121",
+      "Item Name": "TEE",
+      "Category": "Electronics",
+      "Total IN": 37,
+      "Total OUT": 0,
+      "Current Stock": 37,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-122",
+      "Item Name": "RED WIRE 0.5",
+      "Category": "Electronics",
+      "Total IN": 200,
+      "Total OUT": 0,
+      "Current Stock": 200,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-123",
+      "Item Name": "BLACK WIRE 0.6",
+      "Category": "Electronics",
+      "Total IN": 200,
+      "Total OUT": 0,
+      "Current Stock": 200,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-124",
+      "Item Name": "WHITE WIRE 0.7",
+      "Category": "Electronics",
+      "Total IN": 100,
+      "Total OUT": 0,
+      "Current Stock": 100,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-125",
+      "Item Name": "GRAY WIRE 0.8",
+      "Category": "Electronics",
+      "Total IN": 300,
+      "Total OUT": 0,
+      "Current Stock": 300,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-126",
+      "Item Name": "BLUE WIRE 0.9",
+      "Category": "Electronics",
+      "Total IN": 200,
+      "Total OUT": 0,
+      "Current Stock": 200,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-127",
+      "Item Name": "ORANGE WIRE 0.10",
+      "Category": "Electronics",
+      "Total IN": 300,
+      "Total OUT": 0,
+      "Current Stock": 300,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-128",
+      "Item Name": "GREEN  WIRE 0.11",
+      "Category": "Electronics",
+      "Total IN": 300,
+      "Total OUT": 0,
+      "Current Stock": 300,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-129",
+      "Item Name": "BROWN  WIRE 0.11",
+      "Category": "Electronics",
+      "Total IN": 300,
+      "Total OUT": 0,
+      "Current Stock": 300,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-130",
+      "Item Name": "YELLOW  WIRE 0.11",
+      "Category": "Electronics",
+      "Total IN": 200,
+      "Total OUT": 0,
+      "Current Stock": 200,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-131",
+      "Item Name": "2 CORE -BLACK",
+      "Category": "Electronics",
+      "Total IN": 100,
+      "Total OUT": 0,
+      "Current Stock": 100,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-132",
+      "Item Name": "3 CORE -BLACK",
+      "Category": "Electronics",
+      "Total IN": 200,
+      "Total OUT": 0,
+      "Current Stock": 200,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-133",
+      "Item Name": "3 CORE -GRAY",
+      "Category": "Electronics",
+      "Total IN": 300,
+      "Total OUT": 0,
+      "Current Stock": 300,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "E-134",
+      "Item Name": "3 CORE -BLACK 1.5sq mm.",
+      "Category": "Electronics",
+      "Total IN": 0,
+      "Total OUT": 0,
+      "Current Stock": 0,
+      "Status": "OUT OF STOCK"
+    },
+    {
+      "Item Code": "E-135",
+      "Item Name": "EMERGENCY BUTTON",
+      "Category": "Electronics",
+      "Total IN": 38,
+      "Total OUT": 0,
+      "Current Stock": 38,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "M-062",
+      "Item Name": "Screw",
+      "Category": "Mechanical",
+      "Total IN": 100,
+      "Total OUT": 0,
+      "Current Stock": 100,
+      "Status": "OK"
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    },
+    {
+      "Item Code": "",
+      "Item Name": "",
+      "Category": "",
+      "Total IN": "",
+      "Total OUT": "",
+      "Current Stock": "",
+      "Status": ""
+    }
+  ]
+}

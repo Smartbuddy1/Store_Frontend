@@ -1,0 +1,360 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { LayoutDashboard, Users, Folder, Monitor, LogOut, FileText, Sun, Moon, Settings, User, Phone, Shield, Menu, Activity, PieChart, Tag, ClipboardList, Radio, Wrench, Bell } from 'lucide-react';
+import Footer from './Footer';
+import excelData from '../assets/data.json';
+import newLogo from '../assets/new_logo.png';
+
+const Layout = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+  const [lang, setLang] = useState(localStorage.getItem('app_lang') || 'en');
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const profileRef = useRef(null);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  // Click outside to close profile dropdown
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [profileRef]);
+
+  // Close sidebar on route change
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [location.pathname]);
+
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
+
+  const toggleLang = () => {
+    const newLang = lang === 'en' ? 'mr' : 'en';
+    setLang(newLang);
+    localStorage.setItem('app_lang', newLang);
+    // Reload so if other components use localStorage, they update too
+    window.location.reload();
+  };
+
+  const t = (text) => {
+    if (lang === 'en') return text;
+    const dict = {
+      'Dashboard': 'डॅशबोर्ड',
+      'Item Master': 'वस्तूंची यादी',
+      'Stock In': 'माल आवक (In)',
+      'Stock Out': 'माल जावक (Out)',
+      'Current Stock': 'शिल्लक माल (Stock)',
+      'Alerts': 'अलर्ट्स (Alerts)',
+      'Tools Tracker': 'टूल्स ट्रॅकर',
+      'Masters / Settings': 'मास्टर्स / सेटिंग्ज',
+      'Main Menu': 'मुख्य मेनू',
+      'Secure Logout': 'लॉगआउट'
+    };
+    return dict[text] || text;
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const [outOfStockCount, setOutOfStockCount] = useState(0);
+
+  // Fetch Out of Stock Count for Alerts Badge on route change
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const stats = await import('../utils/api').then(m => m.default.currentStock.getDashboardStats());
+        setOutOfStockCount(stats.outOfStock);
+      } catch (err) {
+        console.error('Failed to fetch out of stock count', err);
+      }
+    };
+    fetchStats();
+  }, [location.pathname]);
+
+  const navigation = [
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Item Master', href: '/item-master', icon: Tag },
+    { name: 'Stock In', href: '/stock-in', icon: Activity },
+    { name: 'Stock Out', href: '/stock-out', icon: LogOut },
+    { name: 'Current Stock', href: '/current-stock', icon: ClipboardList },
+    { name: 'Alerts', href: '/alerts', icon: Bell },
+    { name: 'Tools Tracker', href: '/tools', icon: Wrench },
+    { name: 'Masters / Settings', href: '/masters', icon: Settings }
+  ];
+
+  return (
+    <div className="app-layout">
+      {/* Mobile Sidebar Overlay */}
+      <div 
+        className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} 
+        onClick={() => setIsSidebarOpen(false)}
+      ></div>
+
+      {/* Sidebar */}
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-header" style={{ padding: '1.25rem', display: 'flex', justifyContent: 'center', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+          <div style={{ 
+            backgroundColor: 'var(--surface-bg)', 
+            padding: '1rem', 
+            borderRadius: '16px', 
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            width: '100%'
+          }}>
+            <img src={newLogo} alt="E-Toilet Logo" style={{ width: '100%', height: 'auto', maxHeight: '40px', objectFit: 'contain' }} />
+          </div>
+        </div>
+        
+        <div className="sidebar-nav">
+          <div className="sidebar-nav-title">{t('Main Menu')}</div>
+          <nav>
+            {navigation.map((item) => {
+              // Temporarily ignore role restrictions so you can see all links
+              // if (item.roles && !item.roles.includes(user?.role)) return null;
+              
+              const isActive = location.pathname.startsWith(item.href);
+              const Icon = item.icon;
+              
+              return (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`sidebar-link ${isActive ? 'active' : ''}`}
+                >
+                  <Icon className="sidebar-link-icon" size={20} />
+                  {t(item.name)}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        <div className="sidebar-footer">
+          <div className="user-info">
+            <div className="user-avatar" style={{ overflow: 'hidden', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {user?.logo ? (
+                <img src={user?.logo?.startsWith('http') ? user.logo : `${import.meta.env.VITE_SERVER_URL}${user.logo}`} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'cover', backgroundColor: 'var(--surface-bg)' }} />
+              ) : (
+                'D'
+              )}
+            </div>
+            <div className="user-details">
+              <p className="user-name">Mr. Dinesh Nahire</p>
+              <p className="user-role">Store Incharge</p>
+            </div>
+          </div>
+          <button onClick={handleLogout} className="logout-btn" title="Logout">
+            <LogOut size={20} />
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="main-content">
+        <header className="top-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingRight: '2rem', position: 'relative' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button 
+              className="hamburger-menu"
+              onClick={() => setIsSidebarOpen(true)}
+              style={{ display: 'none', background: 'transparent', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', padding: '0.5rem' }}
+            >
+              <Menu size={24} />
+            </button>
+            <h1 className="page-title">
+              {navigation.find(n => location.pathname.startsWith(n.href))?.name || 'Dashboard'}
+            </h1>
+          </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            
+            <button 
+              onClick={toggleLang} 
+              style={{ 
+                background: 'var(--surface-bg)', 
+                border: '1px solid var(--border-color)', 
+                color: 'var(--text-primary)', 
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4px 8px',
+                borderRadius: '6px',
+                fontWeight: 'bold',
+                fontSize: '0.85rem'
+              }}
+              title="Switch Language"
+            >
+              ENG / मराठी
+            </button>
+
+            <button 
+              onClick={toggleTheme} 
+              style={{ 
+                background: 'transparent', 
+                border: 'none', 
+                color: 'var(--slate-400)', 
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              title={`Switch Theme`}
+            >
+              {theme === 'light' ? <Moon size={22} /> : <Sun size={22} />}
+            </button>
+            
+            <button 
+              onClick={() => navigate('/alerts')}
+              style={{ 
+                background: 'transparent', 
+                border: 'none', 
+                color: 'var(--slate-400)', 
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative'
+              }}
+              title="Alerts"
+            >
+              <Bell size={26} />
+              {outOfStockCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '-2px',
+                  right: '-4px',
+                  backgroundColor: '#ef4444',
+                  color: 'var(--surface-bg)',
+                  fontSize: '0.65rem',
+                  fontWeight: 'bold',
+                  width: '18px',
+                  height: '18px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '50%'
+                }}>
+                  {outOfStockCount}
+                </span>
+              )}
+            </button>
+
+            <div style={{ height: '24px', width: '1px', backgroundColor: 'var(--slate-600)' }}></div>
+            
+            <div 
+              ref={profileRef}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', position: 'relative' }}
+              onClick={() => setIsProfileOpen(!isProfileOpen)}
+            >
+              <span style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '1rem' }}>
+                {user?.name || user?.username || 'User'}
+              </span>
+              <div style={{ 
+                width: '36px', height: '36px', borderRadius: '50%', 
+                backgroundColor: 'var(--slate-200)', display: 'flex', 
+                alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '2px solid var(--primary-color)'
+              }}>
+                {user?.logo ? (
+                  <img src={user?.logo?.startsWith('http') ? user.logo : `${import.meta.env.VITE_SERVER_URL}${user.logo}`} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'cover', backgroundColor: 'var(--surface-bg)' }} />
+                ) : (
+                  <User size={24} color="var(--slate-600)" />
+                )}
+              </div>
+
+              {/* PROFILE DROPDOWN CARD */}
+              {isProfileOpen && (
+                <div style={{ 
+                  position: 'absolute', top: '50px', right: '0', width: '320px', 
+                  backgroundColor: 'var(--surface-bg)', borderRadius: '12px', 
+                  boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3)', overflow: 'hidden', zIndex: 1000,
+                  border: '1px solid var(--border-color)'
+                }}>
+                  {/* Top Blue Section */}
+                  <div style={{ backgroundColor: '#3b82f6', padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <div style={{ 
+                      width: '70px', height: '70px', borderRadius: '50%', backgroundColor: 'var(--slate-300)', 
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem',
+                      border: '3px solid rgba(255,255,255,0.4)', overflow: 'hidden'
+                    }}>
+                      {user?.logo ? (
+                        <img src={user?.logo?.startsWith('http') ? user.logo : `${import.meta.env.VITE_SERVER_URL}${user.logo}`} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'cover', backgroundColor: 'var(--surface-bg)' }} />
+                      ) : (
+                        <User size={40} color='var(--slate-600)' />
+                      )}
+                    </div>
+                    <h3 style={{ color: 'var(--surface-bg)', fontSize: '1.1rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '0.5rem', letterSpacing: '0.5px' }}>
+                      {(user?.name || user?.username || 'User').toUpperCase()}
+                    </h3>
+                    <span style={{ backgroundColor: 'rgba(255,255,255,0.3)', color: 'var(--surface-bg)', padding: '0.2rem 1rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                      {(user?.role || 'User').toUpperCase()}
+                    </span>
+                  </div>
+
+                  {/* Middle Dark Section */}
+                  <div style={{ backgroundColor: 'var(--slate-800)', padding: '1.5rem' }}>
+                    <p style={{ color: 'var(--slate-400)', fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '1rem', letterSpacing: '1px' }}>ACCOUNT DETAILS</p>
+                    
+                    <div style={{ backgroundColor: 'var(--slate-900)', padding: '1rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.75rem' }}>
+                      <div style={{ backgroundColor: 'rgba(59, 130, 246, 0.2)', padding: '0.5rem', borderRadius: '50%' }}>
+                        <Phone size={18} color="#3b82f6" />
+                      </div>
+                      <div>
+                        <p style={{ color: 'var(--surface-bg)', fontWeight: 'bold', fontSize: '1rem', marginBottom: '0.1rem' }}>{user?.mobile || 'N/A'}</p>
+                        <p style={{ color: 'var(--slate-400)', fontSize: '0.8rem' }}>User ID / Mobile</p>
+                      </div>
+                    </div>
+
+                    <div style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', padding: '1rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      <div style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)', padding: '0.5rem', borderRadius: '50%' }}>
+                        <Shield size={18} color="#10b981" />
+                      </div>
+                      <div>
+                        <p style={{ color: 'var(--surface-bg)', fontWeight: 'bold', fontSize: '1rem', marginBottom: '0.1rem' }}>{user?.role} Access</p>
+                        <p style={{ color: 'var(--slate-400)', fontSize: '0.8rem' }}>Security Level</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom Logout Section */}
+                  <div style={{ backgroundColor: 'var(--slate-900)', padding: '1rem', borderTop: '1px solid #334155', display: 'flex', justifyContent: 'center' }}>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); handleLogout(); }}
+                      style={{ background: 'transparent', border: 'none', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}
+                    >
+                      <LogOut size={18} /> {t('Secure Logout')}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </header>
+        <div className="page-content" style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 64px)' }}>
+          <div style={{ flex: '1 0 auto' }}>
+            <Outlet />
+          </div>
+          <Footer />
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default Layout;

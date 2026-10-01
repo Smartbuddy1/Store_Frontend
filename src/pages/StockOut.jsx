@@ -21,15 +21,17 @@ const StockOut = () => {
 
   const [staffList, setStaffList] = useState([]);
   const [itemsMaster, setItemsMaster] = useState({});
+  const [currentStockMap, setCurrentStockMap] = useState({});
 
   // Fetch data from API
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [entries, staff, items] = await Promise.all([
+      const [entries, staff, items, currentStockData] = await Promise.all([
         api.stockOut.getAll(),
         api.staff.getAll(),
-        api.items.getAll()
+        api.items.getAll(),
+        api.currentStock.getAll()
       ]);
       
       const itemMap = {};
@@ -41,6 +43,12 @@ const StockOut = () => {
         };
       });
       setItemsMaster(itemMap);
+
+      const stockMap = {};
+      (currentStockData || []).forEach(item => {
+        stockMap[item.item_code] = item.current_qty;
+      });
+      setCurrentStockMap(stockMap);
 
       const mappedEntries = entries.map(entry => ({
         id: entry.id,
@@ -74,6 +82,7 @@ const StockOut = () => {
   const [newCategory, setNewCategory] = useState('');
   const [newQuantity, setNewQuantity] = useState('');
   const [newHandoverTo, setNewHandoverTo] = useState('');
+  const [newSubUnit, setNewSubUnit] = useState('Nos');
   const [editingId, setEditingId] = useState(null);
 
   // Auto-fill logic when Item Code changes
@@ -85,9 +94,11 @@ const StockOut = () => {
     if (itemsMaster[code]) {
       setNewItemName(itemsMaster[code].name);
       setNewCategory(itemsMaster[code].category);
+      setNewSubUnit(itemsMaster[code].unit || 'Nos');
     } else {
       setNewItemName('');
       setNewCategory('');
+      setNewSubUnit('Nos');
     }
   };
 
@@ -97,10 +108,18 @@ const StockOut = () => {
       return;
     }
 
-    // TODO: Ideally current stock validation should be handled in the backend, but we skip it here for now
-    // since we removed excelData current stock reliance. The backend should reject it if needed.
-
     try {
+      let finalQty = parseFloat(newQuantity);
+      if (newSubUnit === 'ml' || newSubUnit === 'gms') {
+        finalQty = finalQty / 1000;
+      }
+
+      const availableQty = currentStockMap[newItemCode] || 0;
+      if (finalQty > availableQty) {
+        alert(t(`Cannot dispatch more than current stock! Available: ${availableQty} ${itemsMaster[newItemCode]?.unit || ''}`));
+        return;
+      }
+
       if (editingId) {
         await api.stockOut.update(editingId, {
           date: newDate,
@@ -108,7 +127,7 @@ const StockOut = () => {
           item_code: newItemCode,
           item_name: newItemName,
           category: newCategory,
-          quantity: parseInt(newQuantity, 10),
+          quantity: finalQty,
           handover_to: newHandoverTo || 'Unknown'
         });
       } else {
@@ -118,7 +137,7 @@ const StockOut = () => {
           item_code: newItemCode,
           item_name: newItemName,
           category: newCategory,
-          quantity: parseInt(newQuantity, 10),
+          quantity: finalQty,
           handover_to: newHandoverTo || 'Unknown'
         });
         setCurrentPage(1);
@@ -135,6 +154,7 @@ const StockOut = () => {
       setNewQuantity('');
       setNewHandoverTo('');
       setIsModalOpen(false);
+      alert('Saved successfully!');
     } catch (err) {
       alert('Save failed: ' + err.message);
     }
@@ -149,7 +169,7 @@ const StockOut = () => {
     setNewCategory(entry.category);
     setNewQuantity(entry.quantity.toString());
     setNewHandoverTo(entry.handoverTo);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setIsModalOpen(true);
   };
 
   const handleDeleteDispatch = async (id) => {
@@ -271,7 +291,7 @@ const StockOut = () => {
         </div>
       </div>
 
-      {/* Inline Form Section */}
+      {/* Inline Form Section (Add New) */}
       <div style={{
         backgroundColor: 'var(--surface-bg)',
         borderRadius: '12px',
@@ -282,13 +302,13 @@ const StockOut = () => {
       }}>
         <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--slate-900)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Plus size={20} color='#3b82f6' />
-          {editingId ? t('Edit Stock Out') : t('Record Dispatch')}
+          {t('Record Dispatch')}
         </h2>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.25rem', marginBottom: '1.5rem' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}</label>
-            <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--slate-100)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
               <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)', fontWeight: '600' }} />
             </div>
           </div>
@@ -338,44 +358,183 @@ const StockOut = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Quantity Dispatched')}</label>
             <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
               <Layers size={18} color='var(--text-secondary)' />
-              <input type="number" min="1" placeholder="Qty" value={newQuantity} onChange={(e) => {
+              <input type="number" step={['nos', 'ml', 'gms'].includes((newSubUnit || '').toLowerCase()) ? "1" : "0.01"} min={['nos', 'ml', 'gms'].includes((newSubUnit || '').toLowerCase()) ? "1" : "0.01"} placeholder="Qty" value={newQuantity} onChange={(e) => {
                 const val = e.target.value;
                 if (val === '' || Number(val) > 0) setNewQuantity(val);
               }} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }} />
+              
+              {newItemCode && itemsMaster[newItemCode] && (
+                <select 
+                  value={newSubUnit} 
+                  onChange={(e) => setNewSubUnit(e.target.value)}
+                  style={{ border: 'none', outline: 'none', padding: '0.5rem', backgroundColor: 'transparent', color: 'var(--text-secondary)', fontWeight: 'bold', borderLeft: '1px solid var(--border-color)', cursor: 'pointer' }}
+                >
+                  <option value={itemsMaster[newItemCode].unit}>{itemsMaster[newItemCode].unit}</option>
+                  {itemsMaster[newItemCode].unit === 'Ltr' && <option value="ml">ml</option>}
+                  {itemsMaster[newItemCode].unit === 'Kgs' && <option value="gms">gms</option>}
+                </select>
+              )}
             </div>
           </div>
 
           <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', gap: '1rem' }}>
-          <button 
-            onClick={() => {
-              setEditingId(null);
-              setNewTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
-              setNewItemCode('');
-              setNewItemName('');
-              setNewCategory('');
-              setNewQuantity('');
-              setNewHandoverTo('');
-            }}
-            style={{
-              padding: '0.6rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'transparent',
-              color: 'var(--text-primary)', fontWeight: '600', cursor: 'pointer'
-            }}
-          >
-            {t('Cancel')}
-          </button>
-          <button 
-            onClick={handleSaveDispatch}
-            style={{
-              padding: '0.6rem 1.5rem', borderRadius: '8px', border: 'none', backgroundColor: '#3b82f6',
-              color: '#ffffff', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem'
-            }}
-          >
-            <Send size={18} />
-            {editingId ? t('Save Changes') : t('Add Dispatch')}
-          </button>
+            <button 
+              onClick={() => {
+                setNewTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
+                setNewItemCode('');
+                setNewItemName('');
+                setNewCategory('');
+                setNewQuantity('');
+                setNewHandoverTo('');
+              }}
+              style={{
+                padding: '0.6rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'transparent',
+                color: 'var(--text-primary)', fontWeight: '600', cursor: 'pointer'
+              }}
+            >
+              {t('Cancel')}
+            </button>
+            <button 
+              onClick={handleSaveDispatch}
+              style={{
+                padding: '0.6rem 1.5rem', borderRadius: '8px', border: 'none', backgroundColor: '#3b82f6',
+                color: '#ffffff', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem'
+              }}
+            >
+              <Send size={18} />
+              {t('Add Dispatch')}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Modal Form Section (Edit Only) */}
+      {isModalOpen && editingId && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          backdropFilter: 'blur(4px)'
+        }}>
+          <div style={{
+            backgroundColor: 'var(--surface-bg)',
+            borderRadius: '16px',
+            padding: '2rem',
+            width: '90%',
+            maxWidth: '900px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            border: '1px solid var(--border-color)',
+            position: 'relative'
+          }}>
+            <button onClick={() => setIsModalOpen(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--slate-400)' }}>
+              <Plus size={24} style={{ transform: 'rotate(45deg)' }} />
+            </button>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--slate-900)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Plus size={22} color='#3b82f6' />
+              {t('Edit Stock Out')}
+            </h2>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}</label>
+                <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--slate-100)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
+                  <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)', fontWeight: '600' }} />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Time')}</label>
+                <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
+                  <input type="time" value={newTime} onChange={(e) => setNewTime(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)', fontWeight: '600' }} />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Code')}</label>
+                <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
+                  <Hash size={18} color='var(--text-secondary)' />
+                  <input type="text" list="stockout-item-codes" placeholder="e.g. E-001" value={newItemCode} onChange={handleItemCodeChange} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }} />
+                  <datalist id="stockout-item-codes">
+                    {Object.keys(itemsMaster).map(code => (
+                      <option key={code} value={code}>{itemsMaster[code].name}</option>
+                    ))}
+                  </datalist>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Name (Auto)')}</label>
+                <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--slate-100)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
+                  <Tag size={18} color='var(--slate-400)' />
+                  <input type="text" placeholder="Auto-populated" value={newItemName} readOnly style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--slate-600)', fontWeight: '600' }} />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Handover To')}</label>
+                <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
+                  <Users size={18} color='var(--text-secondary)' />
+                  <select value={newHandoverTo} onChange={(e) => setNewHandoverTo(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }}>
+                    <option value="">-- Select --</option>
+                    {staffList.filter(p => p.type === 'Helper').map((person, idx) => (
+                      <option key={idx} value={person.name}>{person.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Quantity Dispatched')}</label>
+                <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
+                  <Layers size={18} color='var(--text-secondary)' />
+                  <input type="number" step="0.01" min="0.01" placeholder="Qty" value={newQuantity} onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || Number(val) > 0) setNewQuantity(val);
+                  }} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }} />
+                  
+                  {newItemCode && itemsMaster[newItemCode] && (
+                    <select 
+                      value={newSubUnit} 
+                      onChange={(e) => setNewSubUnit(e.target.value)}
+                      style={{ border: 'none', outline: 'none', padding: '0.5rem', backgroundColor: 'transparent', color: 'var(--text-secondary)', fontWeight: 'bold', borderLeft: '1px solid var(--border-color)', cursor: 'pointer' }}
+                    >
+                      <option value={itemsMaster[newItemCode].unit}>{itemsMaster[newItemCode].unit}</option>
+                      {itemsMaster[newItemCode].unit === 'Ltr' && <option value="ml">ml</option>}
+                      {itemsMaster[newItemCode].unit === 'Kgs' && <option value="gms">gms</option>}
+                    </select>
+                  )}
+                </div>
+              </div>
+
+              <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem', marginTop: '1rem' }}>
+                <button 
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setEditingId(null);
+                  }}
+                  style={{
+                    padding: '0.6rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'transparent',
+                    color: 'var(--text-primary)', fontWeight: '600', cursor: 'pointer'
+                  }}
+                >
+                  {t('Cancel')}
+                </button>
+                <button 
+                  onClick={handleSaveDispatch}
+                  style={{
+                    padding: '0.6rem 1.5rem', borderRadius: '8px', border: 'none', backgroundColor: '#3b82f6',
+                    color: '#ffffff', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem'
+                  }}
+                >
+                  <Send size={18} />
+                  {t('Save Changes')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {/* Filters Section */}
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '2rem' }}>
@@ -508,7 +667,11 @@ const StockOut = () => {
                       padding: '0.35rem 0.75rem', borderRadius: '20px',
                       fontWeight: 'bold', fontSize: '0.9rem', whiteSpace: 'nowrap'
                     }}>
-                      - {entry.quantity}
+                      - {(entry.unit === 'Ltr' && entry.quantity < 1) 
+                          ? `${entry.quantity * 1000} ml` 
+                          : (entry.unit === 'Kgs' && entry.quantity < 1) 
+                            ? `${entry.quantity * 1000} gms` 
+                            : `${entry.quantity} ${entry.unit}`}
                     </span>
                     {entry.returned > 0 && (
                       <span style={{ color: '#10b981', fontSize: '0.75rem', fontWeight: 'bold' }}>
@@ -519,25 +682,6 @@ const StockOut = () => {
                 </td>
                 <td style={{ padding: '1.25rem 1rem', textAlign: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                    {entry.quantity > 0 ? (
-                      <button 
-                        onClick={() => handleReturn(entry.id)}
-                        style={{
-                          backgroundColor: 'var(--surface-bg)',
-                          border: '1px solid #e2e8f0',
-                          color: '#3b82f6',
-                          padding: '0.4rem 0.75rem',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '0.85rem',
-                          fontWeight: '600'
-                        }}
-                      >
-                        Return
-                      </button>
-                    ) : (
-                      <span style={{ color: 'var(--slate-400)', fontSize: '0.85rem', marginRight: '0.5rem' }}>Returned</span>
-                    )}
                     <button onClick={() => setViewingItem(entry)} style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10b981' }}><Eye size={16} /></button>
                     <button onClick={() => handleEditDispatch(entry)} style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--slate-600)' }}><Edit size={16} /></button>
                     <button onClick={() => handleDeleteDispatch(entry.id)} style={{ backgroundColor: '#ef4444', border: 'none', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--surface-bg)' }}><Trash2 size={16} /></button>

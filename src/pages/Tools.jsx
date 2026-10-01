@@ -4,6 +4,7 @@ import { PenTool, Clock, Users, Plus, CheckCircle, ArrowUpDown, Search, FileText
 import { exportToPDF } from '../utils/pdfExport';
 import { exportToExcel } from '../utils/excelExport';
 import { t } from '../utils/translator';
+import api from '../utils/api';
 
 const Tools = () => {
   const location = useLocation();
@@ -36,33 +37,23 @@ const Tools = () => {
   const [issueTime, setIssueTime] = useState('');
 
   // Load initial data
+  const fetchData = async () => {
+    try {
+      const [tools, staff, logs] = await Promise.all([
+        api.tools.getAllTools(),
+        api.staff.getAll(),
+        api.tools.getAllLogs()
+      ]);
+      setToolsMaster(tools);
+      setHelpers(staff.filter(p => p.type === 'Helper'));
+      setToolsLog(logs);
+    } catch (error) {
+      console.error('Failed to fetch tools data:', error);
+    }
+  };
+
   useEffect(() => {
-    // Load Tools Master
-    const savedTools = localStorage.getItem('store_tools_master');
-    if (savedTools) {
-      setToolsMaster(JSON.parse(savedTools));
-    } else {
-      const defaultTools = [
-        { code: 'T-001', name: 'Drill Machine' },
-        { code: 'T-002', name: 'Grinder' }
-      ];
-      setToolsMaster(defaultTools);
-      localStorage.setItem('store_tools_master', JSON.stringify(defaultTools));
-    }
-
-    // Load Helpers from Staff v2
-    const savedStaff = localStorage.getItem('store_staff_v2');
-    if (savedStaff) {
-      const parsedStaff = JSON.parse(savedStaff);
-      setHelpers(parsedStaff.filter(p => p.type === 'Helper'));
-    }
-
-    // Load Issuance Log
-    const savedLog = localStorage.getItem('store_tools_log');
-    if (savedLog) {
-      setToolsLog(JSON.parse(savedLog));
-    }
-
+    fetchData();
     // Set default time to now
     const now = new Date();
     const timeString = now.toTimeString().slice(0, 5); // HH:MM format
@@ -74,20 +65,27 @@ const Tools = () => {
       setIsAddToolOpen(true);
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location]);
+  }, [location, navigate]);
 
   // Add New Tool to Master
-  const handleAddNewTool = () => {
+  const handleAddNewTool = async () => {
     if (!newToolName.trim() || !newToolCode.trim()) {
       alert(t('Please fill all mandatory fields.'));
       return;
     }
-    const updatedTools = [...toolsMaster, { code: newToolCode.toUpperCase(), name: newToolName }];
-    setToolsMaster(updatedTools);
-    localStorage.setItem('store_tools_master', JSON.stringify(updatedTools));
-    setNewToolName('');
-    setNewToolCode('');
-    setIsAddToolOpen(false);
+    try {
+      await api.tools.createTool({
+        toolCode: newToolCode.toUpperCase(),
+        toolName: newToolName
+      });
+      await fetchData();
+      setNewToolName('');
+      setNewToolCode('');
+      setIsAddToolOpen(false);
+      alert('Tool added successfully');
+    } catch (error) {
+      alert('Failed to add tool: ' + error.message);
+    }
   };
 
   // Auto-generate code helper
@@ -98,51 +96,41 @@ const Tools = () => {
   };
 
   // Issue Tool to Helper
-  const handleIssueTool = () => {
+  const handleIssueTool = async () => {
     if (!selectedTool || !selectedHelper || !issueTime) {
       alert(t('Please fill all mandatory fields.'));
       return;
     }
-
-    const toolDetails = toolsMaster.find(t => t.code === selectedTool);
-
-    const newLog = {
-      id: Date.now(),
-      date: new Date().toISOString().split('T')[0],
-      toolCode: toolDetails.code,
-      toolName: toolDetails.name,
-      helperName: selectedHelper,
-      issueTime: issueTime,
-      returnTime: null,
-      status: 'Issued'
-    };
-
-    const updatedLog = [newLog, ...toolsLog];
-    setToolsLog(updatedLog);
-    localStorage.setItem('store_tools_log', JSON.stringify(updatedLog));
-
-    // Reset Form
-    setSelectedTool('');
-    setSelectedHelper('');
-    
-    const now = new Date();
-    setIssueTime(now.toTimeString().slice(0, 5));
+    try {
+      await api.tools.issueTool({
+        toolCode: selectedTool,
+        helperName: selectedHelper,
+        issueTime: issueTime
+      });
+      await fetchData();
+      
+      // Reset Form
+      setSelectedTool('');
+      setSelectedHelper('');
+      const now = new Date();
+      setIssueTime(now.toTimeString().slice(0, 5));
+      alert('Tool issued successfully!');
+    } catch (error) {
+      alert('Failed to issue tool: ' + error.message);
+    }
   };
 
   // Mark as Returned
-  const handleMarkReturned = (logId) => {
+  const handleMarkReturned = async (logId) => {
     const now = new Date();
     const returnTimeString = now.toTimeString().slice(0, 5);
 
-    const updatedLog = toolsLog.map(log => {
-      if (log.id === logId) {
-        return { ...log, returnTime: returnTimeString, status: 'Returned' };
-      }
-      return log;
-    });
-
-    setToolsLog(updatedLog);
-    localStorage.setItem('store_tools_log', JSON.stringify(updatedLog));
+    try {
+      await api.tools.returnTool(logId, { returnTime: returnTimeString });
+      await fetchData();
+    } catch (error) {
+      alert('Failed to return tool: ' + error.message);
+    }
   };
 
   const filteredLogs = toolsLog.filter(log => {
@@ -252,7 +240,7 @@ const Tools = () => {
             >
               <option value="">-- Select Tool --</option>
               {toolsMaster.map(t => (
-                <option key={t.code} value={t.code}>{t.name} ({t.code})</option>
+                <option key={t.toolCode} value={t.toolCode}>{t.toolName} ({t.toolCode})</option>
               ))}
             </select>
           </div>

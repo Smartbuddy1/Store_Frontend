@@ -60,7 +60,7 @@ const Alerts = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const outOfStockItems = filteredData.filter(item => item.currentQty === 0);
+  const outOfStockItems = filteredData.filter(item => item.currentQty <= 0);
   const lowStockItems = filteredData.filter(item => item.currentQty > 0 && item.currentQty <= item.minStock);
 
   const totalOutPages = Math.ceil(outOfStockItems.length / recordsPerPage);

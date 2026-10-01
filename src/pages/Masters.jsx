@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Tag, Users, Shield, Briefcase, Search, FileText, FileSpreadsheet, Download, Edit, X } from 'lucide-react';
+import { Plus, Trash2, Tag, Users, Shield, Briefcase, Search, FileText, FileSpreadsheet, Download, Edit, X, Package } from 'lucide-react';
 import { exportToPDF } from '../utils/pdfExport';
 import { exportToExcel } from '../utils/excelExport';
 import { t } from '../utils/translator';
@@ -224,6 +224,20 @@ const Masters = () => {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
         
+        {/* Kits Master Link Section */}
+        <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden', padding: '1.5rem', backgroundColor: 'var(--surface-bg)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: '0 0 0.5rem 0', color: 'var(--slate-900)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Package size={22} color="#3b82f6" />
+              Kits / Packages Master
+            </h2>
+            <p style={{ margin: 0, color: 'var(--slate-500)', fontSize: '0.95rem' }}>Define reusable sets of items (e.g. 1 Toilet = 1 Pan + 2 Pipes) for fast Site Dispatch.</p>
+          </div>
+          <a href="/kits-master" style={{ textDecoration: 'none', backgroundColor: '#3b82f6', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '8px', fontWeight: 'bold' }}>
+            Manage Kits
+          </a>
+        </div>
+
         {/* Categories Section */}
         <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
           <div style={{ backgroundColor: 'var(--slate-50)', padding: '1rem 1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>

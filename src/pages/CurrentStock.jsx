@@ -231,13 +231,13 @@ const CurrentStock = () => {
                     {item.minStock}
                   </td>
                   <td style={{ padding: '1.25rem 1rem', fontWeight: 'bold', color: '#10b981', whiteSpace: 'nowrap' }}>
-                    + {item.totalIn}
+                    + {(item.unit === 'Ltr' && item.totalIn > 0 && item.totalIn < 1) ? `${item.totalIn * 1000} ml` : (item.unit === 'Kgs' && item.totalIn > 0 && item.totalIn < 1) ? `${item.totalIn * 1000} gms` : item.totalIn}
                   </td>
                   <td style={{ padding: '1.25rem 1rem', fontWeight: 'bold', color: '#ef4444', whiteSpace: 'nowrap' }}>
-                    - {item.totalOut}
+                    - {(item.unit === 'Ltr' && item.totalOut > 0 && item.totalOut < 1) ? `${item.totalOut * 1000} ml` : (item.unit === 'Kgs' && item.totalOut > 0 && item.totalOut < 1) ? `${item.totalOut * 1000} gms` : item.totalOut}
                   </td>
                   <td style={{ padding: '1.25rem 1rem', color: 'var(--slate-900)', fontWeight: 'bold', fontSize: '1.1rem', whiteSpace: 'nowrap' }}>
-                    {item.currentQty}
+                    {(item.unit === 'Ltr' && item.currentQty > 0 && item.currentQty < 1) ? `${item.currentQty * 1000} ml` : (item.unit === 'Kgs' && item.currentQty > 0 && item.currentQty < 1) ? `${item.currentQty * 1000} gms` : item.currentQty}
                   </td>
                   <td style={{ padding: '1.25rem 1rem', textAlign: 'right' }}>
                     <span style={{

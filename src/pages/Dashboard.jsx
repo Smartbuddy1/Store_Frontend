@@ -17,16 +17,19 @@ const Dashboard = () => {
   
   const [recentStockIn, setRecentStockIn] = useState([]);
   const [recentStockOut, setRecentStockOut] = useState([]);
+  const [barChartData, setBarChartData] = useState([]);
+  const [pieChartData, setPieChartData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const [dashStats, stockIn, stockOut] = await Promise.all([
+        const [dashStats, stockIn, stockOut, items] = await Promise.all([
           api.currentStock.getDashboardStats(),
           api.stockIn.getAll(),
-          api.stockOut.getAll()
+          api.stockOut.getAll(),
+          api.items.getAll()
         ]);
 
         setStats(dashStats);
@@ -45,6 +48,35 @@ const Dashboard = () => {
           quantity: item.quantity
         })));
         
+        // Process Bar Chart (Last 7 Days)
+        const last7Days = [];
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const dateStr = d.toISOString().split('T')[0];
+          last7Days.push({ date: dateStr, displayDate: d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }), In: 0, Out: 0 });
+        }
+        stockIn.forEach(entry => {
+          const entryDate = new Date(entry.date).toISOString().split('T')[0];
+          const day = last7Days.find(d => d.date === entryDate);
+          if (day) day.In += entry.quantity;
+        });
+        stockOut.forEach(entry => {
+          const entryDate = new Date(entry.date).toISOString().split('T')[0];
+          const day = last7Days.find(d => d.date === entryDate);
+          if (day) day.Out += entry.quantity;
+        });
+        setBarChartData(last7Days);
+
+        // Process Pie Chart (Items per Category)
+        const categoriesCount = {};
+        (items || []).forEach(item => {
+          const cat = item.categoryName || 'Uncategorized';
+          categoriesCount[cat] = (categoriesCount[cat] || 0) + 1;
+        });
+        const pieData = Object.keys(categoriesCount).map(key => ({ name: key, value: categoriesCount[key] }));
+        setPieChartData(pieData);
+
       } catch (err) {
         console.error('Failed to fetch dashboard data:', err);
       } finally {
@@ -57,8 +89,8 @@ const Dashboard = () => {
 
   const statCards = [
     { label: t('Total Items'), value: stats.totalItems, icon: Package, color: '#3b82f6', badgeText: 'Active', badgeType: 'success', link: '/item-master', state: {} },
-    { label: t('Low Stock'), value: stats.lowStock, icon: AlertTriangle, color: '#f59e0b', badgeText: 'Warning', badgeType: 'warning', link: '/alerts', state: { selectedStatus: 'Low' } },
-    { label: t('Out of Stock'), value: stats.outOfStock, icon: XCircle, color: '#ef4444', badgeText: 'Critical', badgeType: 'danger', link: '/alerts', state: { selectedStatus: 'Empty' } },
+    { label: t('Low Stock'), value: stats.lowStock, icon: AlertTriangle, color: '#f59e0b', badgeText: 'Warning', badgeType: 'warning', link: '/alerts', state: { selectedStatus: 'LOW STOCK' } },
+    { label: t('Out of Stock'), value: stats.outOfStock, icon: XCircle, color: '#ef4444', badgeText: 'Critical', badgeType: 'danger', link: '/alerts', state: { selectedStatus: 'OUT OF STOCK' } },
     { label: t('Items IN'), value: stats.totalQtyIn, icon: ArrowDownCircle, color: '#10b981', badgeText: 'All time', badgeType: 'success', link: '/stock-in', state: {} },
     { label: t('Items OUT'), value: stats.totalQtyOut, icon: ArrowUpCircle, color: '#8b5cf6', badgeText: 'All time', badgeType: 'success', link: '/stock-out', state: {} }
   ];
@@ -191,6 +223,60 @@ const Dashboard = () => {
             </div>
           </Link>
 
+        </div>
+      </div>
+
+      {/* Charts Section */}
+      <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+        
+        {/* Bar Chart: Last 7 Days Stock In vs Out */}
+        <div style={{ flex: '1 1 min(400px, 100%)', backgroundColor: 'var(--surface-bg)', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--slate-900)', marginBottom: '1.5rem' }}>{t('Last 7 Days (Stock In vs Out)')}</h2>
+          <div style={{ width: '100%', height: '300px' }}>
+            <ResponsiveContainer>
+              <BarChart data={barChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <XAxis dataKey="displayDate" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
+                <Tooltip cursor={{ fill: '#f1f5f9' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
+                <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px' }} />
+                <Bar dataKey="In" name={t('Stock In')} fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                <Bar dataKey="Out" name={t('Stock Out')} fill="#ef4444" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Pie Chart: Items per Category */}
+        <div style={{ flex: '1 1 min(400px, 100%)', backgroundColor: 'var(--surface-bg)', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--slate-900)', marginBottom: '1.5rem' }}>{t('Items per Category')}</h2>
+          <div style={{ width: '100%', height: '300px' }}>
+            <ResponsiveContainer>
+              <PieChart>
+                <Pie
+                  data={pieChartData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={70}
+                  outerRadius={100}
+                  paddingAngle={5}
+                  dataKey="value"
+                  nameKey="name"
+                  stroke="none"
+                >
+                  {pieChartData.map((entry, index) => {
+                    const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#6366f1'];
+                    return <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />;
+                  })}
+                </Pie>
+                <Tooltip 
+                  formatter={(value) => [value, t('Items')]}
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} 
+                />
+                <Legend iconType="circle" layout="vertical" verticalAlign="middle" align="right" />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 

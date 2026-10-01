@@ -21,20 +21,29 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      // Point this to backend URL
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/login`, { mobile: username, password });
-      const { token, user: userData } = response.data;
-      
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(userData));
-      
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setUser(userData);
-      return { success: true, role: userData.role };
+      // Mock Authentication (since backend auth is not yet implemented)
+      if (username === '8010209983' && password === 'admin') {
+        const userData = {
+          id: 1,
+          name: 'Mr. Dinesh Nahire',
+          role: 'Store_Incharge',
+          mobile: '9999999999'
+        };
+        const token = 'mock-jwt-token-12345';
+        
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(userData));
+        
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        setUser(userData);
+        return { success: true, role: userData.role };
+      } else {
+        return { success: false, message: 'Invalid mobile number or password' };
+      }
     } catch (error) {
       return { 
         success: false, 
-        message: error.response?.data?.message || 'Login failed' 
+        message: 'Login failed' 
       };
     }
   };

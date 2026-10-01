@@ -20,7 +20,7 @@ const ItemMaster = () => {
   const [editingId, setEditingId] = useState(null);
   const [newItemName, setNewItemName] = useState('');
   const [newItemCategory, setNewItemCategory] = useState('');
-  const [newUnit, setNewUnit] = useState('');
+  const [newUnit, setNewUnit] = useState('Nos');
   const [newMinStock, setNewMinStock] = useState('');
 
   const location = useLocation();
@@ -90,7 +90,7 @@ const ItemMaster = () => {
     setNewItemCategory(item.category);
     setNewUnit(item.unit);
     setNewMinStock(item.minStock.toString());
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // scroll up to see the form
+    setIsModalOpen(true);
   };
 
   const handleExportPDF = async () => {
@@ -117,7 +117,7 @@ const ItemMaster = () => {
     setEditingId(null);
     setNewItemName('');
     setNewItemCategory('');
-    setNewUnit('');
+    setNewUnit('Nos');
     setNewMinStock('');
     setIsModalOpen(true);
   };
@@ -158,6 +158,7 @@ const ItemMaster = () => {
       setNewUnit('');
       setNewMinStock('');
       setIsModalOpen(false);
+      alert('Saved successfully!');
     } catch (err) {
       alert('Save failed: ' + err.message);
     }
@@ -175,64 +176,16 @@ const ItemMaster = () => {
           </div>
           <div style={{ display: 'flex', gap: '0.75rem' }}>
             <button onClick={handleExportPDF} style={{ backgroundColor: 'transparent', color: '#dc2626', border: '1.5px solid #dc2626', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
-            <Download size={18} /> PDF
-          </button>
+              <Download size={18} /> PDF
+            </button>
             <button onClick={handleExportExcel} style={{ backgroundColor: 'transparent', color: '#059669', border: '1.5px solid #059669', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
-            <FileSpreadsheet size={18} /> Excel
-          </button>
+              <FileSpreadsheet size={18} /> Excel
+            </button>
           </div>
-        </div>
-        
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <div style={{ position: 'relative', flex: '1', minWidth: '250px' }}>
-            <Search size={18} color='var(--slate-400)' style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-            <input 
-              type="text" 
-              placeholder="Search items..." 
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1); // Reset to first page on search
-              }}
-              style={{
-                padding: '0.65rem 1rem 0.65rem 2.5rem',
-                borderRadius: '8px',
-                border: '1px solid var(--border-color)',
-                outline: 'none',
-                width: '100%',
-                backgroundColor: 'var(--surface-bg)',
-                color: 'var(--text-primary)'
-              }}
-            />
-          </div>
-          
-          <select 
-            value={selectedCategory}
-            onChange={(e) => {
-              setSelectedCategory(e.target.value);
-              setCurrentPage(1);
-            }}
-            style={{
-              padding: '0.65rem 1rem',
-              borderRadius: '8px',
-              border: '1px solid var(--border-color)',
-              outline: 'none',
-              backgroundColor: 'var(--surface-bg)',
-              color: 'var(--text-primary)',
-              minWidth: '200px',
-              cursor: 'pointer'
-            }}
-          >
-            <option value="">All Categories</option>
-            {uniqueCategories.map((cat, idx) => (
-              <option key={idx} value={cat}>{cat}</option>
-            ))}
-          </select>
-
         </div>
       </div>
 
-      {/* Inline Form Section */}
+      {/* Inline Form Section (Add New) */}
       <div style={{
         backgroundColor: 'var(--surface-bg)',
         borderRadius: '12px',
@@ -243,10 +196,10 @@ const ItemMaster = () => {
       }}>
         <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--slate-900)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Plus size={20} color='var(--primary-color)' />
-          {editingId ? t('Edit Item') : t('Add New Item')}
+          {t('Add New Item')}
         </h2>
         
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.25rem', marginBottom: '1.5rem' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Name')}</label>
             <input 
@@ -280,16 +233,18 @@ const ItemMaster = () => {
 
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Unit')}</label>
-            <input 
-              type="text" 
+            <select 
               value={newUnit}
               onChange={(e) => setNewUnit(e.target.value)}
-              placeholder="e.g. Nos, Kgs, Ltrs"
               style={{
                 width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1',
-                outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box'
+                outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box', backgroundColor: 'var(--surface-bg)'
               }}
-            />
+            >
+              <option value="Nos">Nos</option>
+              <option value="Kgs">Kgs</option>
+              <option value="Ltr">Ltr</option>
+            </select>
           </div>
 
           <div>
@@ -309,34 +264,205 @@ const ItemMaster = () => {
               }}
             />
           </div>
-        </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-          <button 
-            onClick={() => {
-              setEditingId(null);
-              setNewItemName('');
-              setNewItemCategory('');
-              setNewUnit('');
-              setNewMinStock('');
-            }}
-            style={{
-              padding: '0.6rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'transparent',
-              color: 'var(--text-primary)', fontWeight: '600', cursor: 'pointer'
-            }}
-          >
-            {t('Cancel')}
-          </button>
-          <button 
-            onClick={handleSaveItem}
-            style={{
-              padding: '0.6rem 1.5rem', borderRadius: '8px', border: 'none', backgroundColor: 'var(--primary-color)',
-              color: '#ffffff', fontWeight: '600', cursor: 'pointer'
-            }}
-          >
-            {t('Save Changes')}
-          </button>
+          <div style={{ gridColumn: 'span 4', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+            <button 
+              onClick={() => {
+                setNewItemName('');
+                setNewItemCategory('');
+                setNewUnit('');
+                setNewMinStock('');
+              }}
+              style={{
+                padding: '0.6rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'transparent',
+                color: 'var(--text-primary)', fontWeight: '600', cursor: 'pointer'
+              }}
+            >
+              {t('Cancel')}
+            </button>
+            <button 
+              onClick={handleSaveItem}
+              style={{
+                padding: '0.6rem 1.5rem', borderRadius: '8px', border: 'none', backgroundColor: 'var(--primary-color)',
+                color: '#ffffff', fontWeight: '600', cursor: 'pointer'
+              }}
+            >
+              {t('Save')}
+            </button>
+          </div>
         </div>
+      </div>
+
+      {/* Modal Form Section (Edit Only) */}
+      {isModalOpen && editingId && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          backdropFilter: 'blur(4px)'
+        }}>
+          <div style={{
+            backgroundColor: 'var(--surface-bg)',
+            borderRadius: '16px',
+            padding: '2rem',
+            width: '90%',
+            maxWidth: '650px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            border: '1px solid var(--border-color)',
+            position: 'relative'
+          }}>
+            <button onClick={() => setIsModalOpen(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--slate-400)' }}>
+              <Plus size={24} style={{ transform: 'rotate(45deg)' }} />
+            </button>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--slate-900)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Plus size={22} color='var(--primary-color)' />
+              {t('Edit Item')}
+            </h2>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Name')}</label>
+                <input 
+                  type="text" 
+                  value={newItemName}
+                  onChange={(e) => setNewItemName(e.target.value)}
+                  placeholder="e.g. CWX-VALVE- 1 inch"
+                  style={{
+                    width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1',
+                    outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Select Category')}</label>
+                <select 
+                  value={newItemCategory}
+                  onChange={(e) => setNewItemCategory(e.target.value)}
+                  style={{
+                    width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1',
+                    outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box', backgroundColor: 'var(--surface-bg)'
+                  }}
+                >
+                  <option value="">-- Select a Category --</option>
+                  {categories.map((cat, idx) => (
+                    <option key={idx} value={cat.name}>{cat.name} ({cat.prefix})</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Unit')}</label>
+                <select 
+                  value={newUnit}
+                  onChange={(e) => setNewUnit(e.target.value)}
+                  style={{
+                    width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1',
+                    outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box', backgroundColor: 'var(--surface-bg)'
+                  }}
+                >
+                  <option value="Nos">Nos</option>
+                  <option value="Kgs">Kgs</option>
+                  <option value="Ltr">Ltr</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Minimum Stock Alert Level')}</label>
+                <input 
+                  type="number"
+                  min="0" 
+                  value={newMinStock}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || Number(val) >= 0) setNewMinStock(val);
+                  }}
+                  placeholder="e.g. 5"
+                  style={{
+                    width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1',
+                    outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+              <button 
+                onClick={() => {
+                  setEditingId(null);
+                  setNewItemName('');
+                  setNewItemCategory('');
+                  setNewUnit('');
+                  setNewMinStock('');
+                  setIsModalOpen(false);
+                }}
+                style={{
+                  padding: '0.6rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'transparent',
+                  color: 'var(--text-primary)', fontWeight: '600', cursor: 'pointer'
+                }}
+              >
+                {t('Cancel')}
+              </button>
+              <button 
+                onClick={handleSaveItem}
+                style={{
+                  padding: '0.6rem 1.5rem', borderRadius: '8px', border: 'none', backgroundColor: 'var(--primary-color)',
+                  color: '#ffffff', fontWeight: '600', cursor: 'pointer'
+                }}
+              >
+                {t('Save Changes')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Search and Filter Section (Above Table) */}
+      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+        <div style={{ position: 'relative', flex: '1', minWidth: '250px' }}>
+          <Search size={18} color='var(--slate-400)' style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+          <input 
+            type="text" 
+            placeholder="Search items..." 
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+            style={{
+              padding: '0.65rem 1rem 0.65rem 2.5rem',
+              borderRadius: '8px',
+              border: '1px solid var(--border-color)',
+              outline: 'none',
+              width: '100%',
+              backgroundColor: 'var(--surface-bg)',
+              color: 'var(--text-primary)'
+            }}
+          />
+        </div>
+        
+        <select 
+          value={selectedCategory}
+          onChange={(e) => {
+            setSelectedCategory(e.target.value);
+            setCurrentPage(1);
+          }}
+          style={{
+            padding: '0.65rem 1rem',
+            borderRadius: '8px',
+            border: '1px solid var(--border-color)',
+            outline: 'none',
+            backgroundColor: 'var(--surface-bg)',
+            color: 'var(--text-primary)',
+            minWidth: '200px',
+            cursor: 'pointer'
+          }}
+        >
+          <option value="">All Categories</option>
+          {uniqueCategories.map((cat, idx) => (
+            <option key={idx} value={cat}>{cat}</option>
+          ))}
+        </select>
       </div>
 
       {/* Table Section */}

@@ -11,6 +11,8 @@ import CurrentStock from './pages/CurrentStock';
 import Masters from './pages/Masters';
 import Tools from './pages/Tools';
 import Alerts from './pages/Alerts';
+import SiteDispatch from './pages/SiteDispatch';
+import KitsMaster from './pages/KitsMaster';
 
 // Optional: Protected Route Wrapper if you want to keep authentication logic
 const ProtectedRoute = ({ children }) => {
@@ -40,10 +42,12 @@ function App() {
             <Route path="item-master" element={<ItemMaster />} />
             <Route path="stock-in" element={<StockIn />} />
             <Route path="stock-out" element={<StockOut />} />
+            <Route path="site-dispatch" element={<SiteDispatch />} />
             <Route path="current-stock" element={<CurrentStock />} />
             <Route path="tools" element={<Tools />} />
             <Route path="alerts" element={<Alerts />} />
             <Route path="masters" element={<Masters />} />
+            <Route path="kits-master" element={<KitsMaster />} />
           </Route>
           
           {/* Fallback */}

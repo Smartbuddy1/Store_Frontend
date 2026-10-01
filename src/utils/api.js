@@ -14,7 +14,7 @@ const api = {
   // CATEGORIES
   // ========================
   categories: {
-    getAll: () => fetch(`${BASE_URL}/categories`).then(handleResponse),
+    getAll: () => fetch(`${BASE_URL}/categories`, { headers: { 'Cache-Control': 'no-cache' } }).then(handleResponse),
     create: (body) => fetch(`${BASE_URL}/categories`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
     }).then(handleResponse),
@@ -28,7 +28,7 @@ const api = {
   // STAFF
   // ========================
   staff: {
-    getAll: () => fetch(`${BASE_URL}/staff`).then(handleResponse),
+    getAll: () => fetch(`${BASE_URL}/staff`, { headers: { 'Cache-Control': 'no-cache' } }).then(handleResponse),
     create: (body) => fetch(`${BASE_URL}/staff`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
     }).then(handleResponse),
@@ -98,8 +98,42 @@ const api = {
       const query = new URLSearchParams(params).toString();
       return fetch(`${BASE_URL}/current-stock${query ? `?${query}` : ''}`).then(handleResponse);
     },
-    getDashboardStats: () => fetch(`${BASE_URL}/current-stock/dashboard`).then(handleResponse),
+    getDashboardStats: () => fetch(`${BASE_URL}/current-stock/dashboard`, { headers: { 'Cache-Control': 'no-cache' } }).then(handleResponse),
   },
+
+  // ========================
+  // TOOLS
+  // ========================
+  tools: {
+    getAllTools: () => fetch(`${BASE_URL}/tools`, { headers: { 'Cache-Control': 'no-cache' } }).then(handleResponse),
+    createTool: (body) => fetch(`${BASE_URL}/tools`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    }).then(handleResponse),
+    deleteTool: (id) => fetch(`${BASE_URL}/tools/${id}`, { method: 'DELETE' }).then(handleResponse),
+
+    getAllLogs: () => fetch(`${BASE_URL}/tools/logs`, { headers: { 'Cache-Control': 'no-cache' } }).then(handleResponse),
+    issueTool: (body) => fetch(`${BASE_URL}/tools/issue`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    }).then(handleResponse),
+    returnTool: (id, body) => fetch(`${BASE_URL}/tools/return/${id}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    }).then(handleResponse),
+  },
+
+  // ========================
+  // KITS / PACKAGES
+  // ========================
+  kits: {
+    getAll: () => fetch(`${BASE_URL}/kits`, { headers: { 'Cache-Control': 'no-cache' } }).then(handleResponse),
+    getById: (id) => fetch(`${BASE_URL}/kits/${id}`).then(handleResponse),
+    create: (body) => fetch(`${BASE_URL}/kits`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    }).then(handleResponse),
+    update: (id, body) => fetch(`${BASE_URL}/kits/${id}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    }).then(handleResponse),
+    delete: (id) => fetch(`${BASE_URL}/kits/${id}`, { method: 'DELETE' }).then(handleResponse),
+  }
 };
 
 export default api;

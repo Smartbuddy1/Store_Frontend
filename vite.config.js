@@ -6,9 +6,9 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
   return {
     base: env.VITE_BASE_PATH || '/',
-    plugins: [react(), basicSsl()],
+    plugins: [react()],
   server: {
-    port: 5175,
+    port: 5173,
     host: true, // Listen on all local IPs
     proxy: {
       '/api': {

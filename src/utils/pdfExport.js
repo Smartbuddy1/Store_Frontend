@@ -40,9 +40,12 @@ export const exportToPDF = async (title, tableColumn, tableRows, filename, multi
       const totalPagesExp = '{total_pages_count_string}';
       
       const tableStyles = {
+        theme: 'grid',
         styles: {
           font: "helvetica",
           fontSize: 9,
+          lineColor: [200, 200, 200],
+          lineWidth: 0.2
         },
         headStyles: {
           fillColor: [16, 185, 129], // Emerald-500 (Green)

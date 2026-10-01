@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Plus, Search, ArrowUpDown, Edit, Trash2, X, FileText, FileSpreadsheet, Eye, Download } from 'lucide-react';
 import { exportToPDF } from '../utils/pdfExport';
 import { exportToExcel } from '../utils/excelExport';
 import { t } from '../utils/translator';
 import api from '../utils/api';
+import toast from 'react-hot-toast';
 
 const ItemMaster = () => {
   const [items, setItems] = useState([]);
@@ -25,6 +26,7 @@ const ItemMaster = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
+  const formRef = useRef(null);
 
   // Fetch items and categories from API
   const fetchItems = async () => {
@@ -54,7 +56,9 @@ const ItemMaster = () => {
 
   useEffect(() => {
     if (location.state?.openAddModal) {
-      handleOpenModal();
+      if (formRef.current) {
+        formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location]);
@@ -123,8 +127,8 @@ const ItemMaster = () => {
   };
 
   const handleSaveItem = async () => {
-    if (!newItemName || !newItemCategory || !newUnit || !newMinStock) {
-      alert(t('Please fill all mandatory fields.'));
+    if (!newItemName?.trim() || !newItemCategory || !newUnit || newMinStock === '' || newMinStock === null || newMinStock === undefined) {
+      alert(t(`Please fill all mandatory fields. (Missing: ${!newItemName?.trim() ? 'Name ' : ''}${!newItemCategory ? 'Category ' : ''}${!newUnit ? 'Unit ' : ''}${newMinStock === '' || newMinStock == null ? 'MinStock' : ''})`));
       return;
     }
     try {
@@ -158,9 +162,9 @@ const ItemMaster = () => {
       setNewUnit('');
       setNewMinStock('');
       setIsModalOpen(false);
-      alert('Saved successfully!');
+      toast.success('Saved successfully!');
     } catch (err) {
-      alert('Save failed: ' + err.message);
+      toast.error('Save failed: ' + err.message);
     }
   };
 
@@ -174,19 +178,11 @@ const ItemMaster = () => {
             <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--slate-900)', margin: 0 }}>{t('Item Master')}</h1>
             <p style={{ color: 'var(--slate-500)', marginTop: '0.25rem' }}>{t('Manage all store items')}</p>
           </div>
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <button onClick={handleExportPDF} style={{ backgroundColor: 'transparent', color: '#dc2626', border: '1.5px solid #dc2626', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
-              <Download size={18} /> PDF
-            </button>
-            <button onClick={handleExportExcel} style={{ backgroundColor: 'transparent', color: '#059669', border: '1.5px solid #059669', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
-              <FileSpreadsheet size={18} /> Excel
-            </button>
-          </div>
         </div>
       </div>
 
       {/* Inline Form Section (Add New) */}
-      <div style={{
+      <div ref={formRef} style={{
         backgroundColor: 'var(--surface-bg)',
         borderRadius: '12px',
         padding: '1.5rem',
@@ -417,6 +413,16 @@ const ItemMaster = () => {
         </div>
       )}
 
+      {/* Export Buttons */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginBottom: '1rem' }}>
+        <button onClick={handleExportPDF} style={{ backgroundColor: 'transparent', color: '#dc2626', border: '1.5px solid #dc2626', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
+          <Download size={18} /> PDF
+        </button>
+        <button onClick={handleExportExcel} style={{ backgroundColor: 'transparent', color: '#059669', border: '1.5px solid #059669', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
+          <FileSpreadsheet size={18} /> Excel
+        </button>
+      </div>
+
       {/* Search and Filter Section (Above Table) */}
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
         <div style={{ position: 'relative', flex: '1', minWidth: '250px' }}>
@@ -519,7 +525,7 @@ const ItemMaster = () => {
         
         {/* Pagination */}
         <div style={{ padding: '1.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--slate-500)', fontSize: '0.875rem' }}>
-          <span>Showing {filteredItems.length > 0 ? indexOfFirstRecord + 1 : 0} to {Math.min(indexOfLastRecord, filteredItems.length)} of {filteredItems.length} entries</span>
+          <span>Showing {filteredItems.length > 0 ? (Math.min(indexOfLastRecord, filteredItems.length)) - (indexOfFirstRecord) : 0} of {filteredItems.length} entries</span>
           <div style={{ display: 'flex', gap: '0.25rem' }}>
             <button 
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}

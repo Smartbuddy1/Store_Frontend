@@ -15,6 +15,10 @@ const KitsMaster = () => {
   const [kitName, setKitName] = useState('');
   const [description, setDescription] = useState('');
   const [kitItems, setKitItems] = useState([]);
+  
+  // Dropdown states
+  const [activeDropdownIndex, setActiveDropdownIndex] = useState(null);
+  const [itemSearchTerm, setItemSearchTerm] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -224,14 +228,62 @@ const KitsMaster = () => {
                 {kitItems.map((ki, i) => (
                   <tr key={i} style={{ borderBottom: '1px solid var(--border-color)' }}>
                     <td style={{ padding: '0.75rem', verticalAlign: 'top' }}>
-                      <input 
-                        type="text" 
-                        list="item-codes"
-                        value={ki.itemCode}
-                        onChange={e => updateKitItem(i, 'itemCode', e.target.value)}
-                        placeholder="Type Code or Name..."
-                        style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}
-                      />
+                      <div 
+                        style={{ position: 'relative' }}
+                        onBlur={(e) => {
+                          if (!e.currentTarget.contains(e.relatedTarget)) {
+                            setActiveDropdownIndex(null);
+                          }
+                        }}
+                      >
+                        <input 
+                          type="text" 
+                          value={ki.itemCode}
+                          onChange={e => updateKitItem(i, 'itemCode', e.target.value)}
+                          onFocus={() => setActiveDropdownIndex(i)}
+                          placeholder="Type Code or Name (Click to search)"
+                          style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)', outline: 'none' }}
+                        />
+                        
+                        {activeDropdownIndex === i && (
+                          <div style={{ position: 'absolute', top: '100%', left: 0, width: '350px', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', zIndex: 50, marginTop: '4px', overflow: 'hidden' }}>
+                            <div style={{ padding: '0.75rem', borderBottom: '1px solid var(--border-color)' }}>
+                              <input 
+                                type="text" 
+                                placeholder="Search by Item Name or Code..." 
+                                value={itemSearchTerm}
+                                onChange={(e) => setItemSearchTerm(e.target.value)}
+                                autoFocus
+                                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)', outline: 'none' }}
+                              />
+                            </div>
+                            <div style={{ maxHeight: '250px', overflowY: 'auto' }}>
+                              {items
+                                .filter(item => {
+                                  const search = (itemSearchTerm || ki.itemCode || '').toLowerCase();
+                                  return item.itemName.toLowerCase().includes(search) || item.itemCode.toLowerCase().includes(search);
+                                })
+                                .map(item => (
+                                  <div 
+                                    key={item.itemCode} 
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      updateKitItem(i, 'itemCode', item.itemCode);
+                                      setActiveDropdownIndex(null);
+                                      setItemSearchTerm('');
+                                    }}
+                                    style={{ padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column' }}
+                                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'}
+                                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                  >
+                                    <span style={{ fontWeight: 'bold', color: 'var(--slate-800)' }}>{item.itemCode}</span>
+                                    <span style={{ fontSize: '0.85rem', color: 'var(--slate-500)' }}>{item.itemName}</span>
+                                  </div>
+                                ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                       {ki.itemName && (
                         <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)', marginTop: '0.25rem' }}>
                           {ki.itemName}

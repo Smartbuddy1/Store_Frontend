@@ -1,3 +1,13 @@
+// Converts "HH:MM" (24h) to "HH:MM AM/PM" (12h)
+export const formatTime12h = (time24) => {
+  if (!time24) return '';
+  const [hourStr, minute] = time24.split(':');
+  let hour = parseInt(hourStr, 10);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12 || 12;
+  return `${hour.toString().padStart(2, '0')}:${minute} ${ampm}`;
+};
+
 export const t = (key) => {
   const lang = localStorage.getItem('app_lang') || 'en';
   if (lang === 'en') return key;
@@ -42,6 +52,8 @@ export const t = (key) => {
     'Record new tool': 'नवीन टूलची नोंद करा',
     'Recent Stock IN': 'अलीकडील माल आवक',
     'Recent Stock OUT': 'अलीकडील माल जावक',
+    'Last 7 Days (Stock In vs Out)': 'मागील ७ दिवस (आवक वि. जावक)',
+    'Items per Category': 'कॅटेगरीनुसार वस्तू (Items)',
     
     // Buttons
     'Add Tool': 'नवीन टूल जोडा',
@@ -77,6 +89,8 @@ export const t = (key) => {
     'TOTAL OUT': 'एकूण जावक',
     'STATUS': 'स्थिती',
     'DATE': 'तारीख',
+    'TIME': 'वेळ',
+    'DATE & TIME': 'तारीख व वेळ',
     'SOURCE': 'कुठून आले',
     'RECEIVED FROM': 'कुठून आले',
     'HANDOVER TO': 'कोणाला दिले',
@@ -98,6 +112,7 @@ export const t = (key) => {
     
     // Form Labels
     'Date': 'तारीख',
+    'Time': 'वेळ',
     'Item Code': 'वस्तूचा कोड',
     'Item Name (Auto)': 'वस्तूचे नाव (ऑटो)',
     'Item Name': 'वस्तूचे नाव',
@@ -117,6 +132,12 @@ export const t = (key) => {
     'Select Category': 'कॅटेगरी निवडा',
     'Unit': 'युनिट',
     'Minimum Stock Alert Level': 'किमान मालाची पातळी',
+    'Recent Dispatches (via Kits)': 'अलीकडील जावक (Kits द्वारे)',
+    'Search by Name, Code, or Person...': 'नाव, कोड किंवा व्यक्तीनुसार शोधा...',
+    'Date & Time': 'तारीख आणि वेळ',
+    'Quantity': 'संख्या',
+    'Actions': 'कृती (Actions)',
+    'Req. Qty': 'आवश्यक संख्या',
     
     // Stock Status
     'IN STOCK': 'उपलब्ध',

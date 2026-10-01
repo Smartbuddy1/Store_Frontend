@@ -59,12 +59,12 @@ const Dashboard = () => {
         stockIn.forEach(entry => {
           const entryDate = new Date(entry.date).toISOString().split('T')[0];
           const day = last7Days.find(d => d.date === entryDate);
-          if (day) day.In += entry.quantity;
+          if (day) day.In += 1;
         });
         stockOut.forEach(entry => {
           const entryDate = new Date(entry.date).toISOString().split('T')[0];
           const day = last7Days.find(d => d.date === entryDate);
-          if (day) day.Out += entry.quantity;
+          if (day) day.Out += 1;
         });
         setBarChartData(last7Days);
 
@@ -85,6 +85,9 @@ const Dashboard = () => {
     };
 
     fetchDashboardData();
+    const intervalId = setInterval(fetchDashboardData, 30000); // Refresh every 30 seconds
+    
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
 
   const statCards = [
@@ -230,39 +233,62 @@ const Dashboard = () => {
       <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
         
         {/* Bar Chart: Last 7 Days Stock In vs Out */}
-        <div style={{ flex: '1 1 min(400px, 100%)', backgroundColor: 'var(--surface-bg)', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--slate-900)', marginBottom: '1.5rem' }}>{t('Last 7 Days (Stock In vs Out)')}</h2>
-          <div style={{ width: '100%', height: '300px' }}>
+        <div style={{ flex: '1 1 min(400px, 100%)', backgroundColor: 'var(--surface-bg)', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px -2px rgba(0,0,0,0.05)' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--slate-800)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Activity size={20} color="#3b82f6" /> {t('Last 7 Days (Stock In vs Out)')}
+          </h2>
+          <div style={{ width: '100%', height: '320px' }}>
             <ResponsiveContainer>
-              <BarChart data={barChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                <XAxis dataKey="displayDate" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                <Tooltip cursor={{ fill: '#f1f5f9' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
-                <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px' }} />
-                <Bar dataKey="In" name={t('Stock In')} fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={40} />
-                <Bar dataKey="Out" name={t('Stock Out')} fill="#ef4444" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <BarChart data={barChartData} margin={{ top: 15, right: 10, left: -20, bottom: 5 }}>
+                <defs>
+                  <linearGradient id="colorIn" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.9}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.4}/>
+                  </linearGradient>
+                  <linearGradient id="colorOut" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.9}/>
+                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0.4}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="displayDate" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b', fontWeight: 500 }} dy={10} interval={0} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b', fontWeight: 500 }} />
+                <Tooltip 
+                  cursor={{ fill: 'rgba(241,245,249,0.5)' }} 
+                  contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontWeight: 'bold' }} 
+                />
+                <Legend iconType="circle" wrapperStyle={{ paddingTop: '15px', fontWeight: 600, fontSize: '0.9rem' }} />
+                <Bar dataKey="In" name={t('Stock In')} fill="url(#colorIn)" radius={[6, 6, 0, 0]} maxBarSize={35} />
+                <Bar dataKey="Out" name={t('Stock Out')} fill="url(#colorOut)" radius={[6, 6, 0, 0]} maxBarSize={35} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Pie Chart: Items per Category */}
-        <div style={{ flex: '1 1 min(400px, 100%)', backgroundColor: 'var(--surface-bg)', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--slate-900)', marginBottom: '1.5rem' }}>{t('Items per Category')}</h2>
-          <div style={{ width: '100%', height: '300px' }}>
+        <div style={{ flex: '1 1 min(400px, 100%)', backgroundColor: 'var(--surface-bg)', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px -2px rgba(0,0,0,0.05)' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--slate-800)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Tag size={20} color="#8b5cf6" /> {t('Items per Category')}
+          </h2>
+          <div style={{ width: '100%', height: '320px' }}>
             <ResponsiveContainer>
               <PieChart>
+                <defs>
+                  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="4" stdDeviation="5" floodOpacity="0.15" />
+                  </filter>
+                </defs>
                 <Pie
                   data={pieChartData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={70}
-                  outerRadius={100}
-                  paddingAngle={5}
+                  innerRadius={75}
+                  outerRadius={105}
+                  paddingAngle={6}
                   dataKey="value"
                   nameKey="name"
                   stroke="none"
+                  style={{ filter: 'url(#shadow)' }}
                 >
                   {pieChartData.map((entry, index) => {
                     const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#6366f1'];
@@ -271,9 +297,17 @@ const Dashboard = () => {
                 </Pie>
                 <Tooltip 
                   formatter={(value) => [value, t('Items')]}
-                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} 
+                  contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontWeight: 'bold' }} 
+                  itemStyle={{ color: 'var(--slate-800)' }}
                 />
-                <Legend iconType="circle" layout="vertical" verticalAlign="middle" align="right" />
+                <Legend 
+                  iconType="circle" 
+                  layout="vertical" 
+                  verticalAlign="middle" 
+                  align="right" 
+                  wrapperStyle={{ fontWeight: 600, fontSize: '0.9rem', paddingLeft: '20px' }}
+                  formatter={(value, entry) => <span style={{ color: 'var(--slate-700)' }}>{value} ({entry.payload.value})</span>}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>

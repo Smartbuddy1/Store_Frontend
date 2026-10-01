@@ -3,6 +3,7 @@ import { Package, Plus, Send, CheckCircle, Tag, Hash, Users, Trash2, ClipboardLi
 import api from '../utils/api';
 import { exportToExcel } from '../utils/excelExport';
 import { exportToPDF } from '../utils/pdfExport';
+import { formatTime12h } from '../utils/translator';
 
 const SiteDispatch = () => {
   const [lang, setLang] = useState(localStorage.getItem('app_lang') || 'en');
@@ -18,15 +19,20 @@ const SiteDispatch = () => {
       'Cancel': 'रद्द करा',
       'Complete Dispatch': 'डिस्पॅच पूर्ण करा',
       'Dispatch Checklist': 'डिस्पॅच चेकलिस्ट',
-      'Item Code': 'आयटम कोड',
-      'Item Name': 'आयटम नाव',
+      'Item Code': 'वस्तूचा कोड',
+      'Item Name': 'वस्तूचे नाव',
       'Req. Qty': 'आवश्यक संख्या',
       'Verified': 'तपासले (Verified)',
       'Select All': 'सर्व निवडा',
       'Please verify all items before dispatching.': 'डिस्पॅच करण्यापूर्वी कृपया सर्व वस्तू तपासल्याची खात्री करा.',
       'Date': 'तारीख',
       'Time': 'वेळ',
-      'Purpose/Remarks': 'उद्देश/शेरा'
+      'Purpose/Remarks': 'उद्देश/शेरा',
+      'Date & Time': 'तारीख आणि वेळ',
+      'Quantity': 'संख्या',
+      'Actions': 'कृती (Actions)',
+      'Recent Dispatches (via Kits)': 'अलीकडील जावक (Kits द्वारे)',
+      'Search by Name, Code, or Person...': 'नाव, कोड किंवा व्यक्तीनुसार शोधा...'
     };
     return dict[text] || text;
   };
@@ -164,7 +170,7 @@ const SiteDispatch = () => {
     const kitName = kits.find(k => k.id === selectedKitId)?.kitName || 'Unknown Kit';
     const tableColumn = ["Verified", "Item Code", "Item Name", "Req. Qty"];
     const rows = checklist.map(item => [
-      "[   ]",
+      "",
       item.itemCode,
       item.itemName,
       `${item.displayQty} ${item.unit || ''}`
@@ -235,8 +241,8 @@ const SiteDispatch = () => {
     if (kit) {
       setSelectedKitId(kit.id);
     } else {
-      alert("Kit not found. It might have been renamed or deleted.");
-      return;
+      alert("The original kit name was not found. Please select the appropriate kit from the dropdown.");
+      setSelectedKitId('');
     }
     
     setKitQuantity(item.quantity);
@@ -268,12 +274,11 @@ const SiteDispatch = () => {
   );
 
   const handleExportPDF = async () => {
-    const tableColumn = ["DATE", "ITEM CODE", "ITEM NAME", "QUANTITY", "HANDOVER TO"];
+    const tableColumn = ["DATE", "ITEM NAME", "QUANTITY", "HANDOVER TO"];
     const tableRows = [];
     filteredHistory.forEach(item => {
       tableRows.push([
         new Date(item.date).toLocaleDateString() + ' ' + item.time, 
-        item.itemCode, 
         item.itemName, 
         item.quantity, 
         item.handoverTo || '-'
@@ -285,7 +290,6 @@ const SiteDispatch = () => {
   const handleExportExcel = () => {
     const data = filteredHistory.map(item => ({
       "DATE": new Date(item.date).toLocaleDateString() + ' ' + item.time,
-      "ITEM CODE": item.itemCode,
       "ITEM NAME": item.itemName,
       "QUANTITY": item.quantity,
       "HANDOVER TO": item.handoverTo || '-'
@@ -313,11 +317,35 @@ const SiteDispatch = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}</label>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} disabled={isGenerated} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }} />
+            <input 
+              type="date" 
+              max={new Date().toISOString().split('T')[0]}
+              value={date} 
+              onChange={(e) => {
+                const today = new Date().toISOString().split('T')[0];
+                setDate(e.target.value > today ? today : e.target.value);
+              }} 
+              disabled={isGenerated} 
+              style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }} 
+            />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Time')}</label>
-            <input type="time" value={time} onChange={(e) => setTime(e.target.value)} disabled={isGenerated} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }} />
+            <input 
+              type="time" 
+              value={time} 
+              onChange={(e) => {
+                const today = new Date().toISOString().split('T')[0];
+                const now = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                if (date === today && e.target.value > now) {
+                  setTime(now);
+                } else {
+                  setTime(e.target.value);
+                }
+              }} 
+              disabled={isGenerated} 
+              style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }} 
+            />
           </div>
           
           <div>
@@ -474,7 +502,7 @@ const SiteDispatch = () => {
                 filteredHistory.map((item) => (
                   <tr key={item.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                     <td style={{ padding: '1rem', color: 'var(--slate-700)' }}>
-                      {new Date(item.date).toLocaleDateString()} <span style={{ color: 'var(--slate-400)', fontSize: '0.85rem', marginLeft: '0.5rem' }}>{item.time}</span>
+                      {new Date(item.date).toLocaleDateString()} <span style={{ color: 'var(--slate-400)', fontSize: '0.85rem', marginLeft: '0.5rem' }}>{formatTime12h(item.time)}</span>
                     </td>
                     <td style={{ padding: '1rem', color: 'var(--slate-900)', fontWeight: '500' }}>
                       {item.itemName} <span style={{ color: 'var(--slate-400)', fontSize: '0.8rem', display: 'block' }}>{item.itemCode}</span>

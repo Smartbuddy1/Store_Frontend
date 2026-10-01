@@ -229,7 +229,7 @@ const Masters = () => {
           <div>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: '0 0 0.5rem 0', color: 'var(--slate-900)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Package size={22} color="#3b82f6" />
-              Kits / Packages Master
+              Setting 1: Kits / Packages Master
             </h2>
             <p style={{ margin: 0, color: 'var(--slate-500)', fontSize: '0.95rem' }}>Define reusable sets of items (e.g. 1 Toilet = 1 Pan + 2 Pipes) for fast Site Dispatch.</p>
           </div>
@@ -242,7 +242,7 @@ const Masters = () => {
         <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
           <div style={{ backgroundColor: 'var(--slate-50)', padding: '1rem 1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <Tag size={20} color="#3b82f6" />
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: 'var(--slate-900)' }}>Category Master</h2>
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: 'var(--slate-900)' }}>Setting 2: Category Master</h2>
           </div>
           <div style={{ padding: '1.5rem' }}>
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
@@ -363,7 +363,7 @@ const Masters = () => {
             
             {/* Category Pagination */}
             <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--slate-500)', fontSize: '0.875rem' }}>
-              <span>Showing {filteredCategories.length > 0 ? indexOfFirstCat + 1 : 0} to {Math.min(indexOfFirstCat + recordsPerPage, filteredCategories.length)} of {filteredCategories.length} entries</span>
+              <span>Showing {filteredCategories.length > 0 ? (Math.min(indexOfFirstCat + recordsPerPage, filteredCategories.length)) - (indexOfFirstCat) : 0} of {filteredCategories.length} entries</span>
               <div style={{ display: 'flex', gap: '0.25rem' }}>
                 <button
                   onClick={() => setCatPage(prev => Math.max(prev - 1, 1))}
@@ -389,7 +389,7 @@ const Masters = () => {
         <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
           <div style={{ backgroundColor: 'var(--slate-50)', padding: '1rem 1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <Users size={20} color="#10b981" />
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: 'var(--slate-900)' }}>Staff & Helpers Master</h2>
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: 'var(--slate-900)' }}>Setting 3: Staff & Helpers Master</h2>
           </div>
           <div style={{ padding: '1.5rem' }}>
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
@@ -489,7 +489,7 @@ const Masters = () => {
             
             {/* Staff Pagination */}
             <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--slate-500)', fontSize: '0.875rem' }}>
-              <span>Showing {filteredStaff.length > 0 ? indexOfFirstStaff + 1 : 0} to {Math.min(indexOfFirstStaff + recordsPerPage, filteredStaff.length)} of {filteredStaff.length} entries</span>
+              <span>Showing {filteredStaff.length > 0 ? (Math.min(indexOfFirstStaff + recordsPerPage, filteredStaff.length)) - (indexOfFirstStaff) : 0} of {filteredStaff.length} entries</span>
               <div style={{ display: 'flex', gap: '0.25rem' }}>
                 <button
                   onClick={() => setStaffPage(prev => Math.max(prev - 1, 1))}

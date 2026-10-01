@@ -3,8 +3,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Plus, Search, Calendar, Clock, Hash, Tag, Layers, ArrowUpDown, Save, X, FileText, FileSpreadsheet, Edit, Trash2, Eye, Download } from 'lucide-react';
 import { exportToPDF } from '../utils/pdfExport';
 import { exportToExcel } from '../utils/excelExport';
-import { t } from '../utils/translator';
+import { t, formatTime12h } from '../utils/translator';
 import api from '../utils/api';
+import toast from 'react-hot-toast';
 const StockIn = () => {
   const [stockEntries, setStockEntries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -72,9 +73,41 @@ const StockIn = () => {
   const [newItemName, setNewItemName] = useState('');
   const [newCategory, setNewCategory] = useState('');
   const [newQuantity, setNewQuantity] = useState('');
-  const [newSource, setNewSource] = useState('mr. suhas bachhav');
+  const [newSource, setNewSource] = useState(localStorage.getItem('lastReceivedFrom') || 'mr. suhas bachhav');
   const [newSubUnit, setNewSubUnit] = useState('Nos');
   const [editingId, setEditingId] = useState(null);
+  
+  // Custom Dropdown State
+  const [showItemDropdown, setShowItemDropdown] = useState(false);
+  const [itemSearchTerm, setItemSearchTerm] = useState('');
+
+  // New Filters
+  // New Filters
+  const [filterType, setFilterType] = useState('fy'); // 'fy' or 'dateRange'
+  const [selectedFY, setSelectedFY] = useState('');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+
+  const getFinancialYears = () => {
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth(); 
+    const fyStartYear = currentMonth >= 3 ? currentYear : currentYear - 1;
+    
+    return [
+      `${fyStartYear}-${(fyStartYear + 1).toString().slice(-2)}`,
+      `${fyStartYear - 1}-${(fyStartYear).toString().slice(-2)}`,
+      `${fyStartYear - 2}-${(fyStartYear - 1).toString().slice(-2)}`
+    ];
+  };
+
+  const getDatesForFY = (fyString) => {
+    if (!fyString) return null;
+    const startYear = parseInt(fyString.split('-')[0], 10);
+    return {
+      start: `${startYear}-04-01`,
+      end: `${startYear + 1}-03-31`
+    };
+  };
 
   // Auto-fill logic when Item Code changes
   const handleItemCodeChange = (e) => {
@@ -137,11 +170,13 @@ const StockIn = () => {
       setNewItemName('');
       setNewCategory('');
       setNewQuantity('');
-      setNewSource('mr. suhas bachhav');
+      
+      localStorage.setItem('lastReceivedFrom', newSource);
+      
       setIsModalOpen(false);
-      alert('Saved successfully!');
+      toast.success('Successfully Stocked In!');
     } catch (err) {
-      alert('Save failed: ' + err.message);
+      toast.error('Save failed: ' + err.message);
     }
   };
 
@@ -180,33 +215,56 @@ const StockIn = () => {
     setIsModalOpen(true);
   };
 
+  const formRef = React.useRef(null);
+
   useEffect(() => {
     if (location.state?.openAddModal) {
       handleOpenModal();
+      if (formRef.current) {
+        formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location]);
 
   // Make sure we have filtered entries for export
-  const filteredEntriesForExport = stockEntries.filter(entry => {
-    const matchesSearch = (entry.itemName || '').toLowerCase().includes(searchQuery.toLowerCase()) || (entry.itemCode || '').toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === '' || entry.category === selectedCategory;
-    const matchesSource = selectedSource === '' || entry.source === selectedSource;
-    return matchesSearch && matchesCategory && matchesSource;
-  });
+  const getFilteredEntries = () => {
+    return stockEntries.filter(entry => {
+      const matchesSearch = (entry.itemName || '').toLowerCase().includes(searchQuery.toLowerCase()) || (entry.itemCode || '').toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory === '' || entry.category === selectedCategory;
+      const matchesSource = selectedSource === '' || entry.source === selectedSource;
+      
+      let matchesDate = true;
+      const entryDate = entry.date;
+      
+      if (filterType === 'fy' && selectedFY) {
+        const fyDates = getDatesForFY(selectedFY);
+        if (fyDates) {
+          if (entryDate < fyDates.start || entryDate > fyDates.end) matchesDate = false;
+        }
+      } else if (filterType === 'dateRange') {
+        if (fromDate && entryDate < fromDate) matchesDate = false;
+        if (toDate && entryDate > toDate) matchesDate = false;
+      }
+
+      return matchesSearch && matchesCategory && matchesSource && matchesDate;
+    });
+  };
+
+  const filteredEntriesForExport = getFilteredEntries();
 
   const handleExportPDF = async () => {
-    const tableColumn = ["DATE", "ITEM CODE", "ITEM NAME", "CATEGORY", "SOURCE", "QUANTITY"];
+    const tableColumn = ["DATE & TIME", "ITEM CODE", "ITEM NAME", "CATEGORY", "SOURCE", "QUANTITY"];
     const tableRows = [];
     filteredEntriesForExport.forEach(item => {
-      tableRows.push([item.date, item.itemCode, item.itemName, item.category, item.source, item.quantity]);
+      tableRows.push([`${item.date} ${item.time || ''}`, item.itemCode, item.itemName, item.category, item.source, item.quantity]);
     });
     await exportToPDF("Stock In Report", tableColumn, tableRows, "stock_in.pdf");
   };
 
   const handleExportExcel = () => {
     const data = filteredEntriesForExport.map(item => ({
-      "DATE": item.date,
+      "DATE & TIME": `${item.date} ${item.time || ''}`,
       "ITEM CODE": item.itemCode,
       "ITEM NAME": item.itemName,
       "CATEGORY": item.category,
@@ -225,18 +283,10 @@ const StockIn = () => {
           <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--slate-900)', margin: 0 }}>{t('Stock In')}</h1>
           <p style={{ color: 'var(--slate-500)', marginTop: '0.25rem' }}>{t('Record incoming inventory')}</p>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button onClick={handleExportPDF} style={{ backgroundColor: 'transparent', color: '#dc2626', border: '1.5px solid #dc2626', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
-            <Download size={18} /> PDF
-          </button>
-          <button onClick={handleExportExcel} style={{ backgroundColor: 'transparent', color: '#059669', border: '1.5px solid #059669', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
-            <FileSpreadsheet size={18} /> Excel
-          </button>
-        </div>
       </div>
 
       {/* Inline Form Section (Add New) */}
-      <div style={{
+      <div ref={formRef} style={{
         backgroundColor: 'var(--surface-bg)',
         borderRadius: '12px',
         padding: '1.5rem',
@@ -253,27 +303,102 @@ const StockIn = () => {
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}</label>
             <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
-              <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)', fontWeight: '600' }} />
+              <input 
+                type="date" 
+                max={new Date().toISOString().split('T')[0]}
+                value={newDate} 
+                onChange={(e) => {
+                  const today = new Date().toISOString().split('T')[0];
+                  setNewDate(e.target.value > today ? today : e.target.value);
+                }} 
+                style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)', fontWeight: '600' }} 
+              />
             </div>
           </div>
 
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Time')}</label>
             <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
-              <input type="time" value={newTime} onChange={(e) => setNewTime(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)', fontWeight: '600' }} />
+              <input 
+                type="time" 
+                value={newTime} 
+                onChange={(e) => {
+                  const today = new Date().toISOString().split('T')[0];
+                  const now = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                  if (newDate === today && e.target.value > now) {
+                    setNewTime(now);
+                  } else {
+                    setNewTime(e.target.value);
+                  }
+                }} 
+                style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)', fontWeight: '600' }} 
+              />
             </div>
           </div>
 
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Code')}</label>
-            <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
-              <Hash size={18} color='var(--text-secondary)' />
-              <input type="text" list="stockin-item-codes" placeholder="e.g. E-001" value={newItemCode} onChange={handleItemCodeChange} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }} />
-              <datalist id="stockin-item-codes">
-                {Object.keys(itemsMaster).map(code => (
-                  <option key={code} value={code}>{itemsMaster[code].name}</option>
-                ))}
-              </datalist>
+            <div 
+              style={{ position: 'relative' }}
+              onBlur={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget)) {
+                  setShowItemDropdown(false);
+                }
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
+                <Hash size={18} color='var(--text-secondary)' />
+                <input 
+                  type="text" 
+                  placeholder="e.g. E-001 (Click to search)" 
+                  value={newItemCode} 
+                  onChange={handleItemCodeChange}
+                  onFocus={() => setShowItemDropdown(true)}
+                  style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }} 
+                />
+              </div>
+              
+              {showItemDropdown && (
+                <div style={{ position: 'absolute', top: '100%', left: 0, width: '350px', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', zIndex: 50, marginTop: '4px', overflow: 'hidden' }}>
+                  <div style={{ padding: '0.75rem', borderBottom: '1px solid var(--border-color)' }}>
+                    <input 
+                      type="text" 
+                      placeholder="Search by Item Name or Code..." 
+                      value={itemSearchTerm}
+                      onChange={(e) => setItemSearchTerm(e.target.value)}
+                      autoFocus
+                      style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)', outline: 'none' }}
+                    />
+                  </div>
+                  <div style={{ maxHeight: '250px', overflowY: 'auto' }}>
+                    {Object.keys(itemsMaster)
+                      .filter(code => {
+                        const search = (itemSearchTerm || (showItemDropdown ? newItemCode : '')).toLowerCase();
+                        return itemsMaster[code].name.toLowerCase().includes(search) || code.toLowerCase().includes(search);
+                      })
+                      .map(code => (
+                        <div 
+                          key={code} 
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setNewItemCode(code);
+                            setNewItemName(itemsMaster[code].name);
+                            setNewCategory(itemsMaster[code].category);
+                            setNewSubUnit(itemsMaster[code].unit || 'Nos');
+                            setShowItemDropdown(false);
+                            setItemSearchTerm('');
+                          }}
+                          style={{ padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column' }}
+                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'}
+                          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        >
+                          <span style={{ fontWeight: 'bold', color: 'var(--slate-800)' }}>{code}</span>
+                          <span style={{ fontSize: '0.85rem', color: 'var(--slate-500)' }}>{itemsMaster[code].name}</span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -312,8 +437,8 @@ const StockIn = () => {
                   style={{ border: 'none', outline: 'none', padding: '0.5rem', backgroundColor: 'transparent', color: 'var(--text-secondary)', fontWeight: 'bold', borderLeft: '1px solid var(--border-color)', cursor: 'pointer' }}
                 >
                   <option value={itemsMaster[newItemCode].unit}>{itemsMaster[newItemCode].unit}</option>
-                  {itemsMaster[newItemCode].unit === 'Ltr' && <option value="ml">ml</option>}
-                  {itemsMaster[newItemCode].unit === 'Kgs' && <option value="gms">gms</option>}
+                  {(itemsMaster[newItemCode].unit?.toLowerCase() === 'ltr' || itemsMaster[newItemCode].unit?.toLowerCase() === 'ltrs') && <option value="ml">ml</option>}
+                  {(itemsMaster[newItemCode].unit?.toLowerCase() === 'kg' || itemsMaster[newItemCode].unit?.toLowerCase() === 'kgs') && <option value="gms">gms</option>}
                 </select>
               )}
             </div>
@@ -380,14 +505,36 @@ const StockIn = () => {
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}</label>
                 <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--slate-100)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
-                  <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)', fontWeight: '600' }} />
+                  <input 
+                    type="date" 
+                    max={new Date().toISOString().split('T')[0]}
+                    value={newDate} 
+                    onChange={(e) => {
+                      const today = new Date().toISOString().split('T')[0];
+                      setNewDate(e.target.value > today ? today : e.target.value);
+                    }} 
+                    style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)', fontWeight: '600' }} 
+                  />
                 </div>
               </div>
 
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Time')}</label>
                 <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
-                  <input type="time" value={newTime} onChange={(e) => setNewTime(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)', fontWeight: '600' }} />
+                  <input 
+                    type="time" 
+                    value={newTime} 
+                    onChange={(e) => {
+                      const today = new Date().toISOString().split('T')[0];
+                      const now = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                      if (newDate === today && e.target.value > now) {
+                        setNewTime(now);
+                      } else {
+                        setNewTime(e.target.value);
+                      }
+                    }} 
+                    style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)', fontWeight: '600' }} 
+                  />
                 </div>
               </div>
 
@@ -480,6 +627,17 @@ const StockIn = () => {
           </div>
         </div>
       )}
+      
+      {/* Export Buttons */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginBottom: '1rem' }}>
+        <button onClick={handleExportPDF} style={{ backgroundColor: 'transparent', color: '#dc2626', border: '1.5px solid #dc2626', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
+          <Download size={18} /> PDF
+        </button>
+        <button onClick={handleExportExcel} style={{ backgroundColor: 'transparent', color: '#059669', border: '1.5px solid #059669', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
+          <FileSpreadsheet size={18} /> Excel
+        </button>
+      </div>
+
       {/* Filters Section */}
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '2rem' }}>
         <div style={{ position: 'relative', flex: '1', minWidth: '250px' }}>
@@ -527,16 +685,84 @@ const StockIn = () => {
         </select>
       </div>
 
+      <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start', flexWrap: 'wrap', marginBottom: '2rem', padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+        
+        {/* Filter Type Options */}
+        <div>
+          <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: 'bold', color: 'var(--slate-600)', fontSize: '0.85rem' }}>Filter Type</label>
+          <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', height: '42px' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--slate-700)', fontSize: '0.95rem' }}>
+              <input 
+                type="radio" 
+                name="filterType" 
+                value="fy" 
+                checked={filterType === 'fy'} 
+                onChange={(e) => { setFilterType(e.target.value); setCurrentPage(1); }}
+                style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+              />
+              Financial Year
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--slate-700)', fontSize: '0.95rem' }}>
+              <input 
+                type="radio" 
+                name="filterType" 
+                value="dateRange" 
+                checked={filterType === 'dateRange'} 
+                onChange={(e) => { setFilterType(e.target.value); setCurrentPage(1); }}
+                style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+              />
+              Date Range
+            </label>
+          </div>
+        </div>
+
+        {/* Dynamic Inputs Based on Filter Type */}
+        {filterType === 'fy' ? (
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: 'var(--slate-600)', fontSize: '0.85rem' }}>Financial Year</label>
+            <select 
+              value={selectedFY}
+              onChange={(e) => { setSelectedFY(e.target.value); setCurrentPage(1); }}
+              style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: '#ffffff', color: 'var(--text-primary)', minWidth: '200px', cursor: 'pointer', height: '42px' }}
+            >
+              <option value="">-- Select FY --</option>
+              {getFinancialYears().map((fy, idx) => (
+                <option key={idx} value={fy}>{idx === 0 ? 'Current FY ' : idx === 1 ? 'Last FY ' : 'Previous FY '}({fy})</option>
+              ))}
+            </select>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: 'var(--slate-600)', fontSize: '0.85rem' }}>From Date</label>
+              <input 
+                type="date" 
+                max={toDate || new Date().toISOString().split('T')[0]}
+                value={fromDate}
+                onChange={(e) => { setFromDate(e.target.value); setCurrentPage(1); }}
+                style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: '#ffffff', color: 'var(--text-primary)', height: '42px' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: 'var(--slate-600)', fontSize: '0.85rem' }}>To Date</label>
+              <input 
+                type="date"
+                min={fromDate}
+                max={new Date().toISOString().split('T')[0]} 
+                value={toDate}
+                onChange={(e) => { setToDate(e.target.value); setCurrentPage(1); }}
+                style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: '#ffffff', color: 'var(--text-primary)', height: '42px' }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Table Section */}
       <div style={{ backgroundColor: 'var(--surface-bg)', border: 'none' }}>
         {/* Pagination logic */}
         {(() => {
-          const filteredEntries = stockEntries.filter(entry => {
-            const matchesSearch = ((entry.itemName || '').toLowerCase().includes(searchQuery.toLowerCase()) || (entry.itemCode || '').toLowerCase().includes(searchQuery.toLowerCase()));
-            const matchesCategory = selectedCategory === '' || entry.category === selectedCategory;
-            const matchesSource = selectedSource === '' || entry.source === selectedSource;
-            return matchesSearch && matchesCategory && matchesSource;
-          });
+          const filteredEntries = getFilteredEntries();
 
           const recordsPerPage = 50;
           const totalPages = Math.ceil(filteredEntries.length / recordsPerPage);
@@ -581,7 +807,7 @@ const StockIn = () => {
             {currentRecords.map((entry) => (
               <tr key={entry.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                 <td style={{ padding: '1.25rem 1rem', color: 'var(--slate-500)', fontSize: '0.95rem' }}>{entry.date}</td>
-                <td style={{ padding: '1.25rem 1rem', color: 'var(--slate-500)', fontSize: '0.95rem' }}>{entry.time || 'N/A'}</td>
+                <td style={{ padding: '1.25rem 1rem', color: 'var(--slate-500)', fontSize: '0.95rem' }}>{formatTime12h(entry.time) || 'N/A'}</td>
                 <td style={{ padding: '1.25rem 1rem', color: 'var(--slate-900)', fontWeight: 'bold', fontSize: '0.95rem' }}>{entry.itemCode}</td>
                 <td style={{ padding: '1.25rem 1rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -639,7 +865,7 @@ const StockIn = () => {
 
         {/* Pagination UI */}
         <div style={{ padding: '1.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--slate-500)', fontSize: '0.875rem' }}>
-          <span>Showing {filteredEntries.length > 0 ? indexOfFirst + 1 : 0} to {Math.min(indexOfLast, filteredEntries.length)} of {filteredEntries.length} entries</span>
+          <span>Showing {filteredEntries.length > 0 ? (Math.min(indexOfLast, filteredEntries.length)) - (indexOfFirst) : 0} of {filteredEntries.length} entries</span>
           <div style={{ display: 'flex', gap: '0.25rem' }}>
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}

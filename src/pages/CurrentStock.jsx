@@ -273,7 +273,7 @@ const CurrentStock = () => {
 
         {/* Pagination UI */}
         <div style={{ padding: '1.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--slate-500)', fontSize: '0.875rem' }}>
-          <span>Showing {filteredData.length > 0 ? indexOfFirst + 1 : 0} to {Math.min(indexOfLast, filteredData.length)} of {filteredData.length} entries</span>
+          <span>Showing {filteredData.length > 0 ? (Math.min(indexOfLast, filteredData.length)) - (indexOfFirst) : 0} of {filteredData.length} entries</span>
           <div style={{ display: 'flex', gap: '0.25rem' }}>
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}

@@ -109,10 +109,10 @@ const Layout = () => {
 
       {/* Sidebar */}
       <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-        <div className="sidebar-header" style={{ padding: '1.25rem', display: 'flex', justifyContent: 'center', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+        <div className="sidebar-header" style={{ height: 'auto', padding: '1.25rem', display: 'flex', justifyContent: 'center', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', marginBottom: '1rem' }}>
           <div style={{ 
             backgroundColor: 'var(--surface-bg)', 
-            padding: '1rem', 
+            padding: '0.75rem', 
             borderRadius: '16px', 
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', 
             display: 'flex', 

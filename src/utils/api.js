@@ -118,6 +118,10 @@ const api = {
     returnTool: (id, body) => fetch(`${BASE_URL}/tools/return/${id}`, {
       method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
     }).then(handleResponse),
+    updateLog: (id, body) => fetch(`${BASE_URL}/tools/logs/${id}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    }).then(handleResponse),
+    deleteLog: (id) => fetch(`${BASE_URL}/tools/logs/${id}`, { method: 'DELETE' }).then(handleResponse),
   },
 
   // ========================

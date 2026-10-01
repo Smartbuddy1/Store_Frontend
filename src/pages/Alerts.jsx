@@ -238,7 +238,7 @@ const Alerts = () => {
         
         {/* Pagination UI for Out of Stock */}
         <div style={{ padding: '1rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--slate-500)', fontSize: '0.875rem' }}>
-          <span>Showing {outOfStockItems.length > 0 ? indexOfFirstOut + 1 : 0} to {Math.min(indexOfFirstOut + recordsPerPage, outOfStockItems.length)} of {outOfStockItems.length} entries</span>
+          <span>Showing {outOfStockItems.length > 0 ? (Math.min(indexOfFirstOut + recordsPerPage, outOfStockItems.length)) - (indexOfFirstOut) : 0} of {outOfStockItems.length} entries</span>
           <div style={{ display: 'flex', gap: '0.25rem' }}>
             <button
               onClick={() => setOutPage(prev => Math.max(prev - 1, 1))}
@@ -313,7 +313,7 @@ const Alerts = () => {
 
         {/* Pagination UI for Low Stock */}
         <div style={{ padding: '1rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--slate-500)', fontSize: '0.875rem' }}>
-          <span>Showing {lowStockItems.length > 0 ? indexOfFirstLow + 1 : 0} to {Math.min(indexOfFirstLow + recordsPerPage, lowStockItems.length)} of {lowStockItems.length} entries</span>
+          <span>Showing {lowStockItems.length > 0 ? (Math.min(indexOfFirstLow + recordsPerPage, lowStockItems.length)) - (indexOfFirstLow) : 0} of {lowStockItems.length} entries</span>
           <div style={{ display: 'flex', gap: '0.25rem' }}>
             <button
               onClick={() => setLowPage(prev => Math.max(prev - 1, 1))}

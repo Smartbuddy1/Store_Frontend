@@ -685,7 +685,7 @@ const StockIn = () => {
         </select>
       </div>
 
-      <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start', flexWrap: 'wrap', marginBottom: '2rem', padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+      <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start', flexWrap: 'wrap', marginBottom: '2rem', padding: '1rem', backgroundColor: 'var(--surface-bg)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
         
         {/* Filter Type Options */}
         <div>
@@ -723,7 +723,7 @@ const StockIn = () => {
             <select 
               value={selectedFY}
               onChange={(e) => { setSelectedFY(e.target.value); setCurrentPage(1); }}
-              style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: '#ffffff', color: 'var(--text-primary)', minWidth: '200px', cursor: 'pointer', height: '42px' }}
+              style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)', minWidth: '200px', cursor: 'pointer', height: '42px' }}
             >
               <option value="">-- Select FY --</option>
               {getFinancialYears().map((fy, idx) => (
@@ -740,7 +740,7 @@ const StockIn = () => {
                 max={toDate || new Date().toISOString().split('T')[0]}
                 value={fromDate}
                 onChange={(e) => { setFromDate(e.target.value); setCurrentPage(1); }}
-                style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: '#ffffff', color: 'var(--text-primary)', height: '42px' }}
+                style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)', height: '42px' }}
               />
             </div>
             <div>
@@ -751,7 +751,7 @@ const StockIn = () => {
                 max={new Date().toISOString().split('T')[0]} 
                 value={toDate}
                 onChange={(e) => { setToDate(e.target.value); setCurrentPage(1); }}
-                style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: '#ffffff', color: 'var(--text-primary)', height: '42px' }}
+                style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)', height: '42px' }}
               />
             </div>
           </div>

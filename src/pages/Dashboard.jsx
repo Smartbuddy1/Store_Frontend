@@ -91,11 +91,11 @@ const Dashboard = () => {
   }, []);
 
   const statCards = [
-    { label: t('Total Items'), value: stats.totalItems, icon: Package, color: '#3b82f6', badgeText: 'Active', badgeType: 'success', link: '/item-master', state: {} },
-    { label: t('Low Stock'), value: stats.lowStock, icon: AlertTriangle, color: '#f59e0b', badgeText: 'Warning', badgeType: 'warning', link: '/alerts', state: { selectedStatus: 'LOW STOCK' } },
-    { label: t('Out of Stock'), value: stats.outOfStock, icon: XCircle, color: '#ef4444', badgeText: 'Critical', badgeType: 'danger', link: '/alerts', state: { selectedStatus: 'OUT OF STOCK' } },
-    { label: t('Items IN'), value: stats.totalQtyIn, icon: ArrowDownCircle, color: '#10b981', badgeText: 'All time', badgeType: 'success', link: '/stock-in', state: {} },
-    { label: t('Items OUT'), value: stats.totalQtyOut, icon: ArrowUpCircle, color: '#8b5cf6', badgeText: 'All time', badgeType: 'success', link: '/stock-out', state: {} }
+    { label: t('Total Items'), value: stats.totalItems, icon: Package, color: '#3b82f6', badgeText: t('Active'), badgeType: 'success', link: '/item-master', state: {} },
+    { label: t('Low Stock'), value: stats.lowStock, icon: AlertTriangle, color: '#f59e0b', badgeText: t('Warning'), badgeType: 'warning', link: '/alerts', state: { selectedStatus: 'LOW STOCK' } },
+    { label: t('Out of Stock'), value: stats.outOfStock, icon: XCircle, color: '#ef4444', badgeText: t('Critical'), badgeType: 'danger', link: '/alerts', state: { selectedStatus: 'OUT OF STOCK' } },
+    { label: t('Items IN'), value: stats.totalQtyIn, icon: ArrowDownCircle, color: '#10b981', badgeText: t('All time'), badgeType: 'success', link: '/stock-in', state: {} },
+    { label: t('Items OUT'), value: stats.totalQtyOut, icon: ArrowUpCircle, color: '#8b5cf6', badgeText: t('All time'), badgeType: 'success', link: '/stock-out', state: {} }
   ];
 
   return (
@@ -254,10 +254,11 @@ const Dashboard = () => {
                 <XAxis dataKey="displayDate" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b', fontWeight: 500 }} dy={10} interval={0} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b', fontWeight: 500 }} />
                 <Tooltip 
-                  cursor={{ fill: 'rgba(241,245,249,0.5)' }} 
-                  contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontWeight: 'bold' }} 
+                  cursor={{ fill: 'rgba(241,245,249,0.1)' }} 
+                  contentStyle={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontWeight: 'bold' }} 
+                  itemStyle={{ color: 'var(--text-primary)' }}
                 />
-                <Legend iconType="circle" wrapperStyle={{ paddingTop: '15px', fontWeight: 600, fontSize: '0.9rem' }} />
+                <Legend iconType="circle" wrapperStyle={{ paddingTop: '15px', fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-secondary)' }} />
                 <Bar dataKey="In" name={t('Stock In')} fill="url(#colorIn)" radius={[6, 6, 0, 0]} maxBarSize={35} />
                 <Bar dataKey="Out" name={t('Stock Out')} fill="url(#colorOut)" radius={[6, 6, 0, 0]} maxBarSize={35} />
               </BarChart>
@@ -297,16 +298,16 @@ const Dashboard = () => {
                 </Pie>
                 <Tooltip 
                   formatter={(value) => [value, t('Items')]}
-                  contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontWeight: 'bold' }} 
-                  itemStyle={{ color: 'var(--slate-800)' }}
+                  contentStyle={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontWeight: 'bold' }} 
+                  itemStyle={{ color: 'var(--text-primary)' }}
                 />
                 <Legend 
                   iconType="circle" 
                   layout="vertical" 
                   verticalAlign="middle" 
                   align="right" 
-                  wrapperStyle={{ fontWeight: 600, fontSize: '0.9rem', paddingLeft: '20px' }}
-                  formatter={(value, entry) => <span style={{ color: 'var(--slate-700)' }}>{value} ({entry.payload.value})</span>}
+                  wrapperStyle={{ fontWeight: 600, fontSize: '0.9rem', paddingLeft: '20px', color: 'var(--text-secondary)' }}
+                  formatter={(value, entry) => <span style={{ color: 'var(--text-secondary)' }}>{value} ({entry.payload.value})</span>}
                 />
               </PieChart>
             </ResponsiveContainer>

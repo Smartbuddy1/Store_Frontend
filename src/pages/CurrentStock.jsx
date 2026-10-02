@@ -41,9 +41,9 @@ const CurrentStock = () => {
 
   // Determine status based on quantity
   const getStatus = (current, min) => {
-    if (current === 0) return { label: 'Empty', color: '#ef4444', bg: '#fee2e2', rowBg: '#fef2f2', icon: AlertTriangle };
-    if (current <= min) return { label: 'Low', color: '#f59e0b', bg: '#fef3c7', rowBg: '#fefce8', icon: AlertCircle };
-    return { label: 'Good', color: '#10b981', bg: '#dcfce7', rowBg: '#f0fdf4', icon: CheckCircle };
+    if (current === 0) return { label: 'Empty', color: '#ef4444', bg: '#fee2e2', rowBg: 'transparent', icon: AlertTriangle };
+    if (current <= min) return { label: 'Low', color: '#f59e0b', bg: '#fef3c7', rowBg: 'transparent', icon: AlertCircle };
+    return { label: 'Good', color: '#10b981', bg: '#dcfce7', rowBg: 'transparent', icon: CheckCircle };
   };
 
   const uniqueCategories = [...new Set(stockData.map(item => item.category))].filter(c => c !== 'N/A').sort();

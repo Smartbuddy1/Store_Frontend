@@ -14,6 +14,7 @@ import Tools from './pages/Tools';
 import Alerts from './pages/Alerts';
 import SiteDispatch from './pages/SiteDispatch';
 import KitsMaster from './pages/KitsMaster';
+import Requisition from './pages/Requisition';
 
 // Optional: Protected Route Wrapper if you want to keep authentication logic
 const ProtectedRoute = ({ children }) => {
@@ -53,6 +54,7 @@ function App() {
             <Route path="alerts" element={<Alerts />} />
             <Route path="masters" element={<Masters />} />
             <Route path="kits-master" element={<KitsMaster />} />
+            <Route path="requisition" element={<Requisition />} />
           </Route>
           
           {/* Fallback */}

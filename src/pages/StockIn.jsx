@@ -13,6 +13,7 @@ const StockIn = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [viewingItem, setViewingItem] = useState(null);
+  const [viewingPhoto, setViewingPhoto] = useState(null);
   
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,7 +52,8 @@ const StockIn = () => {
         category: entry.category,
         quantity: entry.quantity,
         source: entry.source,
-        unit: itemMap[entry.itemCode]?.unit || 'Nos'
+        unit: itemMap[entry.itemCode]?.unit || 'Nos',
+        photoUrl: entry.photoUrl
       }));
       setStockEntries(mappedEntries);
       setStaffList(staff);
@@ -811,12 +813,21 @@ const StockIn = () => {
                 <td style={{ padding: '1.25rem 1rem', color: 'var(--slate-900)', fontWeight: 'bold', fontSize: '0.95rem' }}>{entry.itemCode}</td>
                 <td style={{ padding: '1.25rem 1rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <div style={{ 
-                      width: '32px', height: '32px', borderRadius: '50%', 
-                      backgroundColor: 'var(--slate-200)', color: 'var(--slate-700)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontWeight: 'bold', fontSize: '0.8rem'
-                    }}>{entry.itemName ? entry.itemName.charAt(0) : '?'}</div>
+                    {entry.photoUrl ? (
+                      <img 
+                        src={entry.photoUrl} 
+                        alt={entry.itemName} 
+                        onClick={() => setViewingPhoto(entry)}
+                        style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', cursor: 'pointer', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} 
+                      />
+                    ) : (
+                      <div style={{ 
+                        width: '32px', height: '32px', borderRadius: '50%', 
+                        backgroundColor: 'var(--slate-200)', color: 'var(--slate-700)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontWeight: 'bold', fontSize: '0.8rem'
+                      }}>{entry.itemName ? entry.itemName.charAt(0) : '?'}</div>
+                    )}
                     <span style={{ color: 'var(--slate-700)', fontWeight: '600', fontSize: '0.95rem' }}>{entry.itemName}</span>
                   </div>
                 </td>
@@ -952,6 +963,31 @@ const StockIn = () => {
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Viewing Photo Modal */}
+      {viewingPhoto && viewingPhoto.photoUrl && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.7)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000, padding: '1rem', backdropFilter: 'blur(4px)'
+        }}>
+          <div style={{
+            backgroundColor: 'var(--surface-bg)', borderRadius: '16px', width: '100%', maxWidth: '400px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', overflow: 'hidden', position: 'relative'
+          }}>
+            <button 
+              onClick={() => setViewingPhoto(null)}
+              style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}
+            >
+              ×
+            </button>
+            <img src={viewingPhoto.photoUrl} alt={viewingPhoto.itemName} style={{ width: '100%', display: 'block', maxHeight: '70vh', objectFit: 'contain', backgroundColor: '#f1f5f9' }} />
+            <div style={{ padding: '1rem', textAlign: 'center', fontWeight: 'bold', color: 'var(--slate-900)' }}>
+              {viewingPhoto.itemName}
             </div>
           </div>
         </div>

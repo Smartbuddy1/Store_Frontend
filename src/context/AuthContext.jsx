@@ -22,7 +22,10 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       // Mock Authentication (since backend auth is not yet implemented)
-      if (username === '8010209983' && password === 'admin') {
+      if (
+        (username === '8010209983' && password === 'Aher@321') || 
+        (username === '8888221604' && password === 'Dinesh@123')
+      ) {
         const userData = {
           id: 1,
           name: 'Mr. Dinesh Nahire',

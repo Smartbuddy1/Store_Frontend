@@ -59,6 +59,7 @@ const Layout = () => {
       'Site Dispatch': 'साईट डिस्पॅच (Kits)',
       'Current Stock': 'शिल्लक माल (Stock)',
       'Alerts': 'अलर्ट्स (Alerts)',
+      'Requisition': 'मागणीपत्र (Requisition)',
       'Tools Tracker': 'टूल्स ट्रॅकर',
       'Masters / Settings': 'मास्टर्स / सेटिंग्ज',
       'Main Menu': 'मुख्य मेनू',
@@ -95,6 +96,7 @@ const Layout = () => {
     { name: 'Site Dispatch', href: '/site-dispatch', icon: FileText },
     { name: 'Current Stock', href: '/current-stock', icon: ClipboardList },
     { name: 'Alerts', href: '/alerts', icon: Bell },
+    { name: 'Requisition', href: '/requisition', icon: FileText },
     { name: 'Tools Tracker', href: '/tools', icon: Wrench },
     { name: 'Masters / Settings', href: '/masters', icon: Settings }
   ];

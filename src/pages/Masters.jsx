@@ -4,6 +4,7 @@ import { exportToPDF } from '../utils/pdfExport';
 import { exportToExcel } from '../utils/excelExport';
 import { t } from '../utils/translator';
 import api from '../utils/api';
+import { Link } from 'react-router-dom';
 
 const defaultCategories = [
   { name: 'Electrical', prefix: 'EX' },
@@ -233,9 +234,9 @@ const Masters = () => {
             </h2>
             <p style={{ margin: 0, color: 'var(--slate-500)', fontSize: '0.95rem' }}>Define reusable sets of items (e.g. 1 Toilet = 1 Pan + 2 Pipes) for fast Site Dispatch.</p>
           </div>
-          <a href="/kits-master" style={{ textDecoration: 'none', backgroundColor: '#3b82f6', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '8px', fontWeight: 'bold' }}>
+          <Link to="/kits-master" style={{ textDecoration: 'none', backgroundColor: '#3b82f6', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '8px', fontWeight: 'bold' }}>
             Manage Kits
-          </a>
+          </Link>
         </div>
 
         {/* Categories Section */}

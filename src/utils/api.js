@@ -1,6 +1,17 @@
 // Central API service for connecting to the backend
-const BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const getBaseUrl = () => {
+  // If we have an explicit env var AND we are not on localhost (or we are on localhost), we could use it, 
+  // but to support network devices dynamically:
+  const host = window.location.hostname;
+  // Fallback to explicit env var only if it's explicitly set to something else,
+  // but dynamically constructing is best for local network testing.
+  if (import.meta.env.DEV || host !== 'localhost') {
+     return `http://${host}:5001/api`;
+  }
+  return import.meta.env.VITE_API_URL || '/api';
+};
 
+const BASE_URL = getBaseUrl();
 const handleResponse = async (res) => {
   const data = await res.json();
   if (!res.ok || !data.success) {

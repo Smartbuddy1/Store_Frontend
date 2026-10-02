@@ -38,6 +38,8 @@ export const t = (key) => {
     'Monitor items that need immediate attention or restocking': 'संपत आलेल्या वस्तू तपासा',
     'Track borrowed tools and equipment': 'वापरायला दिलेले टूल्स तपासा',
     'Manage system configurations': 'सिस्टीम सेटिंग्ज व्यवस्थापन',
+    'Requisition': 'मागणीपत्र (Requisition)',
+    'Select low stock items and generate material requisition': 'कमी असलेला माल निवडा आणि मागणीपत्र तयार करा',
     
     // Stats
     'Total Items': 'एकूण वस्तू',
@@ -57,6 +59,19 @@ export const t = (key) => {
     'Recent Stock OUT': 'अलीकडील माल जावक',
     'Last 7 Days (Stock In vs Out)': 'मागील ७ दिवस (आवक वि. जावक)',
     'Items per Category': 'कॅटेगरीनुसार वस्तू (Items)',
+    'REQ QTY': 'मागणी संख्या',
+    'SELECT': 'निवडा',
+    'STATUS': 'स्थिती (Status)',
+    'Requisition Items': 'मागणीपत्रातील वस्तू (Requisition Items)',
+    'GOOD STOCK': 'चांगला माल (Good Stock)',
+    'Add Good Stock Items': 'इतर माल जोडा',
+    'Search and add normal stock items to this requisition.': 'तुमच्या मागणीपत्रात इतर आवश्यक माल जोडा.',
+    'No good stock items found.': 'काहीही सापडले नाही.',
+    'Camera': 'कॅमेरा',
+    'Gallery': 'गॅलरी',
+    'Upload Photo': 'फोटो अपलोड करा',
+    'Change Photo': 'फोटो बदला',
+    'Only 1 photo allowed. Previous photo replaced.': 'फक्त एकच फोटो जोडता येतो. तुमचा नवीन फोटो सेव्ह झाला आहे.',
     
     // Buttons
     'Add Tool': 'नवीन टूल जोडा',

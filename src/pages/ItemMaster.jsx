@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Plus, Search, ArrowUpDown, Edit, Trash2, X, FileText, FileSpreadsheet, Eye, Download } from 'lucide-react';
+import { Plus, Search, ArrowUpDown, Edit, Trash2, X, FileText, FileSpreadsheet, Eye, Download, Camera, Image } from 'lucide-react';
 import { exportToPDF } from '../utils/pdfExport';
 import { exportToExcel } from '../utils/excelExport';
 import { t } from '../utils/translator';
@@ -23,6 +23,9 @@ const ItemMaster = () => {
   const [newItemCategory, setNewItemCategory] = useState('');
   const [newUnit, setNewUnit] = useState('Nos');
   const [newMinStock, setNewMinStock] = useState('');
+  const [newItemPhoto, setNewItemPhoto] = useState(null);
+  const [showPhotoDropdown, setShowPhotoDropdown] = useState(false);
+  const [viewingPhoto, setViewingPhoto] = useState(null);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -39,7 +42,8 @@ const ItemMaster = () => {
         name: item.itemName,
         category: item.categoryName,
         minStock: item.minimumStock,
-        unit: item.unit
+        unit: item.unit,
+        photoUrl: item.photoUrl
       }));
       setItems(mapped);
     } catch (err) {
@@ -94,6 +98,7 @@ const ItemMaster = () => {
     setNewItemCategory(item.category);
     setNewUnit(item.unit);
     setNewMinStock(item.minStock.toString());
+    setNewItemPhoto(item.photoUrl || null);
     setIsModalOpen(true);
   };
 
@@ -123,6 +128,7 @@ const ItemMaster = () => {
     setNewItemCategory('');
     setNewUnit('Nos');
     setNewMinStock('');
+    setNewItemPhoto(null);
     setIsModalOpen(true);
   };
 
@@ -137,7 +143,8 @@ const ItemMaster = () => {
           item_name: newItemName,
           category: newItemCategory,
           unit: newUnit,
-          minimum_stock: parseInt(newMinStock)
+          minimum_stock: parseInt(newMinStock),
+          photo_url: newItemPhoto
         });
       } else {
         const catPrefix = categories.find(c => c.name === newItemCategory)?.prefix || 'X';
@@ -152,7 +159,8 @@ const ItemMaster = () => {
           item_name: newItemName,
           category: newItemCategory,
           unit: newUnit || 'Nos',
-          minimum_stock: parseInt(newMinStock) || 5
+          minimum_stock: parseInt(newMinStock) || 5,
+          photo_url: newItemPhoto
         });
       }
       await fetchItems();
@@ -161,10 +169,30 @@ const ItemMaster = () => {
       setNewItemCategory('');
       setNewUnit('');
       setNewMinStock('');
+      setNewItemPhoto(null);
       setIsModalOpen(false);
       toast.success('Saved successfully!');
     } catch (err) {
       toast.error('Save failed: ' + err.message);
+    }
+  };
+
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    setShowPhotoDropdown(false); // Close dropdown on select
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        alert(t('Image size should be less than 5MB'));
+        return;
+      }
+      if (newItemPhoto) {
+        toast.info(t('Only 1 photo allowed. Previous photo replaced.'));
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewItemPhoto(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -261,6 +289,40 @@ const ItemMaster = () => {
             />
           </div>
 
+          <div style={{ gridColumn: 'span 4' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Photo')}</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+              
+                <div style={{ position: 'relative' }}>
+                  <button 
+                    onClick={() => setShowPhotoDropdown(!showPhotoDropdown)}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', color: 'var(--slate-700)', fontWeight: '500' }}
+                  >
+                    <Image size={18} color="var(--primary-color)" /> {newItemPhoto ? t('Change Photo') : t('Upload Photo')}
+                  </button>
+                  {showPhotoDropdown && (
+                    <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', backgroundColor: '#fff', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)' }}>
+                        <Camera size={16} color="var(--slate-600)" /> {t('Camera')}
+                        <input type="file" accept="image/*" capture="environment" onChange={handlePhotoUpload} style={{ display: 'none' }} />
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer' }}>
+                        <Image size={16} color="var(--slate-600)" /> {t('Gallery')}
+                        <input type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: 'none' }} />
+                      </label>
+                    </div>
+                  )}
+                </div>
+
+              {newItemPhoto && (
+                <div style={{ position: 'relative', width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+                  <img src={newItemPhoto} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <button onClick={() => setNewItemPhoto(null)} style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(255,0,0,0.7)', color: 'white', border: 'none', borderRadius: '0 0 0 4px', padding: '2px 4px', fontSize: '0.6rem', cursor: 'pointer' }}>X</button>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div style={{ gridColumn: 'span 4', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
             <button 
               onClick={() => {
@@ -268,6 +330,7 @@ const ItemMaster = () => {
                 setNewItemCategory('');
                 setNewUnit('');
                 setNewMinStock('');
+                setNewItemPhoto(null);
               }}
               style={{
                 padding: '0.6rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'transparent',
@@ -380,6 +443,39 @@ const ItemMaster = () => {
                   }}
                 />
               </div>
+              <div style={{ gridColumn: 'span 2' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Photo')}</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                  
+                    <div style={{ position: 'relative' }}>
+                      <button 
+                        onClick={() => setShowPhotoDropdown(!showPhotoDropdown)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', color: 'var(--slate-700)', fontWeight: '500' }}
+                      >
+                        <Image size={18} color="var(--primary-color)" /> {newItemPhoto ? t('Change Photo') : t('Upload Photo')}
+                      </button>
+                      {showPhotoDropdown && (
+                        <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', backgroundColor: '#fff', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)' }}>
+                            <Camera size={16} color="var(--slate-600)" /> {t('Camera')}
+                            <input type="file" accept="image/*" capture="environment" onChange={handlePhotoUpload} style={{ display: 'none' }} />
+                          </label>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer' }}>
+                            <Image size={16} color="var(--slate-600)" /> {t('Gallery')}
+                            <input type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: 'none' }} />
+                          </label>
+                        </div>
+                      )}
+                    </div>
+
+                  {newItemPhoto && (
+                    <div style={{ position: 'relative', width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', flexShrink: 0 }}>
+                      <img src={newItemPhoto} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <button onClick={() => setNewItemPhoto(null)} style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(255,0,0,0.7)', color: 'white', border: 'none', borderRadius: '0 0 0 4px', padding: '2px 4px', fontSize: '0.6rem', cursor: 'pointer' }}>X</button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
@@ -390,6 +486,7 @@ const ItemMaster = () => {
                   setNewItemCategory('');
                   setNewUnit('');
                   setNewMinStock('');
+                  setNewItemPhoto(null);
                   setIsModalOpen(false);
                 }}
                 style={{
@@ -499,12 +596,21 @@ const ItemMaster = () => {
                 <td style={{ padding: '1.25rem 1rem', color: 'var(--slate-500)', fontSize: '0.95rem' }}>{item.code}</td>
                 <td style={{ padding: '1.25rem 1rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <div style={{ 
-                      width: '36px', height: '36px', borderRadius: '50%', 
-                      backgroundColor: 'var(--slate-200)', color: 'var(--slate-700)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontWeight: 'bold', fontSize: '0.9rem'
-                    }}>{item.name.charAt(0)}</div>
+                    {item.photoUrl ? (
+                      <img 
+                        src={item.photoUrl} 
+                        alt={item.name} 
+                        onClick={() => setViewingPhoto(item)}
+                        style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', cursor: 'pointer', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} 
+                      />
+                    ) : (
+                      <div style={{ 
+                        width: '40px', height: '40px', borderRadius: '50%', 
+                        backgroundColor: 'var(--slate-200)', color: 'var(--slate-700)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontWeight: 'bold', fontSize: '0.9rem'
+                      }}>{item.name.charAt(0)}</div>
+                    )}
                     <span style={{ color: 'var(--slate-900)', fontWeight: 'bold', fontSize: '0.95rem' }}>{item.name}</span>
                   </div>
                 </td>
@@ -589,6 +695,14 @@ const ItemMaster = () => {
                 <span style={{ color: 'var(--slate-500)', fontWeight: '600' }}>Min Stock:</span>
                 <span style={{ color: 'var(--slate-900)', fontWeight: 'bold' }}>{viewingItem.minStock}</span>
               </div>
+              {viewingItem.photoUrl && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', borderTop: '1px solid #f1f5f9', paddingTop: '1rem', marginTop: '0.5rem' }}>
+                  <span style={{ color: 'var(--slate-500)', fontWeight: '600' }}>Item Photo:</span>
+                  <div style={{ width: '100%', maxWidth: '200px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', alignSelf: 'center' }}>
+                    <img src={viewingItem.photoUrl} alt={viewingItem.name} style={{ width: '100%', display: 'block', objectFit: 'cover' }} />
+                  </div>
+                </div>
+              )}
             </div>
             <div style={{ padding: '1.5rem', backgroundColor: 'var(--slate-50)', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end' }}>
               <button 
@@ -600,6 +714,31 @@ const ItemMaster = () => {
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Viewing Photo Modal */}
+      {viewingPhoto && viewingPhoto.photoUrl && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.7)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000, padding: '1rem', backdropFilter: 'blur(4px)'
+        }}>
+          <div style={{
+            backgroundColor: 'var(--surface-bg)', borderRadius: '16px', width: '100%', maxWidth: '400px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', overflow: 'hidden', position: 'relative'
+          }}>
+            <button 
+              onClick={() => setViewingPhoto(null)}
+              style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}
+            >
+              ×
+            </button>
+            <img src={viewingPhoto.photoUrl} alt={viewingPhoto.name} style={{ width: '100%', display: 'block', maxHeight: '70vh', objectFit: 'contain', backgroundColor: '#f1f5f9' }} />
+            <div style={{ padding: '1rem', textAlign: 'center', fontWeight: 'bold', color: 'var(--slate-900)' }}>
+              {viewingPhoto.name}
             </div>
           </div>
         </div>

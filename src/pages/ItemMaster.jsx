@@ -663,9 +663,10 @@ const ItemMaster = () => {
         }}>
           <div style={{
             backgroundColor: 'var(--surface-bg)', borderRadius: '16px', width: '100%', maxWidth: '500px',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', overflow: 'hidden'
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', overflow: 'hidden',
+            display: 'flex', flexDirection: 'column', maxHeight: '90vh'
           }}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--slate-900)', margin: 0 }}>{t('Item Details')}</h2>
               <button 
                 onClick={() => setViewingItem(null)}
@@ -674,7 +675,7 @@ const ItemMaster = () => {
                 <X size={20} />
               </button>
             </div>
-            <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', overflowY: 'auto' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
                 <span style={{ color: 'var(--slate-500)', fontWeight: '600' }}>Item Code:</span>
                 <span style={{ color: 'var(--slate-900)', fontWeight: 'bold' }}>{viewingItem.code}</span>
@@ -704,7 +705,7 @@ const ItemMaster = () => {
                 </div>
               )}
             </div>
-            <div style={{ padding: '1.5rem', backgroundColor: 'var(--slate-50)', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ padding: '1.5rem', backgroundColor: 'var(--slate-50)', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', flexShrink: 0 }}>
               <button 
                 onClick={() => setViewingItem(null)}
                 style={{

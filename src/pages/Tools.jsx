@@ -387,8 +387,8 @@ const Tools = () => {
         <select value={filterHelper} onChange={(e) => setFilterHelper(e.target.value)}
           style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)', minWidth: '200px', cursor: 'pointer' }}>
           <option value="">All Helpers</option>
-          {[...new Set(toolsLog.map(log => log.helperName))].filter(Boolean).sort().map((h, idx) => (
-            <option key={idx} value={h}>{h}</option>
+          {helpers.map((h, idx) => (
+            <option key={idx} value={h.name}>{h.name}</option>
           ))}
         </select>
 

@@ -111,19 +111,17 @@ const Layout = () => {
 
       {/* Sidebar */}
       <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-        <div className="sidebar-header" style={{ height: 'auto', padding: '1.25rem', display: 'flex', justifyContent: 'center', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', marginBottom: '1rem' }}>
-          <div style={{ 
-            backgroundColor: 'var(--surface-bg)', 
-            padding: '0.75rem', 
-            borderRadius: '16px', 
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            width: '100%'
-          }}>
-            <img src={newLogo} alt="E-Toilet Logo" style={{ width: '100%', height: 'auto', maxHeight: '40px', objectFit: 'contain' }} />
-          </div>
+        <div className="sidebar-header" style={{ 
+          height: '64px', 
+          padding: '0 1.5rem', 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          borderBottom: '1px solid var(--border-color)', 
+          backgroundColor: 'var(--surface-bg)',
+          margin: 0
+        }}>
+          <img src={newLogo} alt="Aarya Innovtech Logo" style={{ width: '100%', maxHeight: '42px', objectFit: 'contain' }} />
         </div>
         
         <div className="sidebar-nav">

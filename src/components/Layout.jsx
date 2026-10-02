@@ -113,15 +113,25 @@ const Layout = () => {
       <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header" style={{ 
           height: '64px', 
-          padding: '0 1.5rem', 
+          padding: '0.5rem 1.25rem', 
           display: 'flex', 
           justifyContent: 'center', 
           alignItems: 'center', 
-          borderBottom: '1px solid var(--border-color)', 
-          backgroundColor: 'var(--surface-bg)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
           margin: 0
         }}>
-          <img src={newLogo} alt="Aarya Innovtech Logo" style={{ width: '100%', maxHeight: '42px', objectFit: 'contain' }} />
+          <div style={{ 
+            backgroundColor: 'var(--surface-bg)', 
+            padding: '0.25rem', 
+            borderRadius: '12px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%'
+          }}>
+            <img src={newLogo} alt="Aarya Innovtech Logo" style={{ width: '100%', maxHeight: '36px', objectFit: 'contain' }} />
+          </div>
         </div>
         
         <div className="sidebar-nav">

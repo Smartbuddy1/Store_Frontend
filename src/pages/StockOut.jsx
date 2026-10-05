@@ -7,6 +7,14 @@ import { t, formatTime12h } from '../utils/translator';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
 const StockOut = () => {
+
+  const parsePhotos = (photoStr) => {
+    if (!photoStr) return [];
+    if (photoStr.startsWith('[')) {
+      try { return JSON.parse(photoStr); } catch(e) { return [photoStr]; }
+    }
+    return [photoStr];
+  };
   const [stockEntries, setStockEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,6 +23,30 @@ const StockOut = () => {
   const [viewingItem, setViewingItem] = useState(null);
   const [viewingPhoto, setViewingPhoto] = useState(null);
   
+  const [photoSlideIndex, setPhotoSlideIndex] = useState(0);
+
+  // Helper to extract cover photo if it's a JSON array (multiple photos)
+  const getCoverPhoto = (photoData) => {
+    if (!photoData) return null;
+    try {
+      const parsed = JSON.parse(photoData);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed[0];
+    } catch (e) {
+      return photoData; // Not JSON, assume raw string
+    }
+    return null;
+  };
+
+  const getAllPhotos = (photoData) => {
+    if (!photoData) return [];
+    try {
+      const parsed = JSON.parse(photoData);
+      if (Array.isArray(parsed)) return parsed;
+    } catch (e) {
+      return [photoData]; 
+    }
+    return [];
+  };
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -24,74 +56,9 @@ const StockOut = () => {
   const [itemsMaster, setItemsMaster] = useState({});
   const [currentStockMap, setCurrentStockMap] = useState({});
 
-  // Fetch data from API
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [entries, staff, items, currentStockData] = await Promise.all([
-        api.stockOut.getAll(),
-        api.staff.getAll(),
-        api.items.getAll(),
-        api.currentStock.getAll()
-      ]);
-      
-      const itemMap = {};
-      items.forEach(item => {
-        itemMap[item.itemCode] = {
-          name: item.itemName,
-          category: item.categoryName,
-          unit: item.unit
-        };
-      });
-      setItemsMaster(itemMap);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
-      const stockMap = {};
-      (currentStockData || []).forEach(item => {
-        stockMap[item.item_code] = item.current_qty;
-      });
-      setCurrentStockMap(stockMap);
-
-      const mappedEntries = entries.map(entry => ({
-        id: entry.id,
-        date: new Date(entry.date).toISOString().split('T')[0],
-        time: entry.time,
-        itemCode: entry.itemCode,
-        itemName: entry.itemName,
-        category: entry.category,
-        quantity: entry.quantity,
-        handoverTo: entry.handoverTo,
-        unit: itemMap[entry.itemCode]?.unit || 'Nos',
-        photoUrl: entry.photoUrl
-      }));
-      setStockEntries(mappedEntries);
-      setStaffList(staff);
-    } catch (err) {
-      console.error('Failed to fetch data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  // Form State
-  const [newDate, setNewDate] = useState(new Date().toISOString().split('T')[0]);
-  const [newTime, setNewTime] = useState(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
-  const [newItemCode, setNewItemCode] = useState('');
-  const [newItemName, setNewItemName] = useState('');
-  const [newCategory, setNewCategory] = useState('');
-  const [newQuantity, setNewQuantity] = useState('');
-  const [newHandoverTo, setNewHandoverTo] = useState('');
-  const [newSubUnit, setNewSubUnit] = useState('Nos');
-  const [editingId, setEditingId] = useState(null);
-  
-  // Custom Dropdown State
-  const [showItemDropdown, setShowItemDropdown] = useState(false);
-  const [itemSearchTerm, setItemSearchTerm] = useState('');
-
-  // New Filters
   // New Filters
   const [filterType, setFilterType] = useState('fy'); // 'fy' or 'dateRange'
   const [selectedFY, setSelectedFY] = useState('');
@@ -99,6 +66,14 @@ const StockOut = () => {
   const [toDate, setToDate] = useState('');
 
   const getFinancialYears = () => {
+
+  const parsePhotos = (photoStr) => {
+    if (!photoStr) return [];
+    if (photoStr.startsWith('[')) {
+      try { return JSON.parse(photoStr); } catch(e) { return [photoStr]; }
+    }
+    return [photoStr];
+  };
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth(); 
     const fyStartYear = currentMonth >= 3 ? currentYear : currentYear - 1;
@@ -118,6 +93,96 @@ const StockOut = () => {
       end: `${startYear + 1}-03-31`
     };
   };
+
+  const fetchMasters = async () => {
+    try {
+      const [staff, items, currentStockData] = await Promise.all([
+        api.staff.getAll(),
+        api.items.getAll(),
+        api.currentStock.getAll()
+      ]);
+      const itemMap = {};
+      items.forEach(item => {
+        itemMap[item.itemCode] = { name: item.itemName, category: item.categoryName, unit: item.unit };
+      });
+      setItemsMaster(itemMap);
+      
+      const stockMap = {};
+      (currentStockData || []).forEach(item => {
+        stockMap[item.item_code] = item.current_qty;
+      });
+      setCurrentStockMap(stockMap);
+      setStaffList(staff);
+    } catch (err) { console.error('Failed to fetch masters:', err); }
+  };
+
+  const buildQueryParams = () => {
+
+  const parsePhotos = (photoStr) => {
+    if (!photoStr) return [];
+    if (photoStr.startsWith('[')) {
+      try { return JSON.parse(photoStr); } catch(e) { return [photoStr]; }
+    }
+    return [photoStr];
+  };
+    let params = { page: currentPage, limit: 50, search: searchQuery, category: selectedCategory, handover_to: selectedHandover };
+    if (filterType === 'fy' && selectedFY) {
+      const fyDates = getDatesForFY(selectedFY);
+      if (fyDates) { params.from_date = fyDates.start; params.to_date = fyDates.end; }
+    } else if (filterType === 'dateRange') {
+      if (fromDate) params.from_date = fromDate;
+      if (toDate) params.to_date = toDate;
+    }
+    return params;
+  };
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const params = buildQueryParams();
+      const response = await api.stockOut.getAllPaginated(params);
+      const mappedEntries = (response.records || []).map(entry => ({
+        id: entry.id,
+        date: new Date(entry.date).toISOString().split('T')[0],
+        time: entry.time,
+        itemCode: entry.itemCode,
+        itemName: entry.itemName,
+        category: entry.category,
+        quantity: entry.quantity,
+        handoverTo: entry.handoverTo,
+        unit: itemsMaster[entry.itemCode]?.unit || 'Nos',
+        photoUrl: entry.photoUrl
+      }));
+      setStockEntries(mappedEntries);
+      setTotalPages(response.pagination?.totalPages || 1);
+      setTotalRecords(response.pagination?.total || 0);
+    } catch (err) {
+      console.error('Failed to fetch data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchMasters(); }, []);
+
+  useEffect(() => {
+    if (Object.keys(itemsMaster).length > 0) { fetchData(); }
+  }, [currentPage, searchQuery, selectedCategory, selectedHandover, filterType, selectedFY, fromDate, toDate, itemsMaster]);
+
+  // Form State
+  const [newDate, setNewDate] = useState(new Date().toISOString().split('T')[0]);
+  const [newTime, setNewTime] = useState(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
+  const [newItemCode, setNewItemCode] = useState('');
+  const [newItemName, setNewItemName] = useState('');
+  const [newCategory, setNewCategory] = useState('');
+  const [newQuantity, setNewQuantity] = useState('');
+  const [newHandoverTo, setNewHandoverTo] = useState('');
+  const [newSubUnit, setNewSubUnit] = useState('Nos');
+  const [editingId, setEditingId] = useState(null);
+  
+  // Custom Dropdown State
+  const [showItemDropdown, setShowItemDropdown] = useState(false);
+  const [itemSearchTerm, setItemSearchTerm] = useState('');
 
   // Auto-fill logic when Item Code changes
   const handleItemCodeChange = (e) => {
@@ -218,6 +283,14 @@ const StockOut = () => {
   };
 
   const handleOpenModal = () => {
+
+  const parsePhotos = (photoStr) => {
+    if (!photoStr) return [];
+    if (photoStr.startsWith('[')) {
+      try { return JSON.parse(photoStr); } catch(e) { return [photoStr]; }
+    }
+    return [photoStr];
+  };
     setEditingId(null);
     setNewDate(new Date().toISOString().split('T')[0]);
     setNewTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
@@ -241,14 +314,14 @@ const StockOut = () => {
     }
   }, [location]);
 
-  const handleReturn = (id) => {
+  const handleReturn = async (id) => {
     const entry = stockEntries.find(e => e.id === id);
     if (!entry) return;
 
     const returnStr = window.prompt(`How many ${entry.itemName} are being returned? (Currently out: ${entry.quantity})`);
     if (!returnStr) return;
 
-    const returnQty = parseInt(returnStr, 10);
+    const returnQty = parseFloat(returnStr);
     if (isNaN(returnQty) || returnQty <= 0) {
       alert("Please enter a valid positive number.");
       return;
@@ -259,65 +332,51 @@ const StockOut = () => {
       return;
     }
 
-    const updatedEntries = stockEntries.map(e => {
-      if (e.id === id) {
-        return {
-          ...e,
-          quantity: e.quantity - returnQty,
-          returned: (e.returned || 0) + returnQty
-        };
-      }
-      return e;
-    });
-
-    setStockEntries(updatedEntries);
-
-    // Save to localStorage for CurrentStock to pick up
     try {
-      const savedReturns = JSON.parse(localStorage.getItem('store_returns_v1')) || {};
-      savedReturns[entry.itemCode] = (savedReturns[entry.itemCode] || 0) + returnQty;
-      localStorage.setItem('store_returns_v1', JSON.stringify(savedReturns));
-    } catch (e) {
-      console.error("Could not save to localStorage", e);
+      const now = new Date();
+      await api.stockIn.create({
+        date: now.toISOString().split('T')[0],
+        time: now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+        item_code: entry.itemCode,
+        item_name: entry.itemName,
+        category: entry.category,
+        quantity: returnQty,
+        source: 'Return',
+        remarks: `Returned by ${entry.handoverTo || 'Unknown'}`
+      });
+      
+      toast.success(`Successfully recorded return of ${returnQty} ${entry.unit || 'units'}`);
+      await fetchData(); // Refresh the list from the server
+    } catch (err) {
+      toast.error('Failed to process return: ' + err.message);
     }
   };
 
-  const getFilteredEntries = () => {
-    return stockEntries.filter(entry => {
-      const matchesSearch = (entry.itemName || '').toLowerCase().includes(searchQuery.toLowerCase()) || (entry.itemCode || '').toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = selectedCategory === '' || entry.category === selectedCategory;
-      const matchesHandover = selectedHandover === '' || entry.handoverTo === selectedHandover;
-      
-      let matchesDate = true;
-      const entryDate = entry.date;
-      
-      if (filterType === 'fy' && selectedFY) {
-        const fyDates = getDatesForFY(selectedFY);
-        if (fyDates) {
-          if (entryDate < fyDates.start || entryDate > fyDates.end) matchesDate = false;
-        }
-      } else if (filterType === 'dateRange') {
-        if (fromDate && entryDate < fromDate) matchesDate = false;
-        if (toDate && entryDate > toDate) matchesDate = false;
-      }
-
-      return matchesSearch && matchesCategory && matchesHandover && matchesDate;
-    });
+  const fetchAllFilteredData = async () => {
+    const params = buildQueryParams();
+    delete params.page;
+    delete params.limit;
+    const entries = await api.stockOut.getAll(params);
+    return entries.map(entry => ({
+      ...entry,
+      date: new Date(entry.date).toISOString().split('T')[0],
+      unit: itemsMaster[entry.itemCode]?.unit || 'Nos'
+    }));
   };
 
-  const filteredEntriesForExport = getFilteredEntries();
-
   const handleExportPDF = async () => {
+    const data = await fetchAllFilteredData();
     const tableColumn = ["DATE & TIME", "ITEM CODE", "ITEM NAME", "CATEGORY", "HANDOVER TO", "QUANTITY"];
     const tableRows = [];
-    filteredEntriesForExport.forEach(item => {
+    data.forEach(item => {
       tableRows.push([`${item.date} ${item.time || ''}`, item.itemCode, item.itemName, item.category, item.handoverTo, item.quantity]);
     });
     await exportToPDF("Stock Out Report", tableColumn, tableRows, "stock_out.pdf");
   };
 
-  const handleExportExcel = () => {
-    const data = filteredEntriesForExport.map(item => ({
+  const handleExportExcel = async () => {
+    const data = await fetchAllFilteredData();
+    const excelData = data.map(item => ({
       "DATE & TIME": `${item.date} ${item.time || ''}`,
       "ITEM CODE": item.itemCode,
       "ITEM NAME": item.itemName,
@@ -325,7 +384,7 @@ const StockOut = () => {
       "HANDOVER TO": item.handoverTo,
       "QUANTITY": item.quantity
     }));
-    exportToExcel(data, "StockOut", "stock_out.xlsx");
+    exportToExcel(excelData, "StockOut", "stock_out.xlsx");
   };
 
   return (
@@ -442,12 +501,12 @@ const StockOut = () => {
                             setShowItemDropdown(false);
                             setItemSearchTerm('');
                           }}
-                          style={{ padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column' }}
-                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'}
+                          style={{ padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}
+                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--table-hover)'}
                           onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
-                          <span style={{ fontWeight: 'bold', color: 'var(--slate-800)' }}>{code}</span>
-                          <span style={{ fontSize: '0.85rem', color: 'var(--slate-500)' }}>{itemsMaster[code].name}</span>
+                          <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{code}</span>
+                          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{itemsMaster[code].name}</span>
                         </div>
                       ))}
                   </div>
@@ -469,9 +528,9 @@ const StockOut = () => {
             <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
               <Users size={18} color='var(--text-secondary)' />
               <select value={newHandoverTo} onChange={(e) => setNewHandoverTo(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }}>
-                <option value="">-- Select --</option>
+                <option value="" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>-- Select --</option>
                 {staffList.filter(p => p.type === 'Helper').map((person, idx) => (
-                  <option key={idx} value={person.name}>{person.name}</option>
+                  <option key={idx} value={person.name} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{person.name}</option>
                 ))}
               </select>
             </div>
@@ -492,9 +551,9 @@ const StockOut = () => {
                   onChange={(e) => setNewSubUnit(e.target.value)}
                   style={{ border: 'none', outline: 'none', padding: '0.5rem', backgroundColor: 'transparent', color: 'var(--text-secondary)', fontWeight: 'bold', borderLeft: '1px solid var(--border-color)', cursor: 'pointer' }}
                 >
-                  <option value={itemsMaster[newItemCode].unit}>{itemsMaster[newItemCode].unit}</option>
-                  {(itemsMaster[newItemCode].unit?.toLowerCase() === 'ltr' || itemsMaster[newItemCode].unit?.toLowerCase() === 'ltrs') && <option value="ml">ml</option>}
-                  {(itemsMaster[newItemCode].unit?.toLowerCase() === 'kg' || itemsMaster[newItemCode].unit?.toLowerCase() === 'kgs') && <option value="gms">gms</option>}
+                  <option value={itemsMaster[newItemCode].unit} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{itemsMaster[newItemCode].unit}</option>
+                  {(itemsMaster[newItemCode].unit?.toLowerCase() === 'ltr' || itemsMaster[newItemCode].unit?.toLowerCase() === 'ltrs') && <option value="ml" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>ml</option>}
+                  {(itemsMaster[newItemCode].unit?.toLowerCase() === 'kg' || itemsMaster[newItemCode].unit?.toLowerCase() === 'kgs') && <option value="gms" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>gms</option>}
                 </select>
               )}
             </div>
@@ -716,9 +775,9 @@ const StockOut = () => {
           onChange={(e) => { setSelectedCategory(e.target.value); setCurrentPage(1); }}
           style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)', minWidth: '150px', cursor: 'pointer' }}
         >
-          <option value="">All Categories</option>
+          <option value="" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>All Categories</option>
           {[...new Set(stockEntries.map(e => e.category))].filter(Boolean).sort().map((cat, idx) => (
-            <option key={idx} value={cat}>{cat}</option>
+            <option key={idx} value={cat} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{cat}</option>
           ))}
         </select>
 
@@ -727,12 +786,12 @@ const StockOut = () => {
           onChange={(e) => { setSelectedHandover(e.target.value); setCurrentPage(1); }}
           style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)', minWidth: '150px', cursor: 'pointer' }}
         >
-          <option value="">All Staff/Helpers</option>
+          <option value="" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>All Staff/Helpers</option>
           {[...new Set([
             ...stockEntries.map(e => e.handoverTo),
             ...staffList.filter(s => s.type === 'Helper').map(s => s.name)
           ])].filter(person => person && !staffList.filter(s => s.type !== 'Helper').map(s => s.name).includes(person)).sort().map((person, idx) => (
-            <option key={idx} value={person}>{person}</option>
+            <option key={idx} value={person} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{person}</option>
           ))}
         </select>
       </div>
@@ -777,9 +836,9 @@ const StockOut = () => {
               onChange={(e) => { setSelectedFY(e.target.value); setCurrentPage(1); }}
               style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)', minWidth: '200px', cursor: 'pointer', height: '42px' }}
             >
-              <option value="">-- Select FY --</option>
+              <option value="" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>-- Select FY --</option>
               {getFinancialYears().map((fy, idx) => (
-                <option key={idx} value={fy}>{idx === 0 ? 'Current FY ' : idx === 1 ? 'Last FY ' : 'Previous FY '}({fy})</option>
+                <option key={idx} value={fy} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{idx === 0 ? 'Current FY ' : idx === 1 ? 'Last FY ' : 'Previous FY '}({fy})</option>
               ))}
             </select>
           </div>
@@ -813,13 +872,7 @@ const StockOut = () => {
       {/* Table Section */}
       <div style={{ backgroundColor: 'var(--surface-bg)', border: 'none' }}>
         {(() => {
-          const filteredEntries = getFilteredEntries();
-
-          const recordsPerPage = 50;
-          const totalPages = Math.ceil(filteredEntries.length / recordsPerPage);
-          const indexOfFirst = (currentPage - 1) * recordsPerPage;
-          const indexOfLast = indexOfFirst + recordsPerPage;
-          const currentRecords = filteredEntries.slice(indexOfFirst, indexOfLast);
+          const currentRecords = stockEntries;
           return (
             <>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -862,21 +915,24 @@ const StockOut = () => {
                 <td style={{ padding: '1.25rem 1rem', color: 'var(--slate-900)', fontWeight: 'bold', fontSize: '0.95rem' }}>{entry.itemCode}</td>
                 <td style={{ padding: '1.25rem 1rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    {entry.photoUrl ? (
-                      <img 
-                        src={entry.photoUrl} 
-                        alt={entry.itemName} 
-                        onClick={() => setViewingPhoto(entry)}
-                        style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', cursor: 'pointer', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} 
-                      />
-                    ) : (
-                      <div style={{
-                        width: '32px', height: '32px', borderRadius: '50%',
-                        backgroundColor: 'var(--slate-200)', color: 'var(--slate-700)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontWeight: 'bold', fontSize: '0.8rem'
-                      }}>{entry.itemName ? entry.itemName.charAt(0) : '?'}</div>
-                    )}
+                    {(() => {
+                      const coverPhoto = getCoverPhoto(entry.photoUrl);
+                      return coverPhoto ? (
+                        <img 
+                          src={coverPhoto} 
+                          alt={entry.itemName} 
+                          onClick={() => setViewingPhoto(entry)}
+                          style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', cursor: 'pointer', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} 
+                        />
+                      ) : (
+                        <div style={{
+                          width: '32px', height: '32px', borderRadius: '50%',
+                          backgroundColor: 'var(--slate-200)', color: 'var(--slate-700)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontWeight: 'bold', fontSize: '0.8rem'
+                        }}>{entry.itemName ? entry.itemName.charAt(0) : '?'}</div>
+                      );
+                    })()}
                     <span style={{ color: 'var(--slate-700)', fontWeight: '600', fontSize: '0.95rem' }}>{entry.itemName}</span>
                   </div>
                 </td>
@@ -920,10 +976,17 @@ const StockOut = () => {
                 </td>
               </tr>
             ))}
-            {filteredEntries.length === 0 && (
+            {stockEntries.length === 0 && !loading && (
               <tr>
-                <td colSpan="8" style={{ padding: '2rem', textAlign: 'center', color: 'var(--slate-400)' }}>
+                <td colSpan="9" style={{ padding: '2rem', textAlign: 'center', color: 'var(--slate-400)' }}>
                   No stock out entries match the current filters.
+                </td>
+              </tr>
+            )}
+            {loading && (
+              <tr>
+                <td colSpan="9" style={{ padding: '2rem', textAlign: 'center', color: 'var(--slate-500)' }}>
+                  Loading records...
                 </td>
               </tr>
             )}
@@ -932,7 +995,7 @@ const StockOut = () => {
 
         {/* Pagination UI */}
         <div style={{ padding: '1.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--slate-500)', fontSize: '0.875rem' }}>
-          <span>Showing {filteredEntries.length > 0 ? (Math.min(indexOfLast, filteredEntries.length)) - (indexOfFirst) : 0} of {filteredEntries.length} entries</span>
+          <span>Showing {stockEntries.length} entries of {totalRecords} total</span>
           <div style={{ display: 'flex', gap: '0.25rem' }}>
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
@@ -1023,28 +1086,52 @@ const StockOut = () => {
           </div>
         </div>
       )}
-      {/* Viewing Photo Modal */}
-      {viewingPhoto && viewingPhoto.photoUrl && (
+      {/* Viewing Photo Modal (Slideshow) */}
+      {viewingPhoto && viewingPhoto.photoUrl && getAllPhotos(viewingPhoto.photoUrl).length > 0 && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.7)',
+          backgroundColor: 'rgba(15, 23, 42, 0.8)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          zIndex: 1000, padding: '1rem', backdropFilter: 'blur(4px)'
+          zIndex: 10000, padding: '1rem', backdropFilter: 'blur(4px)'
         }}>
-          <div style={{
-            backgroundColor: 'var(--surface-bg)', borderRadius: '16px', width: '100%', maxWidth: '400px',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', overflow: 'hidden', position: 'relative'
-          }}>
+          <div style={{ position: 'relative', width: '100%', maxWidth: '600px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <button 
               onClick={() => setViewingPhoto(null)}
-              style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}
+              style={{ position: 'absolute', top: '-40px', right: '0', background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', borderRadius: '50%', width: '35px', height: '35px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10, fontSize: '1.2rem' }}
             >
               ×
             </button>
-            <img src={viewingPhoto.photoUrl} alt={viewingPhoto.itemName} style={{ width: '100%', display: 'block', maxHeight: '70vh', objectFit: 'contain', backgroundColor: '#f1f5f9' }} />
-            <div style={{ padding: '1rem', textAlign: 'center', fontWeight: 'bold', color: 'var(--slate-900)' }}>
+            <div style={{ position: 'relative', width: '100%', backgroundColor: 'var(--surface-bg)', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)' }}>
+              {(() => {
+                const photos = getAllPhotos(viewingPhoto.photoUrl);
+                return (
+                  <>
+                    <img src={photos[photoSlideIndex] || photos[0]} alt={viewingPhoto.itemName} style={{ width: '100%', display: 'block', maxHeight: '70vh', objectFit: 'contain', backgroundColor: '#f1f5f9' }} />
+                    
+                    {photos.length > 1 && (
+                      <>
+                        <button onClick={(e) => { e.stopPropagation(); setPhotoSlideIndex(prev => prev === 0 ? photos.length - 1 : prev - 1); }} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', fontSize: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>‹</button>
+                        <button onClick={(e) => { e.stopPropagation(); setPhotoSlideIndex(prev => prev === photos.length - 1 ? 0 : prev + 1); }} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', fontSize: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>›</button>
+                      </>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
+            
+            <div style={{ marginTop: '1rem', color: 'white', fontWeight: 'bold', fontSize: '1.1rem', textAlign: 'center' }}>
               {viewingPhoto.itemName}
             </div>
+            {(() => {
+              const photos = getAllPhotos(viewingPhoto.photoUrl);
+              return photos.length > 1 ? (
+                <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
+                  {photos.map((_, idx) => (
+                     <div key={idx} onClick={(e) => { e.stopPropagation(); setPhotoSlideIndex(idx); }} style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: idx === photoSlideIndex ? 'var(--primary-color)' : 'rgba(255,255,255,0.4)', cursor: 'pointer', transition: 'background-color 0.2s' }} />
+                  ))}
+                </div>
+              ) : null;
+            })()}
           </div>
         </div>
       )}

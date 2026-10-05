@@ -6,6 +6,14 @@ import { t } from '../utils/translator';
 import api from '../utils/api';
 
 const CurrentStock = () => {
+
+  const parsePhotos = (photoStr) => {
+    if (!photoStr) return [];
+    if (photoStr.startsWith('[')) {
+      try { return JSON.parse(photoStr); } catch(e) { return [photoStr]; }
+    }
+    return [photoStr];
+  };
   const [stockData, setStockData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -43,9 +51,9 @@ const CurrentStock = () => {
 
   // Determine status based on quantity
   const getStatus = (current, min) => {
-    if (current === 0) return { label: 'Empty', color: '#ef4444', bg: '#fee2e2', rowBg: 'transparent', icon: AlertTriangle };
-    if (current <= min) return { label: 'Low', color: '#f59e0b', bg: '#fef3c7', rowBg: 'transparent', icon: AlertCircle };
-    return { label: 'Good', color: '#10b981', bg: '#dcfce7', rowBg: 'transparent', icon: CheckCircle };
+    if (current === 0) return { label: 'Empty', color: '#ef4444', bg: '#fee2e2', rowBg: '#fef2f2', icon: AlertTriangle };
+    if (current <= min) return { label: 'Low', color: '#f59e0b', bg: '#fef3c7', rowBg: '#fefce8', icon: AlertCircle };
+    return { label: 'Good', color: '#10b981', bg: '#dcfce7', rowBg: '#f0fdf4', icon: CheckCircle };
   };
 
   const uniqueCategories = [...new Set(stockData.map(item => item.category))].filter(c => c !== 'N/A').sort();
@@ -77,6 +85,14 @@ const CurrentStock = () => {
   };
 
   const handleExportExcel = () => {
+
+  const parsePhotos = (photoStr) => {
+    if (!photoStr) return [];
+    if (photoStr.startsWith('[')) {
+      try { return JSON.parse(photoStr); } catch(e) { return [photoStr]; }
+    }
+    return [photoStr];
+  };
     const data = filteredData.map(item => {
       let status = 'Good';
       if (item.currentQty <= 0) status = 'Empty';
@@ -210,9 +226,9 @@ const CurrentStock = () => {
                   </td>
                   <td style={{ padding: '1.25rem 1rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                      {item.photoUrl ? (
+                      {parsePhotos(item.photoUrl).length > 0 ? (
                         <img 
-                          src={item.photoUrl} 
+                          src={parsePhotos(item.photoUrl)[0]} 
                           alt={item.name} 
                           onClick={() => setViewingPhoto(item)}
                           style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', cursor: 'pointer', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} 
@@ -270,14 +286,26 @@ const CurrentStock = () => {
                 </tr>
               )
             })}
-            
-            {filteredData.length === 0 && (
+            {loading ? (
               <tr>
-                <td colSpan="8" style={{ padding: '2rem', textAlign: 'center', color: 'var(--slate-400)' }}>
+                <td colSpan="9" style={{ padding: '3rem', textAlign: 'center', color: 'var(--slate-500)' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{
+                      width: '40px', height: '40px', borderRadius: '50%',
+                      border: '3px solid var(--slate-200)', borderTopColor: 'var(--primary-color)',
+                      animation: 'spin 1s linear infinite'
+                    }}></div>
+                    <p style={{ fontWeight: '600', letterSpacing: '0.5px' }}>Loading real-time stock data...</p>
+                  </div>
+                </td>
+              </tr>
+            ) : filteredData.length === 0 ? (
+              <tr>
+                <td colSpan="9" style={{ padding: '3rem', textAlign: 'center', color: 'var(--slate-400)' }}>
                   No items found.
                 </td>
               </tr>
-            )}
+            ) : null}
           </tbody>
         </table>
         </div>
@@ -306,7 +334,7 @@ const CurrentStock = () => {
       </div>
 
       {/* Viewing Photo Modal */}
-      {viewingPhoto && viewingPhoto.photoUrl && (
+      {viewingPhoto && (viewingPhoto.photoUrl && parsePhotos(viewingPhoto.photoUrl).length > 0) && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           backgroundColor: 'rgba(15, 23, 42, 0.7)',
@@ -323,7 +351,7 @@ const CurrentStock = () => {
             >
               ×
             </button>
-            <img src={viewingPhoto.photoUrl} alt={viewingPhoto.name} style={{ width: '100%', display: 'block', maxHeight: '70vh', objectFit: 'contain', backgroundColor: '#f1f5f9' }} />
+            <img src={parsePhotos(viewingPhoto.photoUrl)[0]} alt={viewingPhoto.name} style={{ width: '100%', display: 'block', maxHeight: '70vh', objectFit: 'contain', backgroundColor: '#f1f5f9' }} />
             <div style={{ padding: '1rem', textAlign: 'center', fontWeight: 'bold', color: 'var(--slate-900)' }}>
               {viewingPhoto.name}
             </div>

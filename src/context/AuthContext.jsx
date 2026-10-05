@@ -3,51 +3,68 @@ import axios from 'axios';
 
 const AuthContext = createContext(null);
 
+const getBaseUrl = () => {
+  if (import.meta.env.PROD) {
+    return import.meta.env.VITE_API_URL || '/api';
+  }
+  const host = window.location.hostname;
+  return `http://${host}:5001/api`;
+};
+
+const BASE_URL = getBaseUrl();
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in
+    // Check if user is already logged in (token in localStorage)
     const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
-    
+
     if (token && storedUser) {
-      setUser(JSON.parse(storedUser));
+      // Set token in axios defaults
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      setUser(JSON.parse(storedUser));
+
+      // Verify token is still valid with backend
+      axios.get(`${BASE_URL}/auth/verify`)
+        .then(res => {
+          if (res.data.success) {
+            setUser(res.data.user);
+          } else {
+            logout();
+          }
+        })
+        .catch(() => {
+          // Token expired or invalid → logout
+          logout();
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
-  const login = async (username, password) => {
+  const login = async (mobile, password) => {
     try {
-      // Mock Authentication (since backend auth is not yet implemented)
-      if (
-        (username === '8010209983' && password === 'Aher@321') || 
-        (username === '8888221604' && password === 'Dinesh@123')
-      ) {
-        const userData = {
-          id: 1,
-          name: 'Mr. Dinesh Nahire',
-          role: 'Store_Incharge',
-          mobile: '9999999999'
-        };
-        const token = 'mock-jwt-token-12345';
-        
+      const res = await axios.post(`${BASE_URL}/auth/login`, { mobile, password });
+
+      if (res.data.success) {
+        const { token, user: userData } = res.data;
+
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(userData));
-        
+
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         setUser(userData);
         return { success: true, role: userData.role };
       } else {
-        return { success: false, message: 'Invalid mobile number or password' };
+        return { success: false, message: res.data.message };
       }
     } catch (error) {
-      return { 
-        success: false, 
-        message: 'Login failed' 
-      };
+      const message = error.response?.data?.message || 'Login failed. Please try again.';
+      return { success: false, message };
     }
   };
 

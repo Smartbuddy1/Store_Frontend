@@ -213,14 +213,7 @@ const Masters = () => {
           <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--slate-900)', margin: 0 }}>{t('Masters / Settings')}</h1>
           <p style={{ color: 'var(--slate-500)', marginTop: '0.25rem' }}>{t('Manage system configurations')}</p>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button onClick={handleExportPDF} style={{ backgroundColor: 'transparent', color: '#dc2626', border: '1.5px solid #dc2626', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
-            <Download size={18} /> PDF
-          </button>
-          <button onClick={handleExportExcel} style={{ backgroundColor: 'transparent', color: '#059669', border: '1.5px solid #059669', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
-            <FileSpreadsheet size={18} /> Excel
-          </button>
-        </div>
+
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>

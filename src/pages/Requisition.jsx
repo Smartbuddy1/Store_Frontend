@@ -122,14 +122,13 @@ const Requisition = () => {
       return;
     }
     
-    const tableColumn = ["ITEM CODE", "ITEM NAME", "CATEGORY", "CURRENT QTY", "REQ QTY", "STATUS"];
+    const tableColumn = ["ITEM CODE", "ITEM NAME", "CATEGORY", "CURRENT QTY", "REQ QTY"];
     const rows = itemsToExport.map(item => [
       item.code, 
       item.name, 
       item.category, 
       item.currentQty,
-      "", // Blank column for REQ QTY
-      item.currentQty <= 0 ? "OUT OF STOCK" : item.currentQty <= item.minStock ? "LOW STOCK" : "GOOD STOCK"
+      "" // Blank column for REQ QTY
     ]);
     
     await exportToPDF("Material Requisition Request", tableColumn, rows, "requisition.pdf");
@@ -147,8 +146,7 @@ const Requisition = () => {
       "ITEM NAME": item.name,
       "CATEGORY": item.category,
       "CURRENT QTY": item.currentQty,
-      "REQ QTY": "", // Blank column for writing later
-      "STATUS": item.currentQty <= 0 ? "OUT OF STOCK" : item.currentQty <= item.minStock ? "LOW STOCK" : "GOOD STOCK"
+      "REQ QTY": "" // Blank column for writing later
     }));
 
     exportToExcel(data, "Requisition", "requisition.xlsx");

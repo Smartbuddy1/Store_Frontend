@@ -16,13 +16,13 @@ export const exportToPDF = async (title, tableColumn, tableRows, filename, multi
       doc.setTextColor(16, 185, 129); // Emerald-500
       doc.setFontSize(18);
       doc.setFont("helvetica", "bold");
-      doc.text(title.toUpperCase(), pageWidth / 2, 22, { align: "center" });
+      doc.text(title.toUpperCase(), 14, 22, { align: "left" });
       
       // Add date
       doc.setTextColor(100, 116, 139); // Slate-500
       doc.setFontSize(11);
       doc.setFont("helvetica", "normal");
-      doc.text(`Generated on: ${new Date().toLocaleString()}`, pageWidth / 2, 30, { align: "center" });
+      doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30, { align: "left" });
       
       // Add logo (right aligned)
       if (img.width && img.height) {

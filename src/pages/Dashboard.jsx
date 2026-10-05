@@ -25,23 +25,34 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const [dashStats, stockIn, stockOut, items] = await Promise.all([
+        
+        // Calculate date 7 days ago for chart data
+        const d7 = new Date();
+        d7.setDate(d7.getDate() - 6);
+        const fromDateStr = d7.toISOString().split('T')[0];
+
+        const [dashStats, recentInRes, recentOutRes, stockInLast7, stockOutLast7, items] = await Promise.all([
           api.currentStock.getDashboardStats(),
-          api.stockIn.getAll(),
-          api.stockOut.getAll(),
+          api.stockIn.getAllPaginated({ page: 1, limit: 10 }),
+          api.stockOut.getAllPaginated({ page: 1, limit: 10 }),
+          api.stockIn.getAll({ from_date: fromDateStr }),
+          api.stockOut.getAll({ from_date: fromDateStr }),
           api.items.getAll()
         ]);
 
         setStats(dashStats);
         
-        setRecentStockIn(stockIn.slice(0, 10).map(item => ({
+        const recentIn = recentInRes.records || [];
+        const recentOut = recentOutRes.records || [];
+        
+        setRecentStockIn(recentIn.map(item => ({
           date: new Date(item.date).toISOString().split('T')[0],
           itemCode: item.itemCode,
           itemName: item.itemName,
           quantity: item.quantity
         })));
         
-        setRecentStockOut(stockOut.slice(0, 10).map(item => ({
+        setRecentStockOut(recentOut.map(item => ({
           date: new Date(item.date).toISOString().split('T')[0],
           itemCode: item.itemCode,
           itemName: item.itemName,
@@ -56,12 +67,12 @@ const Dashboard = () => {
           const dateStr = d.toISOString().split('T')[0];
           last7Days.push({ date: dateStr, displayDate: d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }), In: 0, Out: 0 });
         }
-        stockIn.forEach(entry => {
+        (stockInLast7 || []).forEach(entry => {
           const entryDate = new Date(entry.date).toISOString().split('T')[0];
           const day = last7Days.find(d => d.date === entryDate);
           if (day) day.In += 1;
         });
-        stockOut.forEach(entry => {
+        (stockOutLast7 || []).forEach(entry => {
           const entryDate = new Date(entry.date).toISOString().split('T')[0];
           const day = last7Days.find(d => d.date === entryDate);
           if (day) day.Out += 1;
@@ -85,9 +96,6 @@ const Dashboard = () => {
     };
 
     fetchDashboardData();
-    const intervalId = setInterval(fetchDashboardData, 30000); // Refresh every 30 seconds
-    
-    return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
 
   const statCards = [
@@ -113,8 +121,19 @@ const Dashboard = () => {
         </div>
 
       </div>
-
-      {/* Stats Grid */}
+      
+      {loading ? (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '50vh', gap: '1rem', color: 'var(--slate-500)' }}>
+          <div style={{
+            width: '50px', height: '50px', borderRadius: '50%',
+            border: '4px solid var(--slate-200)', borderTopColor: 'var(--primary-color)',
+            animation: 'spin 1s linear infinite'
+          }}></div>
+          <p style={{ fontWeight: '600', fontSize: '1.1rem', letterSpacing: '0.5px' }}>Loading Dashboard Data...</p>
+        </div>
+      ) : (
+        <>
+          {/* Stats Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
@@ -388,6 +407,8 @@ const Dashboard = () => {
 
       </div>
       
+      </>
+      )}
     </div>
   );
 };

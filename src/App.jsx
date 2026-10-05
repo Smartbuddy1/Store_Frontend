@@ -29,7 +29,7 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
-      <Router basename={import.meta.env.VITE_BASE_PATH || '/'}>
+      <Router basename={import.meta.env.VITE_BASE_PATH || '/'} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />

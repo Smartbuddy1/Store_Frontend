@@ -160,16 +160,16 @@ const Layout = () => {
 
         <div className="sidebar-footer">
           <div className="user-info">
-            <div className="user-avatar" style={{ overflow: 'hidden', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="user-avatar" style={{ overflow: 'hidden', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 'bold' }}>
               {user?.logo ? (
                 <img src={user?.logo?.startsWith('http') ? user.logo : `${import.meta.env.VITE_SERVER_URL}${user.logo}`} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'cover', backgroundColor: 'var(--surface-bg)' }} />
               ) : (
-                'D'
+                (user?.name || user?.username || 'U').charAt(0).toUpperCase()
               )}
             </div>
             <div className="user-details">
-              <p className="user-name">Mr. Dinesh Nahire</p>
-              <p className="user-role">Store Incharge</p>
+              <p className="user-name">{user?.name || user?.username || 'User'}</p>
+              <p className="user-role">{user?.role || 'Staff'}</p>
             </div>
           </div>
           <button onClick={handleLogout} className="logout-btn" title="Logout">

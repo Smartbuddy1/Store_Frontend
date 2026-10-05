@@ -32,7 +32,7 @@ const SiteDispatch = () => {
       'Quantity': 'संख्या',
       'Actions': 'कृती (Actions)',
       'Recent Dispatches (via Kits)': 'अलीकडील जावक (Kits द्वारे)',
-      'Search by Name, Code, or Person...': 'नाव, कोड किंवा व्यक्तीनुसार शोधा...'
+      'Search item name or handover to...': 'वस्तूचे नाव किंवा व्यक्तीनुसार शोधा...'
     };
     return dict[text] || text;
   };
@@ -465,7 +465,7 @@ const SiteDispatch = () => {
               <Search size={18} color="var(--slate-400)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
               <input 
                 type="text" 
-                placeholder={t('Search by Name, Code, or Person...')} 
+                placeholder={t('Search item name or handover to...')} 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{ width: '100%', padding: '0.6rem 1rem 0.6rem 2.2rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none' }}
@@ -513,9 +513,6 @@ const SiteDispatch = () => {
                     <td style={{ padding: '1rem', color: 'var(--slate-700)' }}>{item.handoverTo}</td>
                     <td style={{ padding: '1rem', textAlign: 'center' }}>
                       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
-                        <button onClick={() => handleEditDispatch(item)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3b82f6' }}>
-                          <Edit size={18} />
-                        </button>
                         <button onClick={() => handleDeleteDispatch(item.ids)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }}>
                           <Trash2 size={18} />
                         </button>

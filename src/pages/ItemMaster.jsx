@@ -16,6 +16,9 @@ const ItemMaster = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const recordsPerPage = 50;
 
   // Modal Form State
   const [editingId, setEditingId] = useState(null);
@@ -23,7 +26,8 @@ const ItemMaster = () => {
   const [newItemCategory, setNewItemCategory] = useState('');
   const [newUnit, setNewUnit] = useState('Nos');
   const [newMinStock, setNewMinStock] = useState('');
-  const [newItemPhoto, setNewItemPhoto] = useState(null);
+  const [newItemPhotos, setNewItemPhotos] = useState([]);
+  const [photoSlideIndex, setPhotoSlideIndex] = useState(0);
   const [showPhotoDropdown, setShowPhotoDropdown] = useState(false);
   const [viewingPhoto, setViewingPhoto] = useState(null);
 
@@ -35,17 +39,34 @@ const ItemMaster = () => {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      const data = await api.items.getAll();
-      const mapped = data.map(item => ({
+      const data = await api.items.getAllPaginated({
+        page: currentPage,
+        limit: recordsPerPage,
+        search: searchQuery,
+        category: selectedCategory
+      });
+      const mapped = data.records.map(item => {
+        let photos = [];
+        if (item.photoUrl) {
+           if (item.photoUrl.startsWith('[')) {
+              try { photos = JSON.parse(item.photoUrl); } catch(e) { photos = [item.photoUrl]; }
+           } else {
+              photos = [item.photoUrl];
+           }
+        }
+        return {
         id: item.id,
         code: item.itemCode,
         name: item.itemName,
         category: item.categoryName,
         minStock: item.minimumStock,
         unit: item.unit,
-        photoUrl: item.photoUrl
-      }));
+        photos: photos
+      };
+      });
       setItems(mapped);
+      setTotalPages(data.pagination.totalPages || 1);
+      setTotalRecords(data.pagination.total || 0);
     } catch (err) {
       console.error('Failed to fetch items:', err);
     } finally {
@@ -54,7 +75,14 @@ const ItemMaster = () => {
   };
 
   useEffect(() => {
-    fetchItems();
+    // Add debounce for search query
+    const delayDebounceFn = setTimeout(() => {
+      fetchItems();
+    }, 300);
+    return () => clearTimeout(delayDebounceFn);
+  }, [currentPage, searchQuery, selectedCategory]);
+
+  useEffect(() => {
     api.categories.getAll().then(data => setCategories(data)).catch(console.error);
   }, []);
 
@@ -67,19 +95,11 @@ const ItemMaster = () => {
     }
   }, [location]);
 
-  const uniqueCategories = [...new Set(items.map(item => item.category))].filter(c => c !== 'N/A').sort();
+  // Use categories from API for dropdown instead of mapping current page items
+  const uniqueCategories = categories.map(c => c.name).filter(c => c !== 'N/A').sort();
 
-  const recordsPerPage = 50;
-  const filteredItems = items.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || item.code.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === '' || item.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-  
-  const totalPages = Math.ceil(filteredItems.length / recordsPerPage);
-  const indexOfLastRecord = currentPage * recordsPerPage;
-  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentRecords = filteredItems.slice(indexOfFirstRecord, indexOfLastRecord);
+  // For rendering, currentRecords is just the items array (since it's already paginated from server)
+  const currentRecords = items;
 
   const handleDeleteItem = async (id) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
@@ -92,34 +112,53 @@ const ItemMaster = () => {
     }
   };
 
+  
+  const openPhotoView = (item) => {
+    setViewingPhoto(item);
+    setPhotoSlideIndex(0);
+  };
+
   const handleEditItem = (item) => {
     setEditingId(item.id);
     setNewItemName(item.name);
     setNewItemCategory(item.category);
     setNewUnit(item.unit);
     setNewMinStock(item.minStock.toString());
-    setNewItemPhoto(item.photoUrl || null);
-    setIsModalOpen(true);
+    setNewItemPhotos(item.photos || []);
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   const handleExportPDF = async () => {
-    const tableColumn = ["ITEM CODE", "ITEM NAME", "CATEGORY", "UNIT", "MIN STOCK"];
-    const tableRows = [];
-    filteredItems.forEach(item => {
-      tableRows.push([item.code, item.name, item.category, item.unit, item.minStock]);
-    });
-    await exportToPDF("Item Master Report", tableColumn, tableRows, "item_master.pdf");
+    try {
+      // Fetch all matching data without pagination for export
+      const allData = await api.items.getAll({ search: searchQuery, category: selectedCategory });
+      const tableColumn = ["ITEM CODE", "ITEM NAME", "CATEGORY", "UNIT", "MIN STOCK"];
+      const tableRows = [];
+      allData.forEach(item => {
+        tableRows.push([item.itemCode, item.itemName, item.categoryName, item.unit, item.minimumStock]);
+      });
+      await exportToPDF("Item Master Report", tableColumn, tableRows, "item_master.pdf");
+    } catch (err) {
+      toast.error('Export failed: ' + err.message);
+    }
   };
 
-  const handleExportExcel = () => {
-    const data = filteredItems.map(item => ({
-      "ITEM CODE": item.code,
-      "ITEM NAME": item.name,
-      "CATEGORY": item.category,
-      "UNIT": item.unit,
-      "MIN STOCK": item.minStock
-    }));
-    exportToExcel(data, "ItemMaster", "item_master.xlsx");
+  const handleExportExcel = async () => {
+    try {
+      const allData = await api.items.getAll({ search: searchQuery, category: selectedCategory });
+      const data = allData.map(item => ({
+        "ITEM CODE": item.itemCode,
+        "ITEM NAME": item.itemName,
+        "CATEGORY": item.categoryName,
+        "UNIT": item.unit,
+        "MIN STOCK": item.minimumStock
+      }));
+      exportToExcel(data, "ItemMaster", "item_master.xlsx");
+    } catch (err) {
+      toast.error('Export failed: ' + err.message);
+    }
   };
 
   const handleOpenModal = () => {
@@ -128,8 +167,10 @@ const ItemMaster = () => {
     setNewItemCategory('');
     setNewUnit('Nos');
     setNewMinStock('');
-    setNewItemPhoto(null);
-    setIsModalOpen(true);
+    setNewItemPhotos([]);
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   const handleSaveItem = async () => {
@@ -144,33 +185,24 @@ const ItemMaster = () => {
           category: newItemCategory,
           unit: newUnit,
           minimum_stock: parseInt(newMinStock),
-          photo_url: newItemPhoto
+          photo_url: newItemPhotos.length > 0 ? JSON.stringify(newItemPhotos) : null
         });
       } else {
-        const catPrefix = categories.find(c => c.name === newItemCategory)?.prefix || 'X';
-        const catItems = items.filter(i => i.category === newItemCategory);
-        const maxNum = catItems.reduce((max, item) => {
-          const num = parseInt(item.code.split('-')[1]) || 0;
-          return num > max ? num : max;
-        }, 0);
-        const newCode = `${catPrefix}-${String(maxNum + 1).padStart(3, '0')}`;
         await api.items.create({
-          item_code: newCode,
           item_name: newItemName,
           category: newItemCategory,
           unit: newUnit || 'Nos',
           minimum_stock: parseInt(newMinStock) || 5,
-          photo_url: newItemPhoto
+          photo_url: newItemPhotos.length > 0 ? JSON.stringify(newItemPhotos) : null
         });
       }
       await fetchItems();
       setEditingId(null);
       setNewItemName('');
       setNewItemCategory('');
-      setNewUnit('');
+      setNewUnit('Nos');
       setNewMinStock('');
-      setNewItemPhoto(null);
-      setIsModalOpen(false);
+      setNewItemPhotos([]);
       toast.success('Saved successfully!');
     } catch (err) {
       toast.error('Save failed: ' + err.message);
@@ -185,15 +217,20 @@ const ItemMaster = () => {
         alert(t('Image size should be less than 5MB'));
         return;
       }
-      if (newItemPhoto) {
-        toast.info(t('Only 1 photo allowed. Previous photo replaced.'));
+      if (newItemPhotos.length >= 4) {
+        toast.error(t('Maximum 4 photos allowed'));
+        return;
       }
       const reader = new FileReader();
       reader.onloadend = () => {
-        setNewItemPhoto(reader.result);
+        setNewItemPhotos(prev => [...prev, reader.result]);
       };
       reader.readAsDataURL(file);
     }
+  };
+  
+  const removePhoto = (index) => {
+    setNewItemPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -294,12 +331,14 @@ const ItemMaster = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
               
                 <div style={{ position: 'relative' }}>
-                  <button 
-                    onClick={() => setShowPhotoDropdown(!showPhotoDropdown)}
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', color: 'var(--slate-700)', fontWeight: '500' }}
-                  >
-                    <Image size={18} color="var(--primary-color)" /> {newItemPhoto ? t('Change Photo') : t('Upload Photo')}
-                  </button>
+                  {newItemPhotos.length < 4 && (
+                    <button 
+                      onClick={() => setShowPhotoDropdown(!showPhotoDropdown)}
+                      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', color: 'var(--slate-700)', fontWeight: '500' }}
+                    >
+                      <Image size={18} color="var(--primary-color)" /> {t('Upload Photo')} ({newItemPhotos.length}/4)
+                    </button>
+                  )}
                   {showPhotoDropdown && (
                     <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', backgroundColor: '#fff', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>
                       <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)' }}>
@@ -314,10 +353,14 @@ const ItemMaster = () => {
                   )}
                 </div>
 
-              {newItemPhoto && (
-                <div style={{ position: 'relative', width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
-                  <img src={newItemPhoto} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <button onClick={() => setNewItemPhoto(null)} style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(255,0,0,0.7)', color: 'white', border: 'none', borderRadius: '0 0 0 4px', padding: '2px 4px', fontSize: '0.6rem', cursor: 'pointer' }}>X</button>
+              {newItemPhotos.length > 0 && (
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  {newItemPhotos.map((photo, idx) => (
+                    <div key={idx} style={{ position: 'relative', width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', flexShrink: 0 }}>
+                      <img src={photo} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <button onClick={() => removePhoto(idx)} style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(255,0,0,0.7)', color: 'white', border: 'none', borderRadius: '0 0 0 4px', padding: '2px 4px', fontSize: '0.6rem', cursor: 'pointer' }}>X</button>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -328,9 +371,9 @@ const ItemMaster = () => {
               onClick={() => {
                 setNewItemName('');
                 setNewItemCategory('');
-                setNewUnit('');
-                setNewMinStock('');
-                setNewItemPhoto(null);
+                setNewUnit('Nos');
+      setNewMinStock('');
+      setNewItemPhotos([]);
               }}
               style={{
                 padding: '0.6rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'transparent',
@@ -468,12 +511,16 @@ const ItemMaster = () => {
                       )}
                     </div>
 
-                  {newItemPhoto && (
-                    <div style={{ position: 'relative', width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', flexShrink: 0 }}>
-                      <img src={newItemPhoto} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      <button onClick={() => setNewItemPhoto(null)} style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(255,0,0,0.7)', color: 'white', border: 'none', borderRadius: '0 0 0 4px', padding: '2px 4px', fontSize: '0.6rem', cursor: 'pointer' }}>X</button>
+                  {newItemPhotos.length > 0 && (
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  {newItemPhotos.map((photo, idx) => (
+                    <div key={idx} style={{ position: 'relative', width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', flexShrink: 0 }}>
+                      <img src={photo} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <button onClick={() => removePhoto(idx)} style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(255,0,0,0.7)', color: 'white', border: 'none', borderRadius: '0 0 0 4px', padding: '2px 4px', fontSize: '0.6rem', cursor: 'pointer' }}>X</button>
                     </div>
-                  )}
+                  ))}
+                </div>
+              )}
                 </div>
               </div>
             </div>
@@ -484,9 +531,9 @@ const ItemMaster = () => {
                   setEditingId(null);
                   setNewItemName('');
                   setNewItemCategory('');
-                  setNewUnit('');
-                  setNewMinStock('');
-                  setNewItemPhoto(null);
+                  setNewUnit('Nos');
+      setNewMinStock('');
+      setNewItemPhotos([]);
                   setIsModalOpen(false);
                 }}
                 style={{
@@ -596,13 +643,14 @@ const ItemMaster = () => {
                 <td style={{ padding: '1.25rem 1rem', color: 'var(--slate-500)', fontSize: '0.95rem' }}>{item.code}</td>
                 <td style={{ padding: '1.25rem 1rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    {item.photoUrl ? (
-                      <img 
-                        src={item.photoUrl} 
-                        alt={item.name} 
-                        onClick={() => setViewingPhoto(item)}
-                        style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', cursor: 'pointer', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} 
-                      />
+                    {item.photos && item.photos.length > 0 ? (
+                      <div style={{position: 'relative', display: 'inline-block'}} onClick={() => openPhotoView(item)}>
+                        <img 
+                          src={item.photos[0]} 
+                          alt={item.name} 
+                          style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', cursor: 'pointer', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} 
+                        />
+                      </div>
                     ) : (
                       <div style={{ 
                         width: '40px', height: '40px', borderRadius: '50%', 
@@ -631,7 +679,7 @@ const ItemMaster = () => {
         
         {/* Pagination */}
         <div style={{ padding: '1.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--slate-500)', fontSize: '0.875rem' }}>
-          <span>Showing {filteredItems.length > 0 ? (Math.min(indexOfLastRecord, filteredItems.length)) - (indexOfFirstRecord) : 0} of {filteredItems.length} entries</span>
+          <span>Showing {items.length} of {totalRecords} entries</span>
           <div style={{ display: 'flex', gap: '0.25rem' }}>
             <button 
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
@@ -696,11 +744,15 @@ const ItemMaster = () => {
                 <span style={{ color: 'var(--slate-500)', fontWeight: '600' }}>Min Stock:</span>
                 <span style={{ color: 'var(--slate-900)', fontWeight: 'bold' }}>{viewingItem.minStock}</span>
               </div>
-              {viewingItem.photoUrl && (
+              {viewingItem.photos && viewingItem.photos.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', borderTop: '1px solid #f1f5f9', paddingTop: '1rem', marginTop: '0.5rem' }}>
-                  <span style={{ color: 'var(--slate-500)', fontWeight: '600' }}>Item Photo:</span>
-                  <div style={{ width: '100%', maxWidth: '200px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', alignSelf: 'center' }}>
-                    <img src={viewingItem.photoUrl} alt={viewingItem.name} style={{ width: '100%', display: 'block', objectFit: 'cover' }} />
+                  <span style={{ color: 'var(--slate-500)', fontWeight: '600' }}>Item Photos:</span>
+                  <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '10px' }}>
+                    {viewingItem.photos.map((photo, idx) => (
+                      <div key={idx} onClick={() => { setPhotoSlideIndex(idx); openPhotoView(viewingItem); }} style={{ width: '120px', height: '120px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', flexShrink: 0, cursor: 'pointer' }}>
+                        <img src={photo} alt={`${viewingItem.name} ${idx+1}`} style={{ width: '100%', height: '100%', display: 'block', objectFit: 'cover' }} />
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -719,28 +771,42 @@ const ItemMaster = () => {
           </div>
         </div>
       )}
-      {/* Viewing Photo Modal */}
-      {viewingPhoto && viewingPhoto.photoUrl && (
+      {/* Viewing Photo Modal (Slideshow) */}
+      {viewingPhoto && viewingPhoto.photos && viewingPhoto.photos.length > 0 && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.7)',
+          backgroundColor: 'rgba(15, 23, 42, 0.8)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          zIndex: 1000, padding: '1rem', backdropFilter: 'blur(4px)'
+          zIndex: 10000, padding: '1rem', backdropFilter: 'blur(4px)'
         }}>
-          <div style={{
-            backgroundColor: 'var(--surface-bg)', borderRadius: '16px', width: '100%', maxWidth: '400px',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', overflow: 'hidden', position: 'relative'
-          }}>
+          <div style={{ position: 'relative', width: '100%', maxWidth: '600px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <button 
               onClick={() => setViewingPhoto(null)}
-              style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}
+              style={{ position: 'absolute', top: '-40px', right: '0', background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', borderRadius: '50%', width: '35px', height: '35px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10, fontSize: '1.2rem' }}
             >
               ×
             </button>
-            <img src={viewingPhoto.photoUrl} alt={viewingPhoto.name} style={{ width: '100%', display: 'block', maxHeight: '70vh', objectFit: 'contain', backgroundColor: '#f1f5f9' }} />
-            <div style={{ padding: '1rem', textAlign: 'center', fontWeight: 'bold', color: 'var(--slate-900)' }}>
+            <div style={{ position: 'relative', width: '100%', backgroundColor: 'var(--surface-bg)', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)' }}>
+              <img src={viewingPhoto.photos[photoSlideIndex]} alt={viewingPhoto.name} style={{ width: '100%', display: 'block', maxHeight: '70vh', objectFit: 'contain', backgroundColor: '#f1f5f9' }} />
+              
+              {viewingPhoto.photos.length > 1 && (
+                <>
+                  <button onClick={(e) => { e.stopPropagation(); setPhotoSlideIndex(prev => prev === 0 ? viewingPhoto.photos.length - 1 : prev - 1); }} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', fontSize: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>‹</button>
+                  <button onClick={(e) => { e.stopPropagation(); setPhotoSlideIndex(prev => prev === viewingPhoto.photos.length - 1 ? 0 : prev + 1); }} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', fontSize: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>›</button>
+                </>
+              )}
+            </div>
+            
+            <div style={{ marginTop: '1rem', color: 'white', fontWeight: 'bold', fontSize: '1.1rem', textAlign: 'center' }}>
               {viewingPhoto.name}
             </div>
+            {viewingPhoto.photos.length > 1 && (
+              <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
+                {viewingPhoto.photos.map((_, idx) => (
+                   <div key={idx} onClick={(e) => { e.stopPropagation(); setPhotoSlideIndex(idx); }} style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: idx === photoSlideIndex ? 'var(--primary-color)' : 'rgba(255,255,255,0.4)', cursor: 'pointer', transition: 'background-color 0.2s' }} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}

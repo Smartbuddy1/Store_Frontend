@@ -272,12 +272,12 @@ const KitsMaster = () => {
                                       setActiveDropdownIndex(null);
                                       setItemSearchTerm('');
                                     }}
-                                    style={{ padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column' }}
-                                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'}
+                                    style={{ padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}
+                                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--table-hover)'}
                                     onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                   >
-                                    <span style={{ fontWeight: 'bold', color: 'var(--slate-800)' }}>{item.itemCode}</span>
-                                    <span style={{ fontSize: '0.85rem', color: 'var(--slate-500)' }}>{item.itemName}</span>
+                                    <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{item.itemCode}</span>
+                                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{item.itemName}</span>
                                   </div>
                                 ))}
                             </div>

@@ -16,6 +16,11 @@ const Tools = () => {
   const [isAddToolOpen, setIsAddToolOpen] = useState(false);
   const [newToolName, setNewToolName] = useState('');
   const [newToolCode, setNewToolCode] = useState('');
+  // Manage Tools Modal
+  const [isManageToolsOpen, setIsManageToolsOpen] = useState(false);
+  const [editingToolId, setEditingToolId] = useState(null);
+  const [editingToolCode, setEditingToolCode] = useState('');
+  const [editingToolName, setEditingToolName] = useState('');
 
   // States for Helpers
   const [helpers, setHelpers] = useState([]);
@@ -27,7 +32,7 @@ const Tools = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterHelper, setFilterHelper] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
-  
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 50;
@@ -103,6 +108,40 @@ const Tools = () => {
     setIsAddToolOpen(true);
   };
 
+  // Delete Tool from Master
+  const handleDeleteTool = async (id, toolName) => {
+    if (!window.confirm(`Are you sure you want to delete "${toolName}"? \n\nNote: All logs for this tool will also be deleted.`)) return;
+    try {
+      await api.tools.deleteTool(id);
+      await fetchData();
+      toast.success(`"${toolName}" deleted successfully!`);
+    } catch (error) {
+      toast.error('Failed to delete tool: ' + error.message);
+    }
+  };
+
+  // Edit Tool Master inline
+  const handleStartEditTool = (tool) => {
+    setEditingToolId(tool.id);
+    setEditingToolCode(tool.toolCode);
+    setEditingToolName(tool.toolName);
+  };
+
+  const handleSaveToolEdit = async (id) => {
+    if (!editingToolCode.trim() || !editingToolName.trim()) {
+      toast.error('Tool Code and Name cannot be empty.');
+      return;
+    }
+    try {
+      await api.tools.updateTool(id, { toolCode: editingToolCode.toUpperCase(), toolName: editingToolName });
+      await fetchData();
+      setEditingToolId(null);
+      toast.success('Tool updated successfully!');
+    } catch (error) {
+      toast.error('Failed to update tool: ' + error.message);
+    }
+  };
+
   // Issue Tool to Helper
   const handleIssueTool = async () => {
     if (!selectedTool || !selectedHelper || !issueTime) {
@@ -149,7 +188,7 @@ const Tools = () => {
       if (!t) return '';
       // If already HH:MM, return as-is
       const match = t.match(/^(\d{1,2}):(\d{2})/);
-      if (match) return `${match[1].padStart(2,'0')}:${match[2]}`;
+      if (match) return `${match[1].padStart(2, '0')}:${match[2]}`;
       return '';
     };
     setEditIssueTime(normalizeTime(log.issueTime));
@@ -222,7 +261,7 @@ const Tools = () => {
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'var(--font-sans)', backgroundColor: 'var(--surface-bg)', minHeight: '100%' }}>
-      
+
       {/* Edit Modal */}
       {editingLog && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -240,7 +279,7 @@ const Tools = () => {
                 <select value={editToolCode} onChange={e => setEditToolCode(e.target.value)}
                   style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>
                   {toolsMaster.map(tool => (
-                    <option key={tool.toolCode} value={tool.toolCode}>{tool.toolName} ({tool.toolCode})</option>
+                    <option key={tool.toolCode} value={tool.toolCode} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{tool.toolName} ({tool.toolCode})</option>
                   ))}
                 </select>
               </div>
@@ -250,7 +289,7 @@ const Tools = () => {
                 <select value={editHelperName} onChange={e => setEditHelperName(e.target.value)}
                   style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>
                   {helpers.map((h, i) => (
-                    <option key={i} value={h.name}>{h.name}</option>
+                    <option key={i} value={h.name} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{h.name}</option>
                   ))}
                 </select>
               </div>
@@ -290,12 +329,16 @@ const Tools = () => {
           <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--slate-900)', margin: 0 }}>{t('Tools Tracking')}</h1>
           <p style={{ color: 'var(--slate-500)', marginTop: '0.25rem' }}>{t('Track borrowed tools and equipment')}</p>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <button onClick={handleExportPDF} style={{ backgroundColor: 'transparent', color: '#dc2626', border: '1.5px solid #dc2626', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
             <Download size={18} /> PDF
           </button>
           <button onClick={handleExportExcel} style={{ backgroundColor: 'transparent', color: '#059669', border: '1.5px solid #059669', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
             <FileSpreadsheet size={18} /> Excel
+          </button>
+          <button onClick={() => setIsManageToolsOpen(true)}
+            style={{ backgroundColor: 'transparent', color: '#7c3aed', border: '1.5px solid #7c3aed', padding: '0.65rem 1.25rem', borderRadius: '8px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+            <Edit size={16} /> Manage Tools ({toolsMaster.length})
           </button>
           <button onClick={handleOpenAddTool}
             style={{ backgroundColor: 'var(--primary-color)', color: '#ffffff', border: 'none', padding: '0.65rem 1.25rem', borderRadius: '8px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
@@ -326,6 +369,94 @@ const Tools = () => {
         </div>
       )}
 
+      {/* Manage Tools Modal */}
+      {isManageToolsOpen && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div style={{ backgroundColor: 'var(--surface-bg)', borderRadius: '16px', padding: '2rem', width: '100%', maxWidth: '650px', maxHeight: '85vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--slate-900)' }}>Manage Tools ({toolsMaster.length})</h2>
+              <button onClick={() => { setIsManageToolsOpen(false); setEditingToolId(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--slate-500)' }}><X size={22} /></button>
+            </div>
+
+            {toolsMaster.length === 0 ? (
+              <p style={{ textAlign: 'center', color: 'var(--slate-400)', padding: '2rem' }}>No tools added yet.</p>
+            ) : (
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ backgroundColor: 'var(--table-header-bg)' }}>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.82rem', fontWeight: 'bold', color: 'var(--slate-600)', borderBottom: '2px solid var(--border-color)' }}>{t('TOOL CODE')}</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.82rem', fontWeight: 'bold', color: 'var(--slate-600)', borderBottom: '2px solid var(--border-color)' }}>{t('TOOL NAME')}</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', fontSize: '0.82rem', fontWeight: 'bold', color: 'var(--slate-600)', borderBottom: '2px solid var(--border-color)', width: '100px' }}>{t('ACTIONS')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {toolsMaster.map(tool => (
+                    <tr key={tool.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        {editingToolId === tool.id ? (
+                          <input
+                            value={editingToolCode}
+                            onChange={e => setEditingToolCode(e.target.value)}
+                            style={{ width: '80px', padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}
+                          />
+                        ) : (
+                          <span style={{ fontWeight: '600', color: 'var(--slate-700)', fontSize: '0.9rem' }}>{tool.toolCode}</span>
+                        )}
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        {editingToolId === tool.id ? (
+                          <input
+                            value={editingToolName}
+                            onChange={e => setEditingToolName(e.target.value)}
+                            style={{ width: '100%', padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}
+                          />
+                        ) : (
+                          <span style={{ color: 'var(--text-primary)', fontSize: '0.9rem' }}>{tool.toolName}</span>
+                        )}
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                        {editingToolId === tool.id ? (
+                          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                            <button onClick={() => handleSaveToolEdit(tool.id)}
+                              style={{ backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: '6px', padding: '0.35rem 0.75rem', cursor: 'pointer', fontWeight: '600', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                              <Save size={14} /> Save
+                            </button>
+                            <button onClick={() => setEditingToolId(null)}
+                              style={{ backgroundColor: 'transparent', color: 'var(--slate-500)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.35rem 0.6rem', cursor: 'pointer' }}>
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ) : (
+                          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                            <button onClick={() => handleStartEditTool(tool)}
+                              title="Edit Tool"
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3b82f6', padding: '4px', display: 'flex', alignItems: 'center' }}>
+                              <Edit size={16} />
+                            </button>
+                            <button onClick={() => handleDeleteTool(tool.id, tool.toolName)}
+                              title="Delete Tool"
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '4px', display: 'flex', alignItems: 'center' }}>
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={() => { setIsManageToolsOpen(false); setEditingToolId(null); }}
+                style={{ padding: '0.6rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'transparent', color: 'var(--slate-600)', cursor: 'pointer', fontWeight: '600' }}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Issue Tool Form */}
       <div style={{ backgroundColor: 'var(--slate-50)', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '2rem', display: 'flex', gap: '1rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
         <div style={{ flex: '2', minWidth: '200px' }}>
@@ -334,9 +465,9 @@ const Tools = () => {
             <PenTool size={18} color='var(--slate-500)' />
             <select value={selectedTool} onChange={(e) => setSelectedTool(e.target.value)}
               style={{ border: 'none', outline: 'none', padding: '0.65rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent' }}>
-              <option value="">-- Select Tool --</option>
+              <option value="" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>-- Select Tool --</option>
               {toolsMaster.map(tool => (
-                <option key={tool.toolCode} value={tool.toolCode}>{tool.toolName} ({tool.toolCode})</option>
+                <option key={tool.toolCode} value={tool.toolCode} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{tool.toolName} ({tool.toolCode})</option>
               ))}
             </select>
           </div>
@@ -348,9 +479,9 @@ const Tools = () => {
             <Users size={18} color='var(--slate-500)' />
             <select value={selectedHelper} onChange={(e) => setSelectedHelper(e.target.value)}
               style={{ border: 'none', outline: 'none', padding: '0.65rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent' }}>
-              <option value="">-- Select Helper --</option>
+              <option value="" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>-- Select Helper --</option>
               {helpers.map((h, i) => (
-                <option key={i} value={h.name}>{h.name}</option>
+                <option key={i} value={h.name} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{h.name}</option>
               ))}
             </select>
           </div>
@@ -386,17 +517,17 @@ const Tools = () => {
 
         <select value={filterHelper} onChange={(e) => setFilterHelper(e.target.value)}
           style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)', minWidth: '200px', cursor: 'pointer' }}>
-          <option value="">All Helpers</option>
+          <option value="" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>All Helpers</option>
           {helpers.map((h, idx) => (
-            <option key={idx} value={h.name}>{h.name}</option>
+            <option key={idx} value={h.name} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{h.name}</option>
           ))}
         </select>
 
         <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
           style={{ padding: '0.65rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)', minWidth: '200px', cursor: 'pointer' }}>
-          <option value="">All Statuses</option>
-          <option value="Issued">Issued (Not Returned)</option>
-          <option value="Returned">Returned</option>
+          <option value="" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>All Statuses</option>
+          <option value="Issued" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>Issued (Not Returned)</option>
+          <option value="Returned" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>Returned</option>
         </select>
       </div>
 
@@ -473,7 +604,7 @@ const Tools = () => {
             )}
           </tbody>
         </table>
-        
+
         {/* Pagination */}
         <div style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--slate-500)', fontSize: '0.875rem', borderTop: '1px solid #e2e8f0' }}>
           <span>Showing {filteredLogs.length > 0 ? (Math.min(indexOfFirst + recordsPerPage, filteredLogs.length)) - indexOfFirst : 0} of {filteredLogs.length} entries</span>

@@ -19,11 +19,11 @@ export default defineConfig(({ mode }) => {
     host: true, // Listen on all local IPs
     proxy: {
       '/api': {
-        target: 'http://localhost:5001',
+        target: 'http://127.0.0.1:5001',
         changeOrigin: true,
       },
       '/uploads': {
-        target: 'http://localhost:5001',
+        target: 'http://127.0.0.1:5001',
         changeOrigin: true,
       },
       '/s3-proxy': {

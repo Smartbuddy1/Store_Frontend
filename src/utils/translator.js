@@ -62,6 +62,8 @@ export const t = (key) => {
     'REQ QTY': 'मागणी संख्या',
     'SELECT': 'निवडा',
     'STATUS': 'स्थिती (Status)',
+    'Add Requisition': 'मागणीपत्र बनवा',
+    'Create material requisition': 'नवीन मागणीपत्र तयार करा',
     'Requisition Items': 'मागणीपत्रातील वस्तू (Requisition Items)',
     'GOOD STOCK': 'चांगला माल (Good Stock)',
     'Add Good Stock Items': 'इतर माल जोडा',
@@ -157,10 +159,19 @@ export const t = (key) => {
     'Actions': 'कृती (Actions)',
     'Req. Qty': 'आवश्यक संख्या',
     
-    // Stock Status
     'IN STOCK': 'उपलब्ध',
     'LOW STOCK': 'कमी माल',
     'OUT OF STOCK': 'माल संपला',
+    
+    // Kit History
+    'EXPORT FORMAT': 'फॉरमॅट (Format)',
+    'KIT NAME': 'किटचे नाव (Kit Name)',
+    'ITEMS COUNT': 'एकूण वस्तू (Items)',
+    'records': 'नोंदी',
+    'Showing': 'दाखवत आहे',
+    'of': 'पैकी',
+    'Prev': 'मागे',
+    'Next': 'पुढे',
   };
 
   return dict[key] || key;

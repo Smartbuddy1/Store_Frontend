@@ -39,13 +39,13 @@ const SiteDispatch = () => {
 
   const [kits, setKits] = useState([]);
   const [staffList, setStaffList] = useState([]);
-  
+
   const [selectedKitId, setSelectedKitId] = useState('');
   const [kitQuantity, setKitQuantity] = useState(1);
   const [handoverTo, setHandoverTo] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [time, setTime] = useState(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
-  
+
   const [checklist, setChecklist] = useState([]);
   const [isGenerated, setIsGenerated] = useState(false);
   const [editingDispatchIds, setEditingDispatchIds] = useState(null);
@@ -70,15 +70,15 @@ const SiteDispatch = () => {
       ]);
       setKits(kitsData || []);
       setStaffList(staffData || []);
-      
+
       const stockMap = {};
       (currentStockData || []).forEach(item => {
         stockMap[item.item_code] = item.current_qty;
       });
       setCurrentStockMap(stockMap);
-      
+
       const historyItems = (stockOutData || []).filter(item => item.remarks === 'Auto-dispatched via Site Dispatch');
-      
+
       const grouped = {};
       historyItems.forEach(item => {
         const key = `${item.date}-${item.time}-${item.purpose}-${item.handoverTo}`;
@@ -94,11 +94,11 @@ const SiteDispatch = () => {
         }
         grouped[key].ids.push(item.id);
       });
-      
+
       const history = Object.values(grouped).map(group => {
         let kitName = 'Unknown Kit';
         let kitQty = 1;
-        
+
         const match = group.purpose?.match(/Kit Dispatch: (.*?)(?:\s+\(Qty: (\d+)\))?$/);
         if (match) {
           kitName = match[1];
@@ -175,7 +175,7 @@ const SiteDispatch = () => {
       item.itemName,
       `${item.displayQty} ${item.unit || ''}`
     ]);
-    
+
     await exportToPDF(`Dispatch Checklist - ${kitName}`, tableColumn, rows, `checklist_${kitName.replace(/\s+/g, '_')}.pdf`);
   };
 
@@ -212,9 +212,9 @@ const SiteDispatch = () => {
           remarks: 'Auto-dispatched via Site Dispatch'
         });
       }));
-      
+
       alert('Dispatch successful!');
-      
+
       // Reset form
       setSelectedKitId('');
       setKitQuantity(1);
@@ -224,10 +224,10 @@ const SiteDispatch = () => {
       setEditingDispatchIds(null);
       setDate(new Date().toISOString().split('T')[0]);
       setTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
-      
+
       // Refresh history
       fetchData();
-      
+
     } catch (error) {
       console.error('Error in bulk dispatch:', error);
       alert('Error during dispatch. Some items may not have been recorded.');
@@ -244,14 +244,14 @@ const SiteDispatch = () => {
       alert("The original kit name was not found. Please select the appropriate kit from the dropdown.");
       setSelectedKitId('');
     }
-    
+
     setKitQuantity(item.quantity);
     setHandoverTo(item.handoverTo);
     setDate(new Date(item.date).toISOString().split('T')[0]);
     setTime(item.time);
     setEditingDispatchIds(item.ids);
     setIsGenerated(false);
-    
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -267,7 +267,7 @@ const SiteDispatch = () => {
     }
   };
 
-  const filteredHistory = dispatchHistory.filter(item => 
+  const filteredHistory = dispatchHistory.filter(item =>
     item.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.itemCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (item.handoverTo && item.handoverTo.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -278,9 +278,9 @@ const SiteDispatch = () => {
     const tableRows = [];
     filteredHistory.forEach(item => {
       tableRows.push([
-        new Date(item.date).toLocaleDateString() + ' ' + item.time, 
-        item.itemName, 
-        item.quantity, 
+        new Date(item.date).toLocaleDateString() + ' ' + item.time,
+        item.itemName,
+        item.quantity,
         item.handoverTo || '-'
       ]);
     });
@@ -317,23 +317,23 @@ const SiteDispatch = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}</label>
-            <input 
-              type="date" 
+            <input
+              type="date"
               max={new Date().toISOString().split('T')[0]}
-              value={date} 
+              value={date}
               onChange={(e) => {
                 const today = new Date().toISOString().split('T')[0];
                 setDate(e.target.value > today ? today : e.target.value);
-              }} 
-              disabled={isGenerated} 
-              style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }} 
+              }}
+              disabled={isGenerated}
+              style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}
             />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Time')}</label>
-            <input 
-              type="time" 
-              value={time} 
+            <input
+              type="time"
+              value={time}
               onChange={(e) => {
                 const today = new Date().toISOString().split('T')[0];
                 const now = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
@@ -342,12 +342,12 @@ const SiteDispatch = () => {
                 } else {
                   setTime(e.target.value);
                 }
-              }} 
-              disabled={isGenerated} 
-              style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }} 
+              }}
+              disabled={isGenerated}
+              style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}
             />
           </div>
-          
+
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Select Kit')}</label>
             <select value={selectedKitId} onChange={(e) => setSelectedKitId(e.target.value)} disabled={isGenerated} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>
@@ -376,7 +376,7 @@ const SiteDispatch = () => {
 
         {!isGenerated && (
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <button 
+            <button
               onClick={handleGenerate}
               style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', border: 'none', backgroundColor: '#3b82f6', color: 'white', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
@@ -429,13 +429,13 @@ const SiteDispatch = () => {
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem' }}>
-            <button 
+            <button
               onClick={() => { setIsGenerated(false); setChecklist([]); }}
               style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'transparent', color: 'var(--text-primary)', fontWeight: '600', cursor: 'pointer' }}
             >
               {t('Cancel')}
             </button>
-            <button 
+            <button
               onClick={handleDispatch}
               disabled={loading}
               style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', border: 'none', backgroundColor: '#10b981', color: 'white', fontWeight: 'bold', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', opacity: loading ? 0.7 : 1 }}
@@ -463,9 +463,9 @@ const SiteDispatch = () => {
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', flex: 1, justifyItems: 'flex-end', justifyContent: 'flex-end' }}>
             <div style={{ position: 'relative', width: '300px', maxWidth: '100%' }}>
               <Search size={18} color="var(--slate-400)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-              <input 
-                type="text" 
-                placeholder={t('Search item name or handover to...')} 
+              <input
+                type="text"
+                placeholder={t('Search item name or handover to...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{ width: '100%', padding: '0.6rem 1rem 0.6rem 2.2rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none' }}

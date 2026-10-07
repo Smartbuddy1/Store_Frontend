@@ -678,6 +678,11 @@ textarea:focus {
   background-color: var(--slate-50);
 }
 
+/* Hamburger Menu */
+.hamburger-menu {
+  display: none;
+}
+
 /* Sidebar */
 .sidebar {
   width: 260px;
@@ -1127,6 +1132,7 @@ textarea:focus {
   justify-content: center;
   gap: 0.5rem;
   margin-top: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .pagination-btn {
@@ -1611,12 +1617,51 @@ textarea:focus {
 
 /* Mobile Screens */
 @media (max-width: 768px) {
-  .top-header {
-    padding: 1rem;
-    padding-right: 1rem !important;
+  html, body, #root, .app-layout, .main-content, .page-content {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
   }
+
+  /* Robust responsive tables */
+  table {
+    display: block !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+  
+  /* Prevent containers from blowing up width */
+  .page-content * {
+    max-width: 100vw;
+  }
+  
+  /* Fix inline flex headers and forms that overflow on mobile */
+  .page-content > div > div[style*="display: flex"] {
+    flex-wrap: wrap !important;
+    gap: 1rem !important;
+  }
+
+  .pagination-container {
+    flex-wrap: wrap !important;
+    padding: 0 1rem;
+  }
+
+  .hide-on-mobile {
+    display: none !important;
+  }
+  
+  .mobile-only {
+    display: inline-block !important;
+  }
+  
+  .top-header {
+    padding: 0.5rem 1rem !important;
+  }
+  
   .page-title {
-    font-size: 1.25rem !important;
+    font-size: 1.1rem !important;
   }
   .grid-cards {
     grid-template-columns: 1fr !important;

@@ -49,7 +49,7 @@ const Login = () => {
       <div className="auth-bg-shape-2"></div>
 
       {/* Glassmorphic Theme Switcher */}
-      <button 
+      <button
         type="button"
         className="auth-theme-toggle"
         onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
@@ -57,25 +57,25 @@ const Login = () => {
       >
         {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
       </button>
-      
+
       {/* Centered Auth Card */}
       <div className="auth-card" style={{ width: '100%', maxWidth: '400px', backgroundColor: theme === 'dark' ? 'var(--surface-bg)' : 'var(--surface-bg)', borderRadius: '24px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.08)', zIndex: 10, padding: '2.5rem 2rem' }}>
         {/* Top Header Section */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <img 
-            src={logoImg} 
-            alt="Aarya Innovtech" 
-            style={{ 
-              height: '80px', 
+          <img
+            src={logoImg}
+            alt="Aarya Innovtech"
+            style={{
+              height: '80px',
               width: 'auto',
               maxWidth: '100%',
-              margin: '0 auto 1.25rem auto', 
+              margin: '0 auto 1.25rem auto',
               display: 'block',
               objectFit: 'contain',
               backgroundColor: theme === 'dark' ? 'var(--surface-bg)' : 'transparent',
               padding: theme === 'dark' ? '8px 16px' : '0',
               borderRadius: theme === 'dark' ? '12px' : '0'
-            }} 
+            }}
           />
           <h1 style={{ fontSize: '1.65rem', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '0.3rem', letterSpacing: '-0.02em' }}>Welcome</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '500' }}>Please enter your credentials to access your portal</p>
@@ -89,7 +89,7 @@ const Login = () => {
               {error}
             </div>
           )}
-          
+
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
             {/* Mobile Number Input */}
             <div className="form-group" style={{ marginBottom: 0 }}>
@@ -134,21 +134,21 @@ const Login = () => {
 
             {/* Forgot Password */}
             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 style={{ color: 'var(--primary-color)', fontSize: '0.85rem', fontWeight: '500', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
-                onClick={(e) => { 
-                  e.preventDefault(); 
-                  alert("Please contact your administrator to reset your password."); 
+                onClick={(e) => {
+                  e.preventDefault();
+                  alert("Please contact your administrator to reset your password.");
                 }}
               >
                 <LockKeyhole size={14} /> Forgot Password?
               </a>
             </div>
-            
+
             {/* Submit Button */}
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn btn-primary btn-block"
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', height: '3.25rem', fontSize: '1rem', marginTop: '0.5rem' }}
               disabled={loading}

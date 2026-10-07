@@ -294,8 +294,8 @@ const KitsMaster = () => {
                       <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                         <input 
                           type="number" 
-                          min="0.01" 
-                          step="0.01"
+                          min={['nos', 'ml', 'gms', 'pcs', 'box', 'set', 'pairs'].includes((ki.baseUnit || '').toLowerCase()) ? "1" : "0.01"} 
+                          step={['nos', 'ml', 'gms', 'pcs', 'box', 'set', 'pairs'].includes((ki.baseUnit || '').toLowerCase()) ? "1" : "0.01"}
                           value={ki.quantity}
                           onChange={e => updateKitItem(i, 'quantity', e.target.value)}
                           style={{ width: '80px', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)' }}

@@ -31,13 +31,10 @@ const Dashboard = () => {
         d7.setDate(d7.getDate() - 6);
         const fromDateStr = d7.toISOString().split('T')[0];
 
-        const [dashStats, recentInRes, recentOutRes, stockInLast7, stockOutLast7, items] = await Promise.all([
+        const [dashStats, recentInRes, recentOutRes] = await Promise.all([
           api.currentStock.getDashboardStats(),
           api.stockIn.getAllPaginated({ page: 1, limit: 10 }),
-          api.stockOut.getAllPaginated({ page: 1, limit: 10 }),
-          api.stockIn.getAll({ from_date: fromDateStr }),
-          api.stockOut.getAll({ from_date: fromDateStr }),
-          api.items.getAll()
+          api.stockOut.getAllPaginated({ page: 1, limit: 10 })
         ]);
 
         setStats(dashStats);
@@ -59,32 +56,12 @@ const Dashboard = () => {
           quantity: item.quantity
         })));
         
-        // Process Bar Chart (Last 7 Days)
-        const last7Days = [];
-        for (let i = 6; i >= 0; i--) {
-          const d = new Date();
-          d.setDate(d.getDate() - i);
-          const dateStr = d.toISOString().split('T')[0];
-          last7Days.push({ date: dateStr, displayDate: d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }), In: 0, Out: 0 });
-        }
-        (stockInLast7 || []).forEach(entry => {
-          const entryDate = new Date(entry.date).toISOString().split('T')[0];
-          const day = last7Days.find(d => d.date === entryDate);
-          if (day) day.In += 1;
-        });
-        (stockOutLast7 || []).forEach(entry => {
-          const entryDate = new Date(entry.date).toISOString().split('T')[0];
-          const day = last7Days.find(d => d.date === entryDate);
-          if (day) day.Out += 1;
-        });
-        setBarChartData(last7Days);
+        // Use aggregated chart data from dashboard stats
+        const last7DaysData = dashStats.chartData || [];
+        setBarChartData(last7DaysData);
 
         // Process Pie Chart (Items per Category)
-        const categoriesCount = {};
-        (items || []).forEach(item => {
-          const cat = item.categoryName || 'Uncategorized';
-          categoriesCount[cat] = (categoriesCount[cat] || 0) + 1;
-        });
+        const categoriesCount = dashStats.categoriesCount || {};
         const pieData = Object.keys(categoriesCount).map(key => ({ name: key, value: categoriesCount[key] }));
         setPieChartData(pieData);
 
@@ -245,6 +222,19 @@ const Dashboard = () => {
             </div>
           </Link>
 
+          <Link to="/requisition" style={{ textDecoration: 'none' }}>
+            <div className="hover-card" style={{ backgroundColor: 'var(--surface-bg)', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.2s', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ backgroundColor: '#cffafe', color: '#0891b2', padding: '0.75rem', borderRadius: '10px' }}><ClipboardList size={24} /></div>
+                <div>
+                  <h4 style={{ margin: 0, color: 'var(--slate-900)', fontWeight: 'bold', fontSize: '1.1rem' }}>{t('Add Requisition')}</h4>
+                  <p style={{ margin: 0, color: 'var(--slate-500)', fontSize: '0.85rem', marginTop: '0.2rem' }}>{t('Create material requisition')}</p>
+                </div>
+              </div>
+              <ArrowRight color='var(--slate-300)' />
+            </div>
+          </Link>
+
         </div>
       </div>
 
@@ -270,7 +260,7 @@ const Dashboard = () => {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="displayDate" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b', fontWeight: 500 }} dy={10} interval={0} />
+                <XAxis dataKey="displayDate" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b', fontWeight: 500 }} dy={10} minTickGap={10} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b', fontWeight: 500 }} />
                 <Tooltip 
                   cursor={{ fill: 'rgba(241,245,249,0.1)' }} 
@@ -322,10 +312,10 @@ const Dashboard = () => {
                 />
                 <Legend 
                   iconType="circle" 
-                  layout="vertical" 
-                  verticalAlign="middle" 
-                  align="right" 
-                  wrapperStyle={{ fontWeight: 600, fontSize: '0.9rem', paddingLeft: '20px', color: 'var(--text-secondary)' }}
+                  layout="horizontal" 
+                  verticalAlign="bottom" 
+                  align="center" 
+                  wrapperStyle={{ fontWeight: 600, fontSize: '0.9rem', paddingTop: '10px', color: 'var(--text-secondary)' }}
                   formatter={(value, entry) => <span style={{ color: 'var(--text-secondary)' }}>{value} ({entry.payload.value})</span>}
                 />
               </PieChart>

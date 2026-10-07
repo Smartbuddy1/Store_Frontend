@@ -48,21 +48,21 @@ const ItemMaster = () => {
       const mapped = data.records.map(item => {
         let photos = [];
         if (item.photoUrl) {
-           if (item.photoUrl.startsWith('[')) {
-              try { photos = JSON.parse(item.photoUrl); } catch(e) { photos = [item.photoUrl]; }
-           } else {
-              photos = [item.photoUrl];
-           }
+          if (item.photoUrl.startsWith('[')) {
+            try { photos = JSON.parse(item.photoUrl); } catch (e) { photos = [item.photoUrl]; }
+          } else {
+            photos = [item.photoUrl];
+          }
         }
         return {
-        id: item.id,
-        code: item.itemCode,
-        name: item.itemName,
-        category: item.categoryName,
-        minStock: item.minimumStock,
-        unit: item.unit,
-        photos: photos
-      };
+          id: item.id,
+          code: item.itemCode,
+          name: item.itemName,
+          category: item.categoryName,
+          minStock: item.minimumStock,
+          unit: item.unit,
+          photos: photos
+        };
       });
       setItems(mapped);
       setTotalPages(data.pagination.totalPages || 1);
@@ -112,7 +112,7 @@ const ItemMaster = () => {
     }
   };
 
-  
+
   const openPhotoView = (item) => {
     setViewingPhoto(item);
     setPhotoSlideIndex(0);
@@ -228,14 +228,14 @@ const ItemMaster = () => {
       reader.readAsDataURL(file);
     }
   };
-  
+
   const removePhoto = (index) => {
     setNewItemPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'var(--font-sans)', backgroundColor: 'var(--surface-bg)', minHeight: '100%' }}>
-      
+
       {/* Header Section */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -259,12 +259,12 @@ const ItemMaster = () => {
           <Plus size={20} color='var(--primary-color)' />
           {t('Add New Item')}
         </h2>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.25rem', marginBottom: '1.5rem' }}>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Name')}</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={newItemName}
               onChange={(e) => setNewItemName(e.target.value)}
               placeholder="e.g. CWX-VALVE- 1 inch"
@@ -277,7 +277,7 @@ const ItemMaster = () => {
 
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Select Category')}</label>
-            <select 
+            <select
               value={newItemCategory}
               onChange={(e) => setNewItemCategory(e.target.value)}
               style={{
@@ -294,7 +294,7 @@ const ItemMaster = () => {
 
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Unit')}</label>
-            <select 
+            <select
               value={newUnit}
               onChange={(e) => setNewUnit(e.target.value)}
               style={{
@@ -310,9 +310,9 @@ const ItemMaster = () => {
 
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Minimum Stock Alert Level')}</label>
-            <input 
+            <input
               type="number"
-              min="0" 
+              min="0"
               value={newMinStock}
               onChange={(e) => {
                 const val = e.target.value;
@@ -329,29 +329,29 @@ const ItemMaster = () => {
           <div style={{ gridColumn: 'span 4' }}>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Photo')}</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-              
-                <div style={{ position: 'relative' }}>
-                  {newItemPhotos.length < 4 && (
-                    <button 
-                      onClick={() => setShowPhotoDropdown(!showPhotoDropdown)}
-                      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', color: 'var(--slate-700)', fontWeight: '500' }}
-                    >
-                      <Image size={18} color="var(--primary-color)" /> {t('Upload Photo')} ({newItemPhotos.length}/4)
-                    </button>
-                  )}
-                  {showPhotoDropdown && (
-                    <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', backgroundColor: '#fff', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)' }}>
-                        <Camera size={16} color="var(--slate-600)" /> {t('Camera')}
-                        <input type="file" accept="image/*" capture="environment" onChange={handlePhotoUpload} style={{ display: 'none' }} />
-                      </label>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer' }}>
-                        <Image size={16} color="var(--slate-600)" /> {t('Gallery')}
-                        <input type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: 'none' }} />
-                      </label>
-                    </div>
-                  )}
-                </div>
+
+              <div style={{ position: 'relative' }}>
+                {newItemPhotos.length < 4 && (
+                  <button
+                    onClick={() => setShowPhotoDropdown(!showPhotoDropdown)}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', color: 'var(--slate-700)', fontWeight: '500' }}
+                  >
+                    <Image size={18} color="var(--primary-color)" /> {t('Upload Photo')} ({newItemPhotos.length}/4)
+                  </button>
+                )}
+                {showPhotoDropdown && (
+                  <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', backgroundColor: '#fff', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)' }}>
+                      <Camera size={16} color="var(--slate-600)" /> {t('Camera')}
+                      <input type="file" accept="image/*" capture="environment" onChange={handlePhotoUpload} style={{ display: 'none' }} />
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer' }}>
+                      <Image size={16} color="var(--slate-600)" /> {t('Gallery')}
+                      <input type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: 'none' }} />
+                    </label>
+                  </div>
+                )}
+              </div>
 
               {newItemPhotos.length > 0 && (
                 <div style={{ display: 'flex', gap: '10px' }}>
@@ -367,13 +367,13 @@ const ItemMaster = () => {
           </div>
 
           <div style={{ gridColumn: 'span 4', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-            <button 
+            <button
               onClick={() => {
                 setNewItemName('');
                 setNewItemCategory('');
                 setNewUnit('Nos');
-      setNewMinStock('');
-      setNewItemPhotos([]);
+                setNewMinStock('');
+                setNewItemPhotos([]);
               }}
               style={{
                 padding: '0.6rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'transparent',
@@ -382,7 +382,7 @@ const ItemMaster = () => {
             >
               {t('Cancel')}
             </button>
-            <button 
+            <button
               onClick={handleSaveItem}
               style={{
                 padding: '0.6rem 1.5rem', borderRadius: '8px', border: 'none', backgroundColor: 'var(--primary-color)',
@@ -420,12 +420,12 @@ const ItemMaster = () => {
               <Plus size={22} color='var(--primary-color)' />
               {t('Edit Item')}
             </h2>
-            
+
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Name')}</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={newItemName}
                   onChange={(e) => setNewItemName(e.target.value)}
                   placeholder="e.g. CWX-VALVE- 1 inch"
@@ -438,7 +438,7 @@ const ItemMaster = () => {
 
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Select Category')}</label>
-                <select 
+                <select
                   value={newItemCategory}
                   onChange={(e) => setNewItemCategory(e.target.value)}
                   style={{
@@ -455,7 +455,7 @@ const ItemMaster = () => {
 
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Unit')}</label>
-                <select 
+                <select
                   value={newUnit}
                   onChange={(e) => setNewUnit(e.target.value)}
                   style={{
@@ -471,9 +471,10 @@ const ItemMaster = () => {
 
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Minimum Stock Alert Level')}</label>
-                <input 
+                <input
                   type="number"
-                  min="0" 
+                  min="0"
+                  step={['nos', 'ml', 'gms', 'pcs', 'box', 'set', 'pairs'].includes((newUnit || '').toLowerCase()) ? "1" : "0.01"}
                   value={newMinStock}
                   onChange={(e) => {
                     const val = e.target.value;
@@ -489,51 +490,51 @@ const ItemMaster = () => {
               <div style={{ gridColumn: 'span 2' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Photo')}</label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                  
-                    <div style={{ position: 'relative' }}>
-                      <button 
-                        onClick={() => setShowPhotoDropdown(!showPhotoDropdown)}
-                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', color: 'var(--slate-700)', fontWeight: '500' }}
-                      >
-                        <Image size={18} color="var(--primary-color)" /> {newItemPhoto ? t('Change Photo') : t('Upload Photo')}
-                      </button>
-                      {showPhotoDropdown && (
-                        <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', backgroundColor: '#fff', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>
-                          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)' }}>
-                            <Camera size={16} color="var(--slate-600)" /> {t('Camera')}
-                            <input type="file" accept="image/*" capture="environment" onChange={handlePhotoUpload} style={{ display: 'none' }} />
-                          </label>
-                          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer' }}>
-                            <Image size={16} color="var(--slate-600)" /> {t('Gallery')}
-                            <input type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: 'none' }} />
-                          </label>
-                        </div>
-                      )}
-                    </div>
+
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      onClick={() => setShowPhotoDropdown(!showPhotoDropdown)}
+                      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', color: 'var(--slate-700)', fontWeight: '500' }}
+                    >
+                      <Image size={18} color="var(--primary-color)" /> {newItemPhoto ? t('Change Photo') : t('Upload Photo')}
+                    </button>
+                    {showPhotoDropdown && (
+                      <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', backgroundColor: '#fff', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)' }}>
+                          <Camera size={16} color="var(--slate-600)" /> {t('Camera')}
+                          <input type="file" accept="image/*" capture="environment" onChange={handlePhotoUpload} style={{ display: 'none' }} />
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer' }}>
+                          <Image size={16} color="var(--slate-600)" /> {t('Gallery')}
+                          <input type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: 'none' }} />
+                        </label>
+                      </div>
+                    )}
+                  </div>
 
                   {newItemPhotos.length > 0 && (
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  {newItemPhotos.map((photo, idx) => (
-                    <div key={idx} style={{ position: 'relative', width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', flexShrink: 0 }}>
-                      <img src={photo} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      <button onClick={() => removePhoto(idx)} style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(255,0,0,0.7)', color: 'white', border: 'none', borderRadius: '0 0 0 4px', padding: '2px 4px', fontSize: '0.6rem', cursor: 'pointer' }}>X</button>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      {newItemPhotos.map((photo, idx) => (
+                        <div key={idx} style={{ position: 'relative', width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', flexShrink: 0 }}>
+                          <img src={photo} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <button onClick={() => removePhoto(idx)} style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(255,0,0,0.7)', color: 'white', border: 'none', borderRadius: '0 0 0 4px', padding: '2px 4px', fontSize: '0.6rem', cursor: 'pointer' }}>X</button>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              )}
+                  )}
                 </div>
               </div>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-              <button 
+              <button
                 onClick={() => {
                   setEditingId(null);
                   setNewItemName('');
                   setNewItemCategory('');
                   setNewUnit('Nos');
-      setNewMinStock('');
-      setNewItemPhotos([]);
+                  setNewMinStock('');
+                  setNewItemPhotos([]);
                   setIsModalOpen(false);
                 }}
                 style={{
@@ -543,7 +544,7 @@ const ItemMaster = () => {
               >
                 {t('Cancel')}
               </button>
-              <button 
+              <button
                 onClick={handleSaveItem}
                 style={{
                   padding: '0.6rem 1.5rem', borderRadius: '8px', border: 'none', backgroundColor: 'var(--primary-color)',
@@ -571,9 +572,9 @@ const ItemMaster = () => {
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
         <div style={{ position: 'relative', flex: '1', minWidth: '250px' }}>
           <Search size={18} color='var(--slate-400)' style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-          <input 
-            type="text" 
-            placeholder="Search items..." 
+          <input
+            type="text"
+            placeholder="Search items..."
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
@@ -590,8 +591,8 @@ const ItemMaster = () => {
             }}
           />
         </div>
-        
-        <select 
+
+        <select
           value={selectedCategory}
           onChange={(e) => {
             setSelectedCategory(e.target.value);
@@ -644,16 +645,16 @@ const ItemMaster = () => {
                 <td style={{ padding: '1.25rem 1rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     {item.photos && item.photos.length > 0 ? (
-                      <div style={{position: 'relative', display: 'inline-block'}} onClick={() => openPhotoView(item)}>
-                        <img 
-                          src={item.photos[0]} 
-                          alt={item.name} 
-                          style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', cursor: 'pointer', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} 
+                      <div style={{ position: 'relative', display: 'inline-block' }} onClick={() => openPhotoView(item)}>
+                        <img
+                          src={item.photos[0]}
+                          alt={item.name}
+                          style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', cursor: 'pointer', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
                         />
                       </div>
                     ) : (
-                      <div style={{ 
-                        width: '40px', height: '40px', borderRadius: '50%', 
+                      <div style={{
+                        width: '40px', height: '40px', borderRadius: '50%',
                         backgroundColor: 'var(--slate-200)', color: 'var(--slate-700)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontWeight: 'bold', fontSize: '0.9rem'
@@ -676,25 +677,25 @@ const ItemMaster = () => {
             ))}
           </tbody>
         </table>
-        
+
         {/* Pagination */}
         <div style={{ padding: '1.5rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--slate-500)', fontSize: '0.875rem' }}>
           <span>Showing {items.length} of {totalRecords} entries</span>
           <div style={{ display: 'flex', gap: '0.25rem' }}>
-            <button 
+            <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
               style={{ padding: '0.35rem 0.75rem', border: '1px solid #e2e8f0', borderRadius: '4px', backgroundColor: currentPage === 1 ? 'var(--slate-50)' : 'var(--surface-bg)', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', color: 'var(--slate-500)' }}>
-                Previous
+              Previous
             </button>
             <span style={{ padding: '0.35rem 0.75rem', fontWeight: 'bold', color: 'var(--slate-900)' }}>
               Page {currentPage} of {totalPages || 1}
             </span>
-            <button 
+            <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages || totalPages === 0}
               style={{ padding: '0.35rem 0.75rem', border: '1px solid #e2e8f0', borderRadius: '4px', backgroundColor: (currentPage === totalPages || totalPages === 0) ? 'var(--slate-50)' : 'var(--surface-bg)', cursor: (currentPage === totalPages || totalPages === 0) ? 'not-allowed' : 'pointer', color: 'var(--slate-500)' }}>
-                Next
+              Next
             </button>
           </div>
         </div>
@@ -716,7 +717,7 @@ const ItemMaster = () => {
           }}>
             <div style={{ padding: '1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--slate-900)', margin: 0 }}>{t('Item Details')}</h2>
-              <button 
+              <button
                 onClick={() => setViewingItem(null)}
                 style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--slate-500)', display: 'flex' }}
               >
@@ -750,7 +751,7 @@ const ItemMaster = () => {
                   <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '10px' }}>
                     {viewingItem.photos.map((photo, idx) => (
                       <div key={idx} onClick={() => { setPhotoSlideIndex(idx); openPhotoView(viewingItem); }} style={{ width: '120px', height: '120px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', flexShrink: 0, cursor: 'pointer' }}>
-                        <img src={photo} alt={`${viewingItem.name} ${idx+1}`} style={{ width: '100%', height: '100%', display: 'block', objectFit: 'cover' }} />
+                        <img src={photo} alt={`${viewingItem.name} ${idx + 1}`} style={{ width: '100%', height: '100%', display: 'block', objectFit: 'cover' }} />
                       </div>
                     ))}
                   </div>
@@ -758,7 +759,7 @@ const ItemMaster = () => {
               )}
             </div>
             <div style={{ padding: '1.5rem', backgroundColor: 'var(--slate-50)', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', flexShrink: 0 }}>
-              <button 
+              <button
                 onClick={() => setViewingItem(null)}
                 style={{
                   padding: '0.6rem 1.5rem', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: 'var(--surface-bg)',
@@ -780,7 +781,7 @@ const ItemMaster = () => {
           zIndex: 10000, padding: '1rem', backdropFilter: 'blur(4px)'
         }}>
           <div style={{ position: 'relative', width: '100%', maxWidth: '600px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <button 
+            <button
               onClick={() => setViewingPhoto(null)}
               style={{ position: 'absolute', top: '-40px', right: '0', background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', borderRadius: '50%', width: '35px', height: '35px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10, fontSize: '1.2rem' }}
             >
@@ -788,7 +789,7 @@ const ItemMaster = () => {
             </button>
             <div style={{ position: 'relative', width: '100%', backgroundColor: 'var(--surface-bg)', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)' }}>
               <img src={viewingPhoto.photos[photoSlideIndex]} alt={viewingPhoto.name} style={{ width: '100%', display: 'block', maxHeight: '70vh', objectFit: 'contain', backgroundColor: '#f1f5f9' }} />
-              
+
               {viewingPhoto.photos.length > 1 && (
                 <>
                   <button onClick={(e) => { e.stopPropagation(); setPhotoSlideIndex(prev => prev === 0 ? viewingPhoto.photos.length - 1 : prev - 1); }} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', fontSize: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>‹</button>
@@ -796,14 +797,14 @@ const ItemMaster = () => {
                 </>
               )}
             </div>
-            
+
             <div style={{ marginTop: '1rem', color: 'white', fontWeight: 'bold', fontSize: '1.1rem', textAlign: 'center' }}>
               {viewingPhoto.name}
             </div>
             {viewingPhoto.photos.length > 1 && (
               <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
                 {viewingPhoto.photos.map((_, idx) => (
-                   <div key={idx} onClick={(e) => { e.stopPropagation(); setPhotoSlideIndex(idx); }} style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: idx === photoSlideIndex ? 'var(--primary-color)' : 'rgba(255,255,255,0.4)', cursor: 'pointer', transition: 'background-color 0.2s' }} />
+                  <div key={idx} onClick={(e) => { e.stopPropagation(); setPhotoSlideIndex(idx); }} style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: idx === photoSlideIndex ? 'var(--primary-color)' : 'rgba(255,255,255,0.4)', cursor: 'pointer', transition: 'background-color 0.2s' }} />
                 ))}
               </div>
             )}

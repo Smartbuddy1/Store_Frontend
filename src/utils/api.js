@@ -6,7 +6,8 @@ const getBaseUrl = () => {
   }
   // During local dev, dynamically use the host so network devices can connect
   const host = window.location.hostname;
-  return `http://${host}:5001/api`;
+  const apiHost = host === 'localhost' ? '127.0.0.1' : host;
+  return `http://${apiHost}:5001/api`;
 };
 
 const BASE_URL = getBaseUrl();
@@ -21,9 +22,28 @@ const getAuthHeaders = (extra = {}) => {
   };
 };
 
-const handleResponse = async (res) => {
+const cache = new Map();
+
+const fetchWithCache = async (url, options = {}, cacheDuration = 5 * 60 * 1000) => {
+  const isCacheable = !options.method || options.method === 'GET';
+  
+  if (isCacheable) {
+    const cached = cache.get(url);
+    if (cached && (Date.now() - cached.timestamp < cacheDuration)) {
+      // Trigger background refetch to keep data fresh
+      fetch(url, options)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            cache.set(url, { data: data.data, timestamp: Date.now() });
+          }
+        }).catch(() => {});
+      return cached.data; // Return cached instantly
+    }
+  }
+
+  const res = await fetch(url, options);
   if (res.status === 401) {
-    // Token expired or invalid → force logout
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = '/login';
@@ -33,6 +53,11 @@ const handleResponse = async (res) => {
   if (!res.ok || !data.success) {
     throw new Error(data.message || 'Something went wrong');
   }
+
+  if (isCacheable) {
+    cache.set(url, { data: data.data, timestamp: Date.now() });
+  }
+
   return data.data;
 };
 
@@ -42,10 +67,10 @@ const api = {
   // CATEGORIES
   // ========================
   categories: {
-    getAll: () => fetch(`${BASE_URL}/categories`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse),
+    getAll: () => fetchWithCache(`${BASE_URL}/categories`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }),
     create: (body) => fetch(`${BASE_URL}/categories`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
-    }).then(handleResponse),
+    }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),
     update: (id, body) => fetch(`${BASE_URL}/categories/${id}`, {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
@@ -56,10 +81,10 @@ const api = {
   // STAFF
   // ========================
   staff: {
-    getAll: () => fetch(`${BASE_URL}/staff`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse),
+    getAll: () => fetchWithCache(`${BASE_URL}/staff`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }),
     create: (body) => fetch(`${BASE_URL}/staff`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
-    }).then(handleResponse),
+    }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),
     update: (id, body) => fetch(`${BASE_URL}/staff/${id}`, {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
@@ -72,16 +97,16 @@ const api = {
   items: {
     getAll: (params = {}) => {
       const query = new URLSearchParams(params).toString();
-      return fetch(`${BASE_URL}/items${query ? `?${query}` : ''}`, { headers: getAuthHeaders() }).then(handleResponse);
+      return fetchWithCache(`${BASE_URL}/items${query ? `?${query}` : ''}`, { headers: getAuthHeaders() });
     },
     getAllPaginated: (params = {}) => {
       const query = new URLSearchParams(params).toString();
-      return fetch(`${BASE_URL}/items/paginated${query ? `?${query}` : ''}`, { headers: getAuthHeaders() }).then(handleResponse);
+      return fetchWithCache(`${BASE_URL}/items/paginated${query ? `?${query}` : ''}`, { headers: getAuthHeaders() });
     },
-    getByCode: (code) => fetch(`${BASE_URL}/items/${code}`, { headers: getAuthHeaders() }).then(handleResponse),
+    getByCode: (code) => fetchWithCache(`${BASE_URL}/items/${code}`, { headers: getAuthHeaders() }),
     create: (body) => fetch(`${BASE_URL}/items`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
-    }).then(handleResponse),
+    }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),
     update: (id, body) => fetch(`${BASE_URL}/items/${id}`, {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
@@ -94,15 +119,15 @@ const api = {
   stockIn: {
     getAll: (params = {}) => {
       const query = new URLSearchParams(params).toString();
-      return fetch(`${BASE_URL}/stock-in${query ? `?${query}` : ''}`, { headers: getAuthHeaders() }).then(handleResponse);
+      return fetchWithCache(`${BASE_URL}/stock-in${query ? `?${query}` : ''}`, { headers: getAuthHeaders() }, 30000); // 30 sec cache
     },
     getAllPaginated: (params = {}) => {
       const query = new URLSearchParams(params).toString();
-      return fetch(`${BASE_URL}/stock-in/paginated${query ? `?${query}` : ''}`, { headers: getAuthHeaders() }).then(handleResponse);
+      return fetchWithCache(`${BASE_URL}/stock-in/paginated${query ? `?${query}` : ''}`, { headers: getAuthHeaders() }, 30000);
     },
     create: (body) => fetch(`${BASE_URL}/stock-in`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
-    }).then(handleResponse),
+    }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),
     update: (id, body) => fetch(`${BASE_URL}/stock-in/${id}`, {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
@@ -115,15 +140,15 @@ const api = {
   stockOut: {
     getAll: (params = {}) => {
       const query = new URLSearchParams(params).toString();
-      return fetch(`${BASE_URL}/stock-out${query ? `?${query}` : ''}`, { headers: getAuthHeaders() }).then(handleResponse);
+      return fetchWithCache(`${BASE_URL}/stock-out${query ? `?${query}` : ''}`, { headers: getAuthHeaders() }, 30000);
     },
     getAllPaginated: (params = {}) => {
       const query = new URLSearchParams(params).toString();
-      return fetch(`${BASE_URL}/stock-out/paginated${query ? `?${query}` : ''}`, { headers: getAuthHeaders() }).then(handleResponse);
+      return fetchWithCache(`${BASE_URL}/stock-out/paginated${query ? `?${query}` : ''}`, { headers: getAuthHeaders() }, 30000);
     },
     create: (body) => fetch(`${BASE_URL}/stock-out`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
-    }).then(handleResponse),
+    }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),
     update: (id, body) => fetch(`${BASE_URL}/stock-out/${id}`, {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
@@ -136,9 +161,9 @@ const api = {
   currentStock: {
     getAll: (params = {}) => {
       const query = new URLSearchParams(params).toString();
-      return fetch(`${BASE_URL}/current-stock${query ? `?${query}` : ''}`, { headers: getAuthHeaders() }).then(handleResponse);
+      return fetchWithCache(`${BASE_URL}/current-stock${query ? `?${query}` : ''}`, { headers: getAuthHeaders() }, 30000);
     },
-    getDashboardStats: () => fetch(`${BASE_URL}/current-stock/dashboard`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse),
+    getDashboardStats: () => fetchWithCache(`${BASE_URL}/current-stock/dashboard`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }, 30000),
   },
 
   // ========================
@@ -150,6 +175,7 @@ const api = {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
     deleteTool: (id) => fetch(`${BASE_URL}/tools/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
+    updateTool: (id, body) => fetch(`${BASE_URL}/tools/${id}`, { method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body) }).then(handleResponse),
 
     getAllLogs: () => fetch(`${BASE_URL}/tools/logs`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse),
     issueTool: (body) => fetch(`${BASE_URL}/tools/issue`, {
@@ -177,6 +203,22 @@ const api = {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
     delete: (id) => fetch(`${BASE_URL}/kits/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
+  },
+
+  // ========================
+  // REQUISITIONS HISTORY
+  // ========================
+  requisitions: {
+    getAll: (type) => {
+      const url = type ? `${BASE_URL}/requisitions?type=${type}` : `${BASE_URL}/requisitions`;
+      return fetch(url, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse);
+    },
+    create: (body) => fetch(`${BASE_URL}/requisitions`, {
+      method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
+    }).then(handleResponse),
+    delete: (id) => fetch(`${BASE_URL}/requisitions/${id}`, {
+      method: 'DELETE', headers: getAuthHeaders()
+    }).then(handleResponse)
   }
 };
 

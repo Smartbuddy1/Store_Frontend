@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Users, Folder, Monitor, LogOut, FileText, Sun, Moon, Settings, User, Phone, Shield, Menu, Activity, PieChart, Tag, ClipboardList, Radio, Wrench, Bell } from 'lucide-react';
+import { LayoutDashboard, Users, Folder, Monitor, LogOut, FileText, Sun, Moon, Settings, User, Phone, Shield, Menu, Activity, PieChart, Tag, ClipboardList, Radio, Wrench, Bell, Globe } from 'lucide-react';
 import Footer from './Footer';
 import excelData from '../assets/data.json';
 import newLogo from '../assets/new_logo.png';
@@ -185,7 +185,7 @@ const Layout = () => {
             <button 
               className="hamburger-menu"
               onClick={() => setIsSidebarOpen(true)}
-              style={{ display: 'none', background: 'transparent', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', padding: '0.5rem' }}
+              style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', padding: '0.5rem' }}
             >
               <Menu size={24} />
             </button>
@@ -213,7 +213,8 @@ const Layout = () => {
               }}
               title="Switch Language"
             >
-              ENG / मराठी
+              <Globe size={18} style={{ marginRight: '0.4rem' }} />
+              <span style={{ fontWeight: 'bold' }}>{lang === 'en' ? 'EN' : 'मराठी'}</span>
             </button>
 
             <button 
@@ -275,7 +276,7 @@ const Layout = () => {
               style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', position: 'relative' }}
               onClick={() => setIsProfileOpen(!isProfileOpen)}
             >
-              <span style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '1rem' }}>
+              <span className="hide-on-mobile" style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '1rem' }}>
                 {user?.name || user?.username || 'User'}
               </span>
               <div style={{ 

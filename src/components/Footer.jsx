@@ -59,6 +59,7 @@ const Footer = () => {
             <div style={{
               display: 'flex',
               alignItems: 'center',
+              flexWrap: 'wrap',
               gap: '0.6rem',
               marginTop: '0.25rem',
               fontSize: '0.82rem',

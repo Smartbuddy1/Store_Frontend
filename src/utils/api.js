@@ -61,6 +61,19 @@ const fetchWithCache = async (url, options = {}, cacheDuration = 5 * 60 * 1000) 
   return data.data;
 };
 
+const handleResponse = async (res) => {
+  if (res.status === 401) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/login';
+    throw new Error('Session expired. Please login again.');
+  }
+  const data = await res.json();
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || 'Something went wrong');
+  }
+  return data.data || data;
+};
 
 const api = {
   // ========================

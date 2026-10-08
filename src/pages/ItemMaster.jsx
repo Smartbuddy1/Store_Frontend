@@ -376,15 +376,30 @@ const ItemMaster = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Photo')}</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
 
-              <div style={{ position: 'relative' }}>
-                {newItemPhotos.length < 4 && (
-                  <button
-                    onClick={() => setShowPhotoDropdown(!showPhotoDropdown)}
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', color: 'var(--slate-700)', fontWeight: '500' }}
-                  >
-                    <Image size={18} color="var(--primary-color)" /> {t('Upload Photo')} ({newItemPhotos.length}/4)
-                  </button>
-                )}
+              <div 
+                style={{ position: 'relative' }}
+                tabIndex={-1}
+                onBlur={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget)) {
+                    setShowPhotoDropdown(false);
+                  }
+                }}
+              >
+                <button
+                  onClick={() => { if (newItemPhotos.length < 4) setShowPhotoDropdown(!showPhotoDropdown); }}
+                  disabled={newItemPhotos.length >= 4}
+                  style={{ 
+                    display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', 
+                    backgroundColor: newItemPhotos.length >= 4 ? 'var(--slate-100)' : 'var(--surface-bg)', 
+                    border: '1px solid var(--border-color)', borderRadius: '8px', 
+                    cursor: newItemPhotos.length >= 4 ? 'not-allowed' : 'pointer', 
+                    color: newItemPhotos.length >= 4 ? 'var(--slate-400)' : 'var(--slate-700)', 
+                    fontWeight: '500', opacity: newItemPhotos.length >= 4 ? 0.6 : 1 
+                  }}
+                >
+                  <Image size={18} color={newItemPhotos.length >= 4 ? "var(--slate-400)" : "var(--primary-color)"} /> 
+                  {t('Upload Photo')} ({newItemPhotos.length}/4)
+                </button>
                 {showPhotoDropdown && (
                   <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', backgroundColor: '#fff', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)' }}>
@@ -537,12 +552,29 @@ const ItemMaster = () => {
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Photo')}</label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
 
-                  <div style={{ position: 'relative' }}>
+                  <div 
+                    style={{ position: 'relative' }}
+                    tabIndex={-1}
+                    onBlur={(e) => {
+                      if (!e.currentTarget.contains(e.relatedTarget)) {
+                        setShowPhotoDropdown(false);
+                      }
+                    }}
+                  >
                     <button
-                      onClick={() => setShowPhotoDropdown(!showPhotoDropdown)}
-                      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', color: 'var(--slate-700)', fontWeight: '500' }}
+                      onClick={() => { if (editItemPhotos.length < 4) setShowPhotoDropdown(!showPhotoDropdown); }}
+                      disabled={editItemPhotos.length >= 4}
+                      style={{ 
+                        display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', 
+                        backgroundColor: editItemPhotos.length >= 4 ? 'var(--slate-100)' : 'var(--surface-bg)', 
+                        border: '1px solid var(--border-color)', borderRadius: '8px', 
+                        cursor: editItemPhotos.length >= 4 ? 'not-allowed' : 'pointer', 
+                        color: editItemPhotos.length >= 4 ? 'var(--slate-400)' : 'var(--slate-700)', 
+                        fontWeight: '500', opacity: editItemPhotos.length >= 4 ? 0.6 : 1 
+                      }}
                     >
-                      <Image size={18} color="var(--primary-color)" /> {editItemPhotos.length > 0 ? t('Add/Change Photo') : t('Upload Photo')}
+                      <Image size={18} color={editItemPhotos.length >= 4 ? "var(--slate-400)" : "var(--primary-color)"} /> 
+                      {editItemPhotos.length > 0 ? t('Add/Change Photo') : t('Upload Photo')} ({editItemPhotos.length}/4)
                     </button>
                     {showPhotoDropdown && (
                       <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', backgroundColor: '#fff', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>

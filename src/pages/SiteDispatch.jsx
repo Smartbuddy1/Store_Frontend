@@ -360,7 +360,7 @@ const SiteDispatch = () => {
 
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Quantity (e.g. 2 Toilets)')}</label>
-            <input type="number" min="1" value={kitQuantity} onChange={(e) => setKitQuantity(Number(e.target.value))} disabled={isGenerated} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }} />
+            <input type="number" min="1" value={kitQuantity} onChange={(e) => setKitQuantity(e.target.value === '' ? '' : Number(e.target.value))} disabled={isGenerated} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }} />
           </div>
 
           <div>

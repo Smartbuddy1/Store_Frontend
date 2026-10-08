@@ -92,11 +92,19 @@ const Requisition = () => {
     ? lowStockItems
     : allRelevantItems;
 
+  const sortedDisplayItems = [...displayItems].sort((a, b) => {
+    const aSelected = selectedItems.has(a.id);
+    const bSelected = selectedItems.has(b.id);
+    if (aSelected && !bSelected) return -1;
+    if (!aSelected && bSelected) return 1;
+    return 0;
+  });
+
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 50;
-  const totalPages = Math.ceil(displayItems.length / recordsPerPage);
+  const totalPages = Math.ceil(sortedDisplayItems.length / recordsPerPage);
   const indexOfFirst = (currentPage - 1) * recordsPerPage;
-  const currentRecords = displayItems.slice(indexOfFirst, indexOfFirst + recordsPerPage);
+  const currentRecords = sortedDisplayItems.slice(indexOfFirst, indexOfFirst + recordsPerPage);
 
   // Search results for adding manual items
   const goodStockItems = currentStockData.filter(item => 

@@ -27,6 +27,14 @@ const ItemMaster = () => {
   const [newUnit, setNewUnit] = useState('Nos');
   const [newMinStock, setNewMinStock] = useState('');
   const [newItemPhotos, setNewItemPhotos] = useState([]);
+
+  // Edit Form State
+  const [editItemName, setEditItemName] = useState('');
+  const [editItemCategory, setEditItemCategory] = useState('');
+  const [editUnit, setEditUnit] = useState('Nos');
+  const [editMinStock, setEditMinStock] = useState('');
+  const [editItemPhotos, setEditItemPhotos] = useState([]);
+  
   const [photoSlideIndex, setPhotoSlideIndex] = useState(0);
   const [showPhotoDropdown, setShowPhotoDropdown] = useState(false);
   const [viewingPhoto, setViewingPhoto] = useState(null);
@@ -120,14 +128,12 @@ const ItemMaster = () => {
 
   const handleEditItem = (item) => {
     setEditingId(item.id);
-    setNewItemName(item.name);
-    setNewItemCategory(item.category);
-    setNewUnit(item.unit);
-    setNewMinStock(item.minStock.toString());
-    setNewItemPhotos(item.photos || []);
-    if (formRef.current) {
-      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    setEditItemName(item.name);
+    setEditItemCategory(item.category);
+    setEditUnit(item.unit);
+    setEditMinStock(item.minStock.toString());
+    setEditItemPhotos(item.photos || []);
+    setIsModalOpen(true);
   };
 
   const handleExportPDF = async () => {
@@ -179,25 +185,14 @@ const ItemMaster = () => {
       return;
     }
     try {
-      if (editingId) {
-        await api.items.update(editingId, {
-          item_name: newItemName,
-          category: newItemCategory,
-          unit: newUnit,
-          minimum_stock: parseInt(newMinStock),
-          photo_url: newItemPhotos.length > 0 ? JSON.stringify(newItemPhotos) : null
-        });
-      } else {
-        await api.items.create({
-          item_name: newItemName,
-          category: newItemCategory,
-          unit: newUnit || 'Nos',
-          minimum_stock: parseInt(newMinStock) || 5,
-          photo_url: newItemPhotos.length > 0 ? JSON.stringify(newItemPhotos) : null
-        });
-      }
+      await api.items.create({
+        item_name: newItemName,
+        category: newItemCategory,
+        unit: newUnit || 'Nos',
+        minimum_stock: parseInt(newMinStock) || 5,
+        photo_url: newItemPhotos.length > 0 ? JSON.stringify(newItemPhotos) : null
+      });
       await fetchItems();
-      setEditingId(null);
       setNewItemName('');
       setNewItemCategory('');
       setNewUnit('Nos');
@@ -206,6 +201,33 @@ const ItemMaster = () => {
       toast.success('Saved successfully!');
     } catch (err) {
       toast.error('Save failed: ' + err.message);
+    }
+  };
+
+  const handleSaveEditItem = async () => {
+    if (!editItemName?.trim() || !editItemCategory || !editUnit || editMinStock === '' || editMinStock === null || editMinStock === undefined) {
+      alert(t(`Please fill all mandatory fields. (Missing: ${!editItemName?.trim() ? 'Name ' : ''}${!editItemCategory ? 'Category ' : ''}${!editUnit ? 'Unit ' : ''}${editMinStock === '' || editMinStock == null ? 'MinStock' : ''})`));
+      return;
+    }
+    try {
+      await api.items.update(editingId, {
+        item_name: editItemName,
+        category: editItemCategory,
+        unit: editUnit,
+        minimum_stock: parseInt(editMinStock),
+        photo_url: editItemPhotos.length > 0 ? JSON.stringify(editItemPhotos) : null
+      });
+      await fetchItems();
+      setEditingId(null);
+      setEditItemName('');
+      setEditItemCategory('');
+      setEditUnit('Nos');
+      setEditMinStock('');
+      setEditItemPhotos([]);
+      setIsModalOpen(false);
+      toast.success('Updated successfully!');
+    } catch (err) {
+      toast.error('Update failed: ' + err.message);
     }
   };
 
@@ -229,8 +251,32 @@ const ItemMaster = () => {
     }
   };
 
+  const handleEditPhotoUpload = (e) => {
+    const file = e.target.files[0];
+    setShowPhotoDropdown(false);
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert(t('Image size should be less than 5MB'));
+        return;
+      }
+      if (editItemPhotos.length >= 4) {
+        toast.error(t('Maximum 4 photos allowed'));
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditItemPhotos(prev => [...prev, reader.result]);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const removePhoto = (index) => {
     setNewItemPhotos(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeEditPhoto = (index) => {
+    setEditItemPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -426,8 +472,8 @@ const ItemMaster = () => {
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Name')}</label>
                 <input
                   type="text"
-                  value={newItemName}
-                  onChange={(e) => setNewItemName(e.target.value)}
+                  value={editItemName}
+                  onChange={(e) => setEditItemName(e.target.value)}
                   placeholder="e.g. CWX-VALVE- 1 inch"
                   style={{
                     width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1',
@@ -439,8 +485,8 @@ const ItemMaster = () => {
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Select Category')}</label>
                 <select
-                  value={newItemCategory}
-                  onChange={(e) => setNewItemCategory(e.target.value)}
+                  value={editItemCategory}
+                  onChange={(e) => setEditItemCategory(e.target.value)}
                   style={{
                     width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1',
                     outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box', backgroundColor: 'var(--surface-bg)'
@@ -456,8 +502,8 @@ const ItemMaster = () => {
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Unit')}</label>
                 <select
-                  value={newUnit}
-                  onChange={(e) => setNewUnit(e.target.value)}
+                  value={editUnit}
+                  onChange={(e) => setEditUnit(e.target.value)}
                   style={{
                     width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1',
                     outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box', backgroundColor: 'var(--surface-bg)'
@@ -474,11 +520,11 @@ const ItemMaster = () => {
                 <input
                   type="number"
                   min="0"
-                  step={['nos', 'ml', 'gms', 'pcs', 'box', 'set', 'pairs'].includes((newUnit || '').toLowerCase()) ? "1" : "0.01"}
-                  value={newMinStock}
+                  step={['nos', 'ml', 'gms', 'pcs', 'box', 'set', 'pairs'].includes((editUnit || '').toLowerCase()) ? "1" : "0.01"}
+                  value={editMinStock}
                   onChange={(e) => {
                     const val = e.target.value;
-                    if (val === '' || Number(val) >= 0) setNewMinStock(val);
+                    if (val === '' || Number(val) >= 0) setEditMinStock(val);
                   }}
                   placeholder="e.g. 5"
                   style={{
@@ -496,28 +542,28 @@ const ItemMaster = () => {
                       onClick={() => setShowPhotoDropdown(!showPhotoDropdown)}
                       style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', cursor: 'pointer', color: 'var(--slate-700)', fontWeight: '500' }}
                     >
-                      <Image size={18} color="var(--primary-color)" /> {newItemPhoto ? t('Change Photo') : t('Upload Photo')}
+                      <Image size={18} color="var(--primary-color)" /> {editItemPhotos.length > 0 ? t('Add/Change Photo') : t('Upload Photo')}
                     </button>
                     {showPhotoDropdown && (
                       <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', backgroundColor: '#fff', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)' }}>
                           <Camera size={16} color="var(--slate-600)" /> {t('Camera')}
-                          <input type="file" accept="image/*" capture="environment" onChange={handlePhotoUpload} style={{ display: 'none' }} />
+                          <input type="file" accept="image/*" capture="environment" onChange={handleEditPhotoUpload} style={{ display: 'none' }} />
                         </label>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer' }}>
                           <Image size={16} color="var(--slate-600)" /> {t('Gallery')}
-                          <input type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: 'none' }} />
+                          <input type="file" accept="image/*" onChange={handleEditPhotoUpload} style={{ display: 'none' }} />
                         </label>
                       </div>
                     )}
                   </div>
 
-                  {newItemPhotos.length > 0 && (
+                  {editItemPhotos.length > 0 && (
                     <div style={{ display: 'flex', gap: '10px' }}>
-                      {newItemPhotos.map((photo, idx) => (
+                      {editItemPhotos.map((photo, idx) => (
                         <div key={idx} style={{ position: 'relative', width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', flexShrink: 0 }}>
                           <img src={photo} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          <button onClick={() => removePhoto(idx)} style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(255,0,0,0.7)', color: 'white', border: 'none', borderRadius: '0 0 0 4px', padding: '2px 4px', fontSize: '0.6rem', cursor: 'pointer' }}>X</button>
+                          <button onClick={() => removeEditPhoto(idx)} style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(255,0,0,0.7)', color: 'white', border: 'none', borderRadius: '0 0 0 4px', padding: '2px 4px', fontSize: '0.6rem', cursor: 'pointer' }}>X</button>
                         </div>
                       ))}
                     </div>
@@ -530,11 +576,11 @@ const ItemMaster = () => {
               <button
                 onClick={() => {
                   setEditingId(null);
-                  setNewItemName('');
-                  setNewItemCategory('');
-                  setNewUnit('Nos');
-                  setNewMinStock('');
-                  setNewItemPhotos([]);
+                  setEditItemName('');
+                  setEditItemCategory('');
+                  setEditUnit('Nos');
+                  setEditMinStock('');
+                  setEditItemPhotos([]);
                   setIsModalOpen(false);
                 }}
                 style={{
@@ -545,7 +591,7 @@ const ItemMaster = () => {
                 {t('Cancel')}
               </button>
               <button
-                onClick={handleSaveItem}
+                onClick={handleSaveEditItem}
                 style={{
                   padding: '0.6rem 1.5rem', borderRadius: '8px', border: 'none', backgroundColor: 'var(--primary-color)',
                   color: '#ffffff', fontWeight: '600', cursor: 'pointer'

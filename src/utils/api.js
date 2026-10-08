@@ -27,6 +27,12 @@ const cache = new Map();
 const fetchWithCache = async (url, options = {}, cacheDuration = 5 * 60 * 1000) => {
   const isCacheable = !options.method || options.method === 'GET';
   
+  if (!isCacheable) {
+    // If it's a mutation (POST, PUT, DELETE), clear the entire cache
+    // so subsequent GET requests fetch fresh data.
+    cache.clear();
+  }
+
   if (isCacheable) {
     const cached = cache.get(url);
     if (cached && (Date.now() - cached.timestamp < cacheDuration)) {
@@ -75,19 +81,26 @@ const handleResponse = async (res) => {
   return data.data || data;
 };
 
+const apiFetch = async (url, options = {}) => {
+  if (options.method && ['POST', 'PUT', 'DELETE'].includes(options.method.toUpperCase())) {
+    cache.clear();
+  }
+  return fetch(url, options);
+};
+
 const api = {
   // ========================
   // CATEGORIES
   // ========================
   categories: {
     getAll: () => fetchWithCache(`${BASE_URL}/categories`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }),
-    create: (body) => fetch(`${BASE_URL}/categories`, {
+    create: (body) => apiFetch(`${BASE_URL}/categories`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),
-    update: (id, body) => fetch(`${BASE_URL}/categories/${id}`, {
+    update: (id, body) => apiFetch(`${BASE_URL}/categories/${id}`, {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
-    delete: (id) => fetch(`${BASE_URL}/categories/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
+    delete: (id) => apiFetch(`${BASE_URL}/categories/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
   },
 
   // ========================
@@ -95,13 +108,13 @@ const api = {
   // ========================
   staff: {
     getAll: () => fetchWithCache(`${BASE_URL}/staff`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }),
-    create: (body) => fetch(`${BASE_URL}/staff`, {
+    create: (body) => apiFetch(`${BASE_URL}/staff`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),
-    update: (id, body) => fetch(`${BASE_URL}/staff/${id}`, {
+    update: (id, body) => apiFetch(`${BASE_URL}/staff/${id}`, {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
-    delete: (id) => fetch(`${BASE_URL}/staff/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
+    delete: (id) => apiFetch(`${BASE_URL}/staff/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
   },
 
   // ========================
@@ -117,13 +130,13 @@ const api = {
       return fetchWithCache(`${BASE_URL}/items/paginated${query ? `?${query}` : ''}`, { headers: getAuthHeaders() });
     },
     getByCode: (code) => fetchWithCache(`${BASE_URL}/items/${code}`, { headers: getAuthHeaders() }),
-    create: (body) => fetch(`${BASE_URL}/items`, {
+    create: (body) => apiFetch(`${BASE_URL}/items`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),
-    update: (id, body) => fetch(`${BASE_URL}/items/${id}`, {
+    update: (id, body) => apiFetch(`${BASE_URL}/items/${id}`, {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
-    delete: (id) => fetch(`${BASE_URL}/items/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
+    delete: (id) => apiFetch(`${BASE_URL}/items/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
   },
 
   // ========================
@@ -138,13 +151,13 @@ const api = {
       const query = new URLSearchParams(params).toString();
       return fetchWithCache(`${BASE_URL}/stock-in/paginated${query ? `?${query}` : ''}`, { headers: getAuthHeaders() }, 30000);
     },
-    create: (body) => fetch(`${BASE_URL}/stock-in`, {
+    create: (body) => apiFetch(`${BASE_URL}/stock-in`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),
-    update: (id, body) => fetch(`${BASE_URL}/stock-in/${id}`, {
+    update: (id, body) => apiFetch(`${BASE_URL}/stock-in/${id}`, {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
-    delete: (id) => fetch(`${BASE_URL}/stock-in/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
+    delete: (id) => apiFetch(`${BASE_URL}/stock-in/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
   },
 
   // ========================
@@ -159,13 +172,13 @@ const api = {
       const query = new URLSearchParams(params).toString();
       return fetchWithCache(`${BASE_URL}/stock-out/paginated${query ? `?${query}` : ''}`, { headers: getAuthHeaders() }, 30000);
     },
-    create: (body) => fetch(`${BASE_URL}/stock-out`, {
+    create: (body) => apiFetch(`${BASE_URL}/stock-out`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),
-    update: (id, body) => fetch(`${BASE_URL}/stock-out/${id}`, {
+    update: (id, body) => apiFetch(`${BASE_URL}/stock-out/${id}`, {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
-    delete: (id) => fetch(`${BASE_URL}/stock-out/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
+    delete: (id) => apiFetch(`${BASE_URL}/stock-out/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
   },
 
   // ========================
@@ -183,39 +196,39 @@ const api = {
   // TOOLS
   // ========================
   tools: {
-    getAllTools: () => fetch(`${BASE_URL}/tools`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse),
-    createTool: (body) => fetch(`${BASE_URL}/tools`, {
+    getAllTools: () => apiFetch(`${BASE_URL}/tools`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse),
+    createTool: (body) => apiFetch(`${BASE_URL}/tools`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
-    deleteTool: (id) => fetch(`${BASE_URL}/tools/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
-    updateTool: (id, body) => fetch(`${BASE_URL}/tools/${id}`, { method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body) }).then(handleResponse),
+    deleteTool: (id) => apiFetch(`${BASE_URL}/tools/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
+    updateTool: (id, body) => apiFetch(`${BASE_URL}/tools/${id}`, { method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body) }).then(handleResponse),
 
-    getAllLogs: () => fetch(`${BASE_URL}/tools/logs`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse),
-    issueTool: (body) => fetch(`${BASE_URL}/tools/issue`, {
+    getAllLogs: () => apiFetch(`${BASE_URL}/tools/logs`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse),
+    issueTool: (body) => apiFetch(`${BASE_URL}/tools/issue`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
-    returnTool: (id, body) => fetch(`${BASE_URL}/tools/return/${id}`, {
+    returnTool: (id, body) => apiFetch(`${BASE_URL}/tools/return/${id}`, {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
-    updateLog: (id, body) => fetch(`${BASE_URL}/tools/logs/${id}`, {
+    updateLog: (id, body) => apiFetch(`${BASE_URL}/tools/logs/${id}`, {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
-    deleteLog: (id) => fetch(`${BASE_URL}/tools/logs/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
+    deleteLog: (id) => apiFetch(`${BASE_URL}/tools/logs/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
   },
 
   // ========================
   // KITS / PACKAGES
   // ========================
   kits: {
-    getAll: () => fetch(`${BASE_URL}/kits`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse),
-    getById: (id) => fetch(`${BASE_URL}/kits/${id}`, { headers: getAuthHeaders() }).then(handleResponse),
-    create: (body) => fetch(`${BASE_URL}/kits`, {
+    getAll: () => apiFetch(`${BASE_URL}/kits`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse),
+    getById: (id) => apiFetch(`${BASE_URL}/kits/${id}`, { headers: getAuthHeaders() }).then(handleResponse),
+    create: (body) => apiFetch(`${BASE_URL}/kits`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
-    update: (id, body) => fetch(`${BASE_URL}/kits/${id}`, {
+    update: (id, body) => apiFetch(`${BASE_URL}/kits/${id}`, {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
-    delete: (id) => fetch(`${BASE_URL}/kits/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
+    delete: (id) => apiFetch(`${BASE_URL}/kits/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
   },
 
   // ========================
@@ -224,12 +237,12 @@ const api = {
   requisitions: {
     getAll: (type) => {
       const url = type ? `${BASE_URL}/requisitions?type=${type}` : `${BASE_URL}/requisitions`;
-      return fetch(url, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse);
+      return apiFetch(url, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse);
     },
-    create: (body) => fetch(`${BASE_URL}/requisitions`, {
+    create: (body) => apiFetch(`${BASE_URL}/requisitions`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
-    delete: (id) => fetch(`${BASE_URL}/requisitions/${id}`, {
+    delete: (id) => apiFetch(`${BASE_URL}/requisitions/${id}`, {
       method: 'DELETE', headers: getAuthHeaders()
     }).then(handleResponse)
   }

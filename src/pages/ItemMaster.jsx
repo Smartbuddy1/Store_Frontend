@@ -37,7 +37,14 @@ const ItemMaster = () => {
   
   const [photoSlideIndex, setPhotoSlideIndex] = useState(0);
   const [showPhotoDropdown, setShowPhotoDropdown] = useState(false);
+  const [showEditPhotoDropdown, setShowEditPhotoDropdown] = useState(false);
   const [viewingPhoto, setViewingPhoto] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const cameraInputRef = useRef(null);
+  const galleryInputRef = useRef(null);
+  const editCameraInputRef = useRef(null);
+  const editGalleryInputRef = useRef(null);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -184,6 +191,8 @@ const ItemMaster = () => {
       alert(t(`Please fill all mandatory fields. (Missing: ${!newItemName?.trim() ? 'Name ' : ''}${!newItemCategory ? 'Category ' : ''}${!newUnit ? 'Unit ' : ''}${newMinStock === '' || newMinStock == null ? 'MinStock' : ''})`));
       return;
     }
+    const toastId = toast.loading('Saving item and uploading photo to Amazon S3...');
+    setIsSaving(true);
     try {
       await api.items.create({
         item_name: newItemName,
@@ -198,9 +207,13 @@ const ItemMaster = () => {
       setNewUnit('Nos');
       setNewMinStock('');
       setNewItemPhotos([]);
-      toast.success('Saved successfully!');
+      toast.dismiss(toastId);
+      toast.success('Saved successfully to Amazon S3!');
     } catch (err) {
+      toast.dismiss(toastId);
       toast.error('Save failed: ' + err.message);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -209,6 +222,8 @@ const ItemMaster = () => {
       alert(t(`Please fill all mandatory fields. (Missing: ${!editItemName?.trim() ? 'Name ' : ''}${!editItemCategory ? 'Category ' : ''}${!editUnit ? 'Unit ' : ''}${editMinStock === '' || editMinStock == null ? 'MinStock' : ''})`));
       return;
     }
+    const toastId = toast.loading('Updating item and uploading photo to Amazon S3...');
+    setIsSaving(true);
     try {
       await api.items.update(editingId, {
         item_name: editItemName,
@@ -225,15 +240,19 @@ const ItemMaster = () => {
       setEditMinStock('');
       setEditItemPhotos([]);
       setIsModalOpen(false);
-      toast.success('Updated successfully!');
+      toast.dismiss(toastId);
+      toast.success('Updated successfully to Amazon S3!');
     } catch (err) {
+      toast.dismiss(toastId);
       toast.error('Update failed: ' + err.message);
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0];
-    setShowPhotoDropdown(false); // Close dropdown on select
+    setShowPhotoDropdown(false);
     if (file) {
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
         alert(t('Image size should be less than 5MB'));
@@ -246,14 +265,16 @@ const ItemMaster = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setNewItemPhotos(prev => [...prev, reader.result]);
+        toast.success(t('Photo selected'));
       };
       reader.readAsDataURL(file);
+      e.target.value = '';
     }
   };
 
   const handleEditPhotoUpload = (e) => {
     const file = e.target.files[0];
-    setShowPhotoDropdown(false);
+    setShowEditPhotoDropdown(false);
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
         alert(t('Image size should be less than 5MB'));
@@ -266,8 +287,10 @@ const ItemMaster = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setEditItemPhotos(prev => [...prev, reader.result]);
+        toast.success(t('Photo selected'));
       };
       reader.readAsDataURL(file);
+      e.target.value = '';
     }
   };
 
@@ -376,18 +399,28 @@ const ItemMaster = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Photo')}</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
 
-              <div 
-                style={{ position: 'relative' }}
-                tabIndex={-1}
-                onBlur={(e) => {
-                  if (!e.currentTarget.contains(e.relatedTarget)) {
-                    setShowPhotoDropdown(false);
-                  }
-                }}
-              >
+              {/* Hidden file inputs permanently mounted in DOM */}
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handlePhotoUpload}
+                style={{ display: 'none' }}
+              />
+              <input
+                ref={galleryInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoUpload}
+                style={{ display: 'none' }}
+              />
+
+              <div style={{ position: 'relative' }}>
                 <button
+                  type="button"
                   onClick={() => { if (newItemPhotos.length < 4) setShowPhotoDropdown(!showPhotoDropdown); }}
-                  disabled={newItemPhotos.length >= 4}
+                  disabled={newItemPhotos.length >= 4 || isSaving}
                   style={{ 
                     display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', 
                     backgroundColor: newItemPhotos.length >= 4 ? 'var(--slate-100)' : 'var(--surface-bg)', 
@@ -402,14 +435,24 @@ const ItemMaster = () => {
                 </button>
                 {showPhotoDropdown && (
                   <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', backgroundColor: '#fff', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)' }}>
+                    <div
+                      onClick={() => {
+                        setShowPhotoDropdown(false);
+                        cameraInputRef.current?.click();
+                      }}
+                      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)', color: 'var(--slate-700)' }}
+                    >
                       <Camera size={16} color="var(--slate-600)" /> {t('Camera')}
-                      <input type="file" accept="image/*" capture="environment" onChange={handlePhotoUpload} style={{ display: 'none' }} />
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer' }}>
+                    </div>
+                    <div
+                      onClick={() => {
+                        setShowPhotoDropdown(false);
+                        galleryInputRef.current?.click();
+                      }}
+                      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', color: 'var(--slate-700)' }}
+                    >
                       <Image size={16} color="var(--slate-600)" /> {t('Gallery')}
-                      <input type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: 'none' }} />
-                    </label>
+                    </div>
                   </div>
                 )}
               </div>
@@ -552,18 +595,28 @@ const ItemMaster = () => {
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Photo')}</label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
 
-                  <div 
-                    style={{ position: 'relative' }}
-                    tabIndex={-1}
-                    onBlur={(e) => {
-                      if (!e.currentTarget.contains(e.relatedTarget)) {
-                        setShowPhotoDropdown(false);
-                      }
-                    }}
-                  >
+                  {/* Hidden file inputs permanently mounted in DOM for edit */}
+                  <input
+                    ref={editCameraInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleEditPhotoUpload}
+                    style={{ display: 'none' }}
+                  />
+                  <input
+                    ref={editGalleryInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleEditPhotoUpload}
+                    style={{ display: 'none' }}
+                  />
+
+                  <div style={{ position: 'relative' }}>
                     <button
-                      onClick={() => { if (editItemPhotos.length < 4) setShowPhotoDropdown(!showPhotoDropdown); }}
-                      disabled={editItemPhotos.length >= 4}
+                      type="button"
+                      onClick={() => { if (editItemPhotos.length < 4) setShowEditPhotoDropdown(!showEditPhotoDropdown); }}
+                      disabled={editItemPhotos.length >= 4 || isSaving}
                       style={{ 
                         display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', 
                         backgroundColor: editItemPhotos.length >= 4 ? 'var(--slate-100)' : 'var(--surface-bg)', 
@@ -576,16 +629,26 @@ const ItemMaster = () => {
                       <Image size={18} color={editItemPhotos.length >= 4 ? "var(--slate-400)" : "var(--primary-color)"} /> 
                       {editItemPhotos.length > 0 ? t('Add/Change Photo') : t('Upload Photo')} ({editItemPhotos.length}/4)
                     </button>
-                    {showPhotoDropdown && (
+                    {showEditPhotoDropdown && (
                       <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', backgroundColor: '#fff', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)' }}>
+                        <div
+                          onClick={() => {
+                            setShowEditPhotoDropdown(false);
+                            editCameraInputRef.current?.click();
+                          }}
+                          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)', color: 'var(--slate-700)' }}
+                        >
                           <Camera size={16} color="var(--slate-600)" /> {t('Camera')}
-                          <input type="file" accept="image/*" capture="environment" onChange={handleEditPhotoUpload} style={{ display: 'none' }} />
-                        </label>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer' }}>
+                        </div>
+                        <div
+                          onClick={() => {
+                            setShowEditPhotoDropdown(false);
+                            editGalleryInputRef.current?.click();
+                          }}
+                          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', color: 'var(--slate-700)' }}
+                        >
                           <Image size={16} color="var(--slate-600)" /> {t('Gallery')}
-                          <input type="file" accept="image/*" onChange={handleEditPhotoUpload} style={{ display: 'none' }} />
-                        </label>
+                        </div>
                       </div>
                     )}
                   </div>

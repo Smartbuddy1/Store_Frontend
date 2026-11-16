@@ -164,7 +164,9 @@ const KitsMaster = () => {
               </div>
             </div>
             <div style={{ padding: '1.25rem' }}>
-              <p style={{ margin: '0 0 1rem 0', color: 'var(--slate-500)', fontSize: '0.875rem' }}>{kit.description || 'No description provided.'}</p>
+              {kit.description && (
+                <p style={{ margin: '0 0 1rem 0', color: 'var(--slate-500)', fontSize: '0.875rem' }}>{kit.description}</p>
+              )}
               
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
                 <thead>
@@ -198,14 +200,10 @@ const KitsMaster = () => {
           <div style={{ backgroundColor: 'var(--surface-bg)', borderRadius: '16px', padding: '2rem', width: '90%', maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>{editingKitId ? 'Edit Kit' : 'Create New Kit'}</h2>
             
-            <div style={{ display: 'grid', gap: '1rem', marginBottom: '2rem' }}>
+            <div style={{ marginBottom: '2rem' }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Kit Name</label>
                 <input type="text" value={kitName} onChange={e => setKitName(e.target.value)} placeholder="e.g. Toilet Assembly" style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Description (Optional)</label>
-                <input type="text" value={description} onChange={e => setDescription(e.target.value)} placeholder="e.g. Includes pan, pipe, and cement" style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
               </div>
             </div>
 

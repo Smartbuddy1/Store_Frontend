@@ -58,7 +58,8 @@ const Requisition = () => {
           name: item.item_name,
           category: item.category || 'N/A',
           currentQty: item.current_qty || 0,
-          minStock: item.minimum_stock || 5
+          minStock: item.minimum_stock || 5,
+          unit: item.unit || 'Nos'
         }));
         setCurrentStockData(mappedData);
         setKits(kitsRes);
@@ -361,7 +362,7 @@ const Requisition = () => {
                   <td style={{ padding: '1rem', color: 'var(--text-primary)', fontWeight: '500' }}>{item.name}</td>
                   <td style={{ padding: '1rem', color: 'var(--slate-500)' }}>{item.category.toUpperCase()}</td>
                   <td style={{ padding: '1rem', fontWeight: 'bold', color: item.currentQty <= 0 ? '#ef4444' : '#f59e0b', textAlign: 'right' }}>
-                    {item.currentQty}
+                    {item.currentQty} <span style={{ fontSize: '0.78rem', fontWeight: '400', color: 'var(--slate-500)' }}>{item.unit || 'Nos'}</span>
                   </td>
                   <td style={{ padding: '1rem', textAlign: 'center' }}>
                     {activeTab === 'KIT' ? (

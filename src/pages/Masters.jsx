@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Tag, Users, Shield, Briefcase, Search, FileText, FileSpreadsheet, Download, Edit, X, Package } from 'lucide-react';
+import { Plus, Trash2, Tag, Users, Shield, Briefcase, Search, FileText, FileSpreadsheet, Download, Edit, X, Package, Scale } from 'lucide-react';
 import { exportToPDF } from '../utils/pdfExport';
 import { exportToExcel } from '../utils/excelExport';
 import { t } from '../utils/translator';
@@ -26,6 +26,13 @@ const defaultStaff = [
 const Masters = () => {
   const [categories, setCategories] = useState([]);
   const [staff, setStaff] = useState([]);
+  const [roles, setRoles] = useState(['Staff', 'Helper', 'Other']);
+  const [units, setUnits] = useState([]);
+  const [newUnitName, setNewUnitName] = useState('');
+  const [unitSearch, setUnitSearch] = useState('');
+  const [showAddRoleModal, setShowAddRoleModal] = useState(false);
+  const [newRoleName, setNewRoleName] = useState('');
+  const [isAddingRole, setIsAddingRole] = useState(false);
 
   // Form states for Category
   const [newCatName, setNewCatName] = useState('');
@@ -67,10 +74,96 @@ const Masters = () => {
     } catch (err) { console.error(err); }
   };
 
+  const fetchRoles = async () => {
+    try {
+      const res = await api.staff.getRoles();
+      const list = Array.isArray(res) ? res : (res && Array.isArray(res.data) ? res.data : []);
+      if (list.length > 0) {
+        const names = list.map(r => (typeof r === 'string' ? r : r.name));
+        const combined = Array.from(new Set(['Staff', 'Helper', 'Other', ...names]));
+        setRoles(combined);
+      }
+    } catch (err) {
+      console.error('Failed to fetch roles:', err);
+    }
+  };
+
+  const fetchUnits = async () => {
+    try {
+      const res = await api.units.getAll();
+      const list = Array.isArray(res) ? res : (res && Array.isArray(res.data) ? res.data : []);
+      setUnits(list);
+    } catch (err) {
+      console.error('Failed to fetch units:', err);
+    }
+  };
+
   useEffect(() => {
     fetchCategories();
     fetchStaff();
+    fetchRoles();
+    fetchUnits();
   }, []);
+
+  const handleAddRole = async (e) => {
+    if (e) e.preventDefault();
+    const trimmed = newRoleName.trim();
+    if (!trimmed) {
+      alert(t('Please enter a role name.'));
+      return;
+    }
+    const exists = roles.some(r => r.toLowerCase() === trimmed.toLowerCase());
+    if (exists) {
+      alert('This role already exists!');
+      const matchingRole = roles.find(r => r.toLowerCase() === trimmed.toLowerCase()) || trimmed;
+      setNewPersonType(matchingRole);
+      setShowAddRoleModal(false);
+      setNewRoleName('');
+      return;
+    }
+    setIsAddingRole(true);
+    try {
+      await api.staff.createRole(trimmed);
+      await fetchRoles();
+      setNewPersonType(trimmed);
+      setShowAddRoleModal(false);
+      setNewRoleName('');
+    } catch (err) {
+      alert('Failed to add role: ' + err.message);
+    } finally {
+      setIsAddingRole(false);
+    }
+  };
+
+  const addUnit = async () => {
+    const trimmed = newUnitName.trim();
+    if (!trimmed) {
+      alert(t('Please enter a unit name.'));
+      return;
+    }
+    if (units.some(u => u.name.toLowerCase() === trimmed.toLowerCase())) {
+      alert(t('This unit already exists!'));
+      return;
+    }
+    try {
+      await api.units.create({ name: trimmed });
+      await fetchUnits();
+      setNewUnitName('');
+    } catch (err) {
+      alert('Failed to add unit: ' + err.message);
+    }
+  };
+
+  const deleteUnit = async (id, name) => {
+    if (window.confirm(`Are you sure you want to delete unit "${name}"?`)) {
+      try {
+        await api.units.delete(id);
+        await fetchUnits();
+      } catch (err) {
+        alert('Delete failed: ' + err.message);
+      }
+    }
+  };
 
   const addCategory = async () => {
     if (!newCatName.trim() || !newCatPrefix.trim()) {
@@ -387,7 +480,7 @@ const Masters = () => {
             <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: 'var(--slate-900)' }}>Setting 3: Staff & Helpers Master</h2>
           </div>
           <div style={{ padding: '1.5rem' }}>
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', alignItems: 'stretch' }}>
               <input
                 type="text"
                 placeholder="Full Name..."
@@ -400,13 +493,34 @@ const Masters = () => {
                 onChange={(e) => setNewPersonType(e.target.value)}
                 style={{ flex: 1, padding: '0.65rem 1rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', backgroundColor: 'var(--surface-bg)' }}
               >
-                <option value="Staff">Staff</option>
-                <option value="Helper">Helper</option>
-                <option value="Other">Other</option>
+                {roles.map((r) => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
               </select>
               <button
+                type="button"
+                onClick={() => setShowAddRoleModal(true)}
+                title="Add New Role"
+                style={{
+                  backgroundColor: '#f8fafc',
+                  color: '#334155',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '6px',
+                  padding: '0 0.85rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                  fontSize: '0.875rem',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                <Plus size={16} /> Role
+              </button>
+              <button
                 onClick={addStaff}
-                style={{ backgroundColor: '#10b981', color: 'var(--surface-bg)', border: 'none', borderRadius: '6px', padding: '0 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: 'bold' }}
+                style={{ backgroundColor: '#10b981', color: 'var(--surface-bg)', border: 'none', borderRadius: '6px', padding: '0 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: 'bold', whiteSpace: 'nowrap' }}
               >
                 <Plus size={18} /> Add
               </button>
@@ -452,8 +566,8 @@ const Masters = () => {
                       <td style={{ padding: '0.75rem 1rem', fontWeight: 'bold', color: 'var(--slate-700)' }}>{person.name}</td>
                       <td style={{ padding: '0.75rem 1rem' }}>
                         <span style={{
-                          backgroundColor: person.type === 'Staff' ? '#dcfce7' : person.type === 'Helper' ? '#fef3c7' : 'var(--slate-100)',
-                          color: person.type === 'Staff' ? '#166534' : person.type === 'Helper' ? '#b45309' : 'var(--slate-600)',
+                          backgroundColor: person.type === 'Staff' ? '#dcfce7' : person.type === 'Helper' ? '#fef3c7' : '#e0f2fe',
+                          color: person.type === 'Staff' ? '#166534' : person.type === 'Helper' ? '#b45309' : '#0369a1',
                           padding: '0.2rem 0.6rem', borderRadius: '4px', fontWeight: 'bold', fontSize: '0.8rem',
                           display: 'inline-flex', alignItems: 'center', gap: '0.25rem'
                         }}>
@@ -507,6 +621,93 @@ const Masters = () => {
           </div>
         </div>
 
+        {/* Setting 4: Units Master Section */}
+        <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
+          <div style={{ backgroundColor: 'var(--slate-50)', padding: '1rem 1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <Scale size={20} color="#f59e0b" />
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: 'var(--slate-900)' }}>Setting 4: Units Master</h2>
+          </div>
+          <div style={{ padding: '1.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
+              <input
+                type="text"
+                placeholder="Unit Name (e.g. Mtr, Box, Pcs, Roll)..."
+                value={newUnitName}
+                onChange={(e) => setNewUnitName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') addUnit(); }}
+                style={{ flex: 1, padding: '0.65rem 1rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' }}
+              />
+              <button
+                onClick={addUnit}
+                style={{ backgroundColor: '#f59e0b', color: 'white', border: 'none', borderRadius: '6px', padding: '0 1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: 'bold', whiteSpace: 'nowrap' }}
+              >
+                <Plus size={18} /> Add
+              </button>
+            </div>
+
+            {/* Unit Search Bar */}
+            <div style={{ position: 'relative', marginBottom: '1.5rem', width: '100%', maxWidth: '400px' }}>
+              <Search size={18} color='var(--slate-400)' style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <input
+                type="text"
+                placeholder="Search units..."
+                value={unitSearch}
+                onChange={(e) => setUnitSearch(e.target.value)}
+                style={{
+                  padding: '0.65rem 1rem 0.65rem 2.5rem',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-color)',
+                  outline: 'none',
+                  width: '100%',
+                  backgroundColor: 'var(--surface-bg)',
+                  color: 'var(--text-primary)'
+                }}
+              />
+            </div>
+
+            {/* Units Table */}
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ backgroundColor: 'var(--slate-100)', color: 'var(--slate-600)', fontSize: '0.85rem' }}>
+                  <th style={{ padding: '0.75rem 1rem', width: '60px' }}>#</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>{t('UNIT NAME')}</th>
+                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right', width: '100px' }}>{t('ACTION')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {units
+                  .filter(u => (u.name || '').toLowerCase().includes(unitSearch.toLowerCase()))
+                  .map((u, i) => (
+                    <tr key={u.id || i} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '0.75rem 1rem', color: 'var(--slate-500)' }}>{i + 1}</td>
+                      <td style={{ padding: '0.75rem 1rem', fontWeight: 'bold', color: 'var(--slate-700)' }}>
+                        <span style={{ backgroundColor: '#fef3c7', color: '#b45309', padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.85rem' }}>
+                          {u.name}
+                        </span>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                        <button
+                          onClick={() => deleteUnit(u.id, u.name)}
+                          style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '0.25rem' }}
+                          title="Delete Unit"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                {units.filter(u => (u.name || '').toLowerCase().includes(unitSearch.toLowerCase())).length === 0 && (
+                  <tr>
+                    <td colSpan="3" style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--slate-400)' }}>
+                      No units found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
 
       {/* Edit Staff Modal */}
@@ -537,9 +738,9 @@ const Masters = () => {
                 onChange={(e) => setEditPersonType(e.target.value)}
                 style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', backgroundColor: 'var(--surface-bg)' }}
               >
-                <option value="Staff">Staff</option>
-                <option value="Helper">Helper</option>
-                <option value="Other">Other</option>
+                {roles.map((r) => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
               </select>
             </div>
 
@@ -557,6 +758,53 @@ const Masters = () => {
                 Save Changes
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Role Modal */}
+      {showAddRoleModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ backgroundColor: 'var(--surface-bg)', padding: '2rem', borderRadius: '12px', width: '100%', maxWidth: '400px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0, color: 'var(--slate-900)' }}>Add New Role</h2>
+              <button
+                onClick={() => { setShowAddRoleModal(false); setNewRoleName(''); }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--slate-500)' }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddRole}>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.875rem', color: 'var(--slate-700)' }}>Role Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Site Supervisor"
+                  autoFocus
+                  value={newRoleName}
+                  onChange={(e) => setNewRoleName(e.target.value)}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => { setShowAddRoleModal(false); setNewRoleName(''); }}
+                  style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: 'var(--surface-bg)', fontWeight: 'bold', cursor: 'pointer', color: 'var(--slate-700)' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isAddingRole}
+                  style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', border: 'none', backgroundColor: '#10b981', color: 'white', fontWeight: 'bold', cursor: isAddingRole ? 'not-allowed' : 'pointer' }}
+                >
+                  {isAddingRole ? 'Adding...' : 'Add Role'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

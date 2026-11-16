@@ -104,10 +104,25 @@ const api = {
   },
 
   // ========================
+  // UNITS
+  // ========================
+  units: {
+    getAll: () => fetchWithCache(`${BASE_URL}/units`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }),
+    create: (body) => apiFetch(`${BASE_URL}/units`, {
+      method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
+    }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),
+    delete: (id) => apiFetch(`${BASE_URL}/units/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
+  },
+
+  // ========================
   // STAFF
   // ========================
   staff: {
     getAll: () => fetchWithCache(`${BASE_URL}/staff`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }),
+    getRoles: () => fetchWithCache(`${BASE_URL}/staff/roles`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }),
+    createRole: (name) => apiFetch(`${BASE_URL}/staff/roles`, {
+      method: 'POST', headers: getAuthHeaders(), body: JSON.stringify({ name })
+    }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),
     create: (body) => apiFetch(`${BASE_URL}/staff`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),

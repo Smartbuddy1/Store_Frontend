@@ -537,7 +537,7 @@ const StockOut = () => {
               <Users size={18} color='var(--text-secondary)' />
               <select value={newHandoverTo} onChange={(e) => setNewHandoverTo(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }}>
                 <option value="" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>-- Select --</option>
-                {staffList.filter(p => p.type === 'Helper').map((person, idx) => (
+                {staffList.filter(p => p.type !== 'Staff').map((person, idx) => (
                   <option key={idx} value={person.name} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{person.name}</option>
                 ))}
               </select>
@@ -696,7 +696,7 @@ const StockOut = () => {
                   <Users size={18} color='var(--text-secondary)' />
                   <select value={newHandoverTo} onChange={(e) => setNewHandoverTo(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }}>
                     <option value="">-- Select --</option>
-                    {staffList.filter(p => p.type === 'Helper').map((person, idx) => (
+                    {staffList.filter(p => p.type !== 'Staff').map((person, idx) => (
                       <option key={idx} value={person.name}>{person.name}</option>
                     ))}
                   </select>
@@ -805,8 +805,8 @@ const StockOut = () => {
           <option value="" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>All Staff/Helpers</option>
           {[...new Set([
             ...stockEntries.map(e => e.handoverTo),
-            ...staffList.filter(s => s.type === 'Helper').map(s => s.name)
-          ])].filter(person => person && !staffList.filter(s => s.type !== 'Helper').map(s => s.name).includes(person)).sort().map((person, idx) => (
+            ...staffList.filter(s => s.type !== 'Staff').map(s => s.name)
+          ])].filter(person => person && !staffList.filter(s => s.type === 'Staff').map(s => s.name).includes(person)).sort().map((person, idx) => (
             <option key={idx} value={person} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{person}</option>
           ))}
         </select>

@@ -367,7 +367,7 @@ const SiteDispatch = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Handover To')}</label>
             <select value={handoverTo} onChange={(e) => setHandoverTo(e.target.value)} disabled={isGenerated} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>
               <option value="">-- Select --</option>
-              {staffList.filter(s => s.type === 'Helper').map(s => (
+              {staffList.filter(s => s.type !== 'Staff').map(s => (
                 <option key={s.id} value={s.name}>{s.name}</option>
               ))}
             </select>

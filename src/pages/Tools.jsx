@@ -59,7 +59,7 @@ const Tools = () => {
         api.tools.getAllLogs()
       ]);
       setToolsMaster(tools);
-      setHelpers(staff.filter(p => p.type === 'Helper'));
+      setHelpers(staff.filter(p => p.type !== 'Staff'));
       setToolsLog(logs);
     } catch (error) {
       console.error('Failed to fetch tools data:', error);

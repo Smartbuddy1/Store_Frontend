@@ -22,6 +22,7 @@ const ItemMaster = () => {
 
   // Modal Form State
   const [editingId, setEditingId] = useState(null);
+  const [units, setUnits] = useState(['Nos', 'Kgs', 'Ltr']);
   const [newItemName, setNewItemName] = useState('');
   const [newItemCategory, setNewItemCategory] = useState('');
   const [newUnit, setNewUnit] = useState('Nos');
@@ -97,8 +98,22 @@ const ItemMaster = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [currentPage, searchQuery, selectedCategory]);
 
+  const fetchUnits = async () => {
+    try {
+      const data = await api.units.getAll();
+      const list = Array.isArray(data) ? data : (data && Array.isArray(data.data) ? data.data : []);
+      if (list.length > 0) {
+        const names = list.map(u => (typeof u === 'string' ? u : u.name));
+        setUnits(Array.from(new Set(['Nos', 'Kgs', 'Ltr', ...names])));
+      }
+    } catch (err) {
+      console.error('Failed to fetch units:', err);
+    }
+  };
+
   useEffect(() => {
     api.categories.getAll().then(data => setCategories(data)).catch(console.error);
+    fetchUnits();
   }, []);
 
   useEffect(() => {
@@ -371,9 +386,9 @@ const ItemMaster = () => {
                 outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box', backgroundColor: 'var(--surface-bg)'
               }}
             >
-              <option value="Nos">Nos</option>
-              <option value="Kgs">Kgs</option>
-              <option value="Ltr">Ltr</option>
+              {units.map((u) => (
+                <option key={u} value={u}>{u}</option>
+              ))}
             </select>
           </div>
 
@@ -567,9 +582,9 @@ const ItemMaster = () => {
                     outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box', backgroundColor: 'var(--surface-bg)'
                   }}
                 >
-                  <option value="Nos">Nos</option>
-                  <option value="Kgs">Kgs</option>
-                  <option value="Ltr">Ltr</option>
+                  {units.map((u) => (
+                    <option key={u} value={u}>{u}</option>
+                  ))}
                 </select>
               </div>
 

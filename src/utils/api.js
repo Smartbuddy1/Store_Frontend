@@ -111,6 +111,9 @@ const api = {
     create: (body) => apiFetch(`${BASE_URL}/units`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),
+    update: (id, body) => apiFetch(`${BASE_URL}/units/${id}`, {
+      method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
+    }).then(handleResponse),
     delete: (id) => apiFetch(`${BASE_URL}/units/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
   },
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Plus, Search, Calendar, Clock, Hash, Tag, Layers, ArrowUpDown, Save, X, FileText, FileSpreadsheet, Edit, Trash2, Eye, Download } from 'lucide-react';
+import { Plus, Search, Calendar, Clock, Hash, Tag, Layers, ArrowUpDown, Save, X, FileText, FileSpreadsheet, Edit, Trash2, Eye, Download, Camera, Image } from 'lucide-react';
 import { exportToPDF } from '../utils/pdfExport';
 import { exportToExcel } from '../utils/excelExport';
 import { t, formatTime12h } from '../utils/translator';
@@ -94,9 +94,11 @@ const StockIn = () => {
 
   const fetchMasters = async () => {
     try {
-      const [staff, items] = await Promise.all([
+      const [staff, items, cats, unitsData] = await Promise.all([
         api.staff.getAll(),
-        api.items.getAll()
+        api.items.getAll(),
+        api.categories.getAll(),
+        api.units.getAll()
       ]);
       const itemMap = {};
       items.forEach(item => {
@@ -104,6 +106,14 @@ const StockIn = () => {
       });
       setItemsMaster(itemMap);
       setStaffList(staff);
+      if (Array.isArray(cats)) {
+        setCategoriesList(cats);
+      }
+      const rawUnits = Array.isArray(unitsData) ? unitsData : (unitsData && Array.isArray(unitsData.data) ? unitsData.data : []);
+      if (rawUnits.length > 0) {
+        const uNames = rawUnits.map(u => (typeof u === 'string' ? u : u.name));
+        setUnitsList(Array.from(new Set(['Nos', 'Kgs', 'Ltr', ...uNames])));
+      }
     } catch (err) { console.error('Failed to fetch masters:', err); }
   };
 
@@ -175,6 +185,102 @@ const StockIn = () => {
   // Custom Dropdown State
   const [showItemDropdown, setShowItemDropdown] = useState(false);
   const [itemSearchTerm, setItemSearchTerm] = useState('');
+
+  // Add Item to Item Master Modal State
+  const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
+  const [addModalItemName, setAddModalItemName] = useState('');
+  const [addModalCategory, setAddModalCategory] = useState('');
+  const [addModalUnit, setAddModalUnit] = useState('Nos');
+  const [addModalMinStock, setAddModalMinStock] = useState('5');
+  const [addModalPhotos, setAddModalPhotos] = useState([]);
+  const [showAddModalPhotoDropdown, setShowAddModalPhotoDropdown] = useState(false);
+  const [isSavingMasterItem, setIsSavingMasterItem] = useState(false);
+  const [categoriesList, setCategoriesList] = useState([]);
+  const [unitsList, setUnitsList] = useState(['Nos', 'Kgs', 'Ltr']);
+
+  const addModalCameraRef = React.useRef(null);
+  const addModalGalleryRef = React.useRef(null);
+
+  const handleOpenAddItemModal = (initialName = '') => {
+    setShowItemDropdown(false);
+    setAddModalItemName(initialName || '');
+    setAddModalCategory('');
+    setAddModalUnit('Nos');
+    setAddModalMinStock('5');
+    setAddModalPhotos([]);
+    setShowAddModalPhotoDropdown(false);
+    setIsAddItemModalOpen(true);
+  };
+
+  const handleAddModalPhotoUpload = (e) => {
+    const file = e.target.files[0];
+    setShowAddModalPhotoDropdown(false);
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert(t('Image size should be less than 5MB'));
+        return;
+      }
+      if (addModalPhotos.length >= 4) {
+        toast.error(t('Maximum 4 photos allowed'));
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAddModalPhotos(prev => [...prev, reader.result]);
+        toast.success(t('Photo selected'));
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    }
+  };
+
+  const removeAddModalPhoto = (index) => {
+    setAddModalPhotos(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSaveMasterItem = async () => {
+    if (!addModalItemName?.trim() || !addModalCategory || !addModalUnit || addModalMinStock === '' || addModalMinStock === null || addModalMinStock === undefined) {
+      alert(t(`Please fill all mandatory fields. (Missing: ${!addModalItemName?.trim() ? 'Name ' : ''}${!addModalCategory ? 'Category ' : ''}${!addModalUnit ? 'Unit ' : ''}${addModalMinStock === '' || addModalMinStock == null ? 'MinStock' : ''})`));
+      return;
+    }
+
+    const toastId = toast.loading('Saving item to Item Master...');
+    setIsSavingMasterItem(true);
+    try {
+      const createdItem = await api.items.create({
+        item_name: addModalItemName.trim(),
+        category: addModalCategory,
+        unit: addModalUnit || 'Nos',
+        minimum_stock: parseInt(addModalMinStock) || 5,
+        photo_url: addModalPhotos.length > 0 ? JSON.stringify(addModalPhotos) : null
+      });
+
+      await fetchMasters();
+
+      if (createdItem && createdItem.itemCode) {
+        setNewItemCode(createdItem.itemCode);
+        setNewItemName(createdItem.itemName || addModalItemName.trim());
+        setNewCategory(createdItem.categoryName || addModalCategory);
+        setNewSubUnit(createdItem.unit || addModalUnit || 'Nos');
+      }
+
+      setIsAddItemModalOpen(false);
+      setAddModalItemName('');
+      setAddModalCategory('');
+      setAddModalUnit('Nos');
+      setAddModalMinStock('5');
+      setAddModalPhotos([]);
+      setItemSearchTerm('');
+
+      toast.dismiss(toastId);
+      toast.success(t('Item saved to Item Master and selected!'));
+    } catch (err) {
+      toast.dismiss(toastId);
+      toast.error('Save failed: ' + err.message);
+    } finally {
+      setIsSavingMasterItem(false);
+    }
+  };
 
   // Auto-fill logic when Item Code changes
   const handleItemCodeChange = (e) => {
@@ -430,35 +536,99 @@ const StockIn = () => {
                       value={itemSearchTerm}
                       onChange={(e) => setItemSearchTerm(e.target.value)}
                       autoFocus
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)', outline: 'none' }}
+                      style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}
                     />
                   </div>
                   <div style={{ maxHeight: '250px', overflowY: 'auto' }}>
-                    {Object.keys(itemsMaster)
-                      .filter(code => {
-                        const search = (itemSearchTerm || (showItemDropdown ? newItemCode : '')).toLowerCase();
+                    {(() => {
+                      const search = (itemSearchTerm || (showItemDropdown ? newItemCode : '')).toLowerCase().trim();
+                      const filteredCodes = Object.keys(itemsMaster).filter(code => {
                         return itemsMaster[code].name.toLowerCase().includes(search) || code.toLowerCase().includes(search);
-                      })
-                      .map(code => (
-                        <div
-                          key={code}
-                          onMouseDown={(e) => {
-                            e.preventDefault();
-                            setNewItemCode(code);
-                            setNewItemName(itemsMaster[code].name);
-                            setNewCategory(itemsMaster[code].category);
-                            setNewSubUnit(itemsMaster[code].unit || 'Nos');
-                            setShowItemDropdown(false);
-                            setItemSearchTerm('');
-                          }}
-                          style={{ padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}
-                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--table-hover)'}
-                          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                        >
-                          <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{code}</span>
-                          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{itemsMaster[code].name}</span>
-                        </div>
-                      ))}
+                      });
+
+                      if (filteredCodes.length === 0) {
+                        return (
+                          <div style={{ padding: '1.25rem 1rem', textAlign: 'center' }}>
+                            <p style={{ margin: '0 0 0.75rem 0', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                              {t('Item not found in master')}
+                            </p>
+                            <button
+                              type="button"
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                handleOpenAddItemModal(itemSearchTerm || newItemCode);
+                              }}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.5rem',
+                                padding: '0.6rem 1rem',
+                                backgroundColor: '#10b981',
+                                color: '#ffffff',
+                                border: 'none',
+                                borderRadius: '8px',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                fontSize: '0.875rem',
+                                width: '100%'
+                              }}
+                            >
+                              <Plus size={16} />
+                              {t('Other (Add New Item)')}
+                            </button>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <>
+                          {filteredCodes.map(code => (
+                            <div
+                              key={code}
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                setNewItemCode(code);
+                                setNewItemName(itemsMaster[code].name);
+                                setNewCategory(itemsMaster[code].category);
+                                setNewSubUnit(itemsMaster[code].unit || 'Nos');
+                                setShowItemDropdown(false);
+                                setItemSearchTerm('');
+                              }}
+                              style={{ padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}
+                              onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--table-hover)'}
+                              onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            >
+                              <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{code}</span>
+                              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{itemsMaster[code].name}</span>
+                            </div>
+                          ))}
+                          <div
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              handleOpenAddItemModal(itemSearchTerm || newItemCode);
+                            }}
+                            style={{
+                              padding: '0.75rem 1rem',
+                              cursor: 'pointer',
+                              borderTop: '1px solid var(--border-color)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.5rem',
+                              color: '#10b981',
+                              fontWeight: '600',
+                              fontSize: '0.875rem',
+                              backgroundColor: 'var(--surface-bg)'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--table-hover)'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-bg)'}
+                          >
+                            <Plus size={16} />
+                            <span>{t('Other / Add New Item')}</span>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               )}
@@ -1078,6 +1248,225 @@ const StockIn = () => {
                 </div>
               ) : null;
             })()}
+          </div>
+        </div>
+      )}
+
+      {/* Add Item to Item Master Modal */}
+      {isAddItemModalOpen && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1100,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          backdropFilter: 'blur(4px)', padding: '1rem'
+        }}>
+          <div style={{
+            backgroundColor: 'var(--surface-bg)',
+            borderRadius: '16px',
+            padding: '2rem',
+            width: '100%',
+            maxWidth: '750px',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            border: '1px solid var(--border-color)',
+            position: 'relative'
+          }}>
+            <button
+              onClick={() => setIsAddItemModalOpen(false)}
+              style={{
+                position: 'absolute', top: '1.25rem', right: '1.25rem',
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                color: 'var(--slate-400)', display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}
+            >
+              <X size={22} />
+            </button>
+
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--slate-900)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Plus size={22} color='#10b981' />
+              {t('Add Item to Item Master')}
+            </h2>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>
+                  {t('Item Name')} <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  value={addModalItemName}
+                  onChange={(e) => setAddModalItemName(e.target.value)}
+                  placeholder="e.g. CWX-VALVE- 1 inch"
+                  style={{
+                    width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)',
+                    outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)'
+                  }}
+                  autoFocus
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>
+                  {t('Select Category')} <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <select
+                  value={addModalCategory}
+                  onChange={(e) => setAddModalCategory(e.target.value)}
+                  style={{
+                    width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)',
+                    outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)'
+                  }}
+                >
+                  <option value="">-- {t('Select Category')} --</option>
+                  {categoriesList.filter(c => c.name !== 'N/A').map((cat, idx) => (
+                    <option key={cat.id || idx} value={cat.name}>
+                      {cat.name} ({cat.prefix})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>
+                  {t('Unit')} <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <select
+                  value={addModalUnit}
+                  onChange={(e) => setAddModalUnit(e.target.value)}
+                  style={{
+                    width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)',
+                    outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)'
+                  }}
+                >
+                  {unitsList.map((u) => (
+                    <option key={u} value={u}>{u}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>
+                  {t('Minimum Stock Alert Level')} <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={addModalMinStock}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || Number(val) >= 0) setAddModalMinStock(val);
+                  }}
+                  placeholder="e.g. 5"
+                  style={{
+                    width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)',
+                    outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)'
+                  }}
+                />
+              </div>
+
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>
+                  {t('Item Photo')}
+                </label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                  <input
+                    ref={addModalCameraRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleAddModalPhotoUpload}
+                    style={{ display: 'none' }}
+                  />
+                  <input
+                    ref={addModalGalleryRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAddModalPhotoUpload}
+                    style={{ display: 'none' }}
+                  />
+
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      type="button"
+                      onClick={() => { if (addModalPhotos.length < 4) setShowAddModalPhotoDropdown(!showAddModalPhotoDropdown); }}
+                      disabled={addModalPhotos.length >= 4 || isSavingMasterItem}
+                      style={{ 
+                        display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', 
+                        backgroundColor: addModalPhotos.length >= 4 ? 'var(--slate-100)' : 'var(--surface-bg)', 
+                        border: '1px solid var(--border-color)', borderRadius: '8px', 
+                        cursor: addModalPhotos.length >= 4 ? 'not-allowed' : 'pointer', 
+                        color: addModalPhotos.length >= 4 ? 'var(--slate-400)' : 'var(--slate-700)', 
+                        fontWeight: '500', opacity: addModalPhotos.length >= 4 ? 0.6 : 1 
+                      }}
+                    >
+                      <Image size={18} color={addModalPhotos.length >= 4 ? "var(--slate-400)" : "#10b981"} /> 
+                      {t('Upload Photo')} ({addModalPhotos.length}/4)
+                    </button>
+                    {showAddModalPhotoDropdown && (
+                      <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>
+                        <div
+                          onClick={() => {
+                            setShowAddModalPhotoDropdown(false);
+                            addModalCameraRef.current?.click();
+                          }}
+                          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', borderBottom: '1px solid var(--border-color)', color: 'var(--slate-700)' }}
+                        >
+                          <Camera size={16} color="var(--slate-600)" /> {t('Camera')}
+                        </div>
+                        <div
+                          onClick={() => {
+                            setShowAddModalPhotoDropdown(false);
+                            addModalGalleryRef.current?.click();
+                          }}
+                          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', cursor: 'pointer', color: 'var(--slate-700)' }}
+                        >
+                          <Image size={16} color="var(--slate-600)" /> {t('Gallery')}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {addModalPhotos.length > 0 && (
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      {addModalPhotos.map((photo, idx) => (
+                        <div key={idx} style={{ position: 'relative', width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', flexShrink: 0 }}>
+                          <img src={photo} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <button onClick={() => removeAddModalPhoto(idx)} style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(255,0,0,0.7)', color: 'white', border: 'none', borderRadius: '0 0 0 4px', padding: '2px 4px', fontSize: '0.6rem', cursor: 'pointer' }}>X</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.25rem' }}>
+              <button
+                type="button"
+                onClick={() => setIsAddItemModalOpen(false)}
+                disabled={isSavingMasterItem}
+                style={{
+                  padding: '0.6rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'transparent',
+                  color: 'var(--text-primary)', fontWeight: '600', cursor: 'pointer'
+                }}
+              >
+                {t('Cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveMasterItem}
+                disabled={isSavingMasterItem}
+                style={{
+                  padding: '0.6rem 1.5rem', borderRadius: '8px', border: 'none', backgroundColor: '#10b981',
+                  color: '#ffffff', fontWeight: '600', cursor: isSavingMasterItem ? 'not-allowed' : 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '0.5rem', opacity: isSavingMasterItem ? 0.7 : 1
+                }}
+              >
+                <Save size={18} />
+                {isSavingMasterItem ? t('Saving...') : t('Save & Select Item')}
+              </button>
+            </div>
           </div>
         </div>
       )}

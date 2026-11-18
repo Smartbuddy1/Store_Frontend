@@ -34,6 +34,11 @@ const Masters = () => {
   const [newRoleName, setNewRoleName] = useState('');
   const [isAddingRole, setIsAddingRole] = useState(false);
 
+  // Edit Unit State
+  const [editingUnitId, setEditingUnitId] = useState(null);
+  const [editUnitName, setEditUnitName] = useState('');
+  const [isSavingUnit, setIsSavingUnit] = useState(false);
+
   // Form states for Category
   const [newCatName, setNewCatName] = useState('');
   const [newCatPrefix, setNewCatPrefix] = useState('');
@@ -162,6 +167,36 @@ const Masters = () => {
       } catch (err) {
         alert('Delete failed: ' + err.message);
       }
+    }
+  };
+
+  const handleOpenEditUnit = (unit) => {
+    setEditingUnitId(unit.id);
+    setEditUnitName(unit.name);
+  };
+
+  const saveEditUnit = async () => {
+    const trimmed = editUnitName.trim();
+    if (!trimmed) {
+      alert(t('Please enter a unit name.'));
+      return;
+    }
+    const duplicate = units.some(u => u.id !== editingUnitId && u.name.toLowerCase() === trimmed.toLowerCase());
+    if (duplicate) {
+      alert(t('This unit already exists!'));
+      return;
+    }
+
+    setIsSavingUnit(true);
+    try {
+      await api.units.update(editingUnitId, { name: trimmed });
+      await fetchUnits();
+      setEditingUnitId(null);
+      setEditUnitName('');
+    } catch (err) {
+      alert('Failed to update unit: ' + err.message);
+    } finally {
+      setIsSavingUnit(false);
     }
   };
 
@@ -680,20 +715,66 @@ const Masters = () => {
                   .map((u, i) => (
                     <tr key={u.id || i} style={{ borderBottom: '1px solid #f1f5f9' }}>
                       <td style={{ padding: '0.75rem 1rem', color: 'var(--slate-500)' }}>{i + 1}</td>
-                      <td style={{ padding: '0.75rem 1rem', fontWeight: 'bold', color: 'var(--slate-700)' }}>
-                        <span style={{ backgroundColor: '#fef3c7', color: '#b45309', padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.85rem' }}>
-                          {u.name}
-                        </span>
-                      </td>
-                      <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
-                        <button
-                          onClick={() => deleteUnit(u.id, u.name)}
-                          style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '0.25rem' }}
-                          title="Delete Unit"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </td>
+                      {editingUnitId === u.id ? (
+                        <>
+                          <td style={{ padding: '0.75rem 1rem' }}>
+                            <input
+                              type="text"
+                              value={editUnitName}
+                              onChange={(e) => setEditUnitName(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') saveEditUnit();
+                                if (e.key === 'Escape') setEditingUnitId(null);
+                              }}
+                              autoFocus
+                              style={{ width: '100%', maxWidth: '250px', padding: '0.4rem 0.6rem', borderRadius: '4px', border: '1px solid #cbd5e1', outline: 'none' }}
+                            />
+                          </td>
+                          <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                              <button
+                                onClick={saveEditUnit}
+                                disabled={isSavingUnit}
+                                style={{ background: '#10b981', color: 'white', border: 'none', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: isSavingUnit ? 'not-allowed' : 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
+                              >
+                                {isSavingUnit ? 'Saving...' : 'Save'}
+                              </button>
+                              <button
+                                onClick={() => setEditingUnitId(null)}
+                                style={{ background: '#cbd5e1', color: 'var(--slate-800)', border: 'none', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </td>
+                        </>
+                      ) : (
+                        <>
+                          <td style={{ padding: '0.75rem 1rem', fontWeight: 'bold', color: 'var(--slate-700)' }}>
+                            <span style={{ backgroundColor: '#fef3c7', color: '#b45309', padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.85rem' }}>
+                              {u.name}
+                            </span>
+                          </td>
+                          <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', alignItems: 'center' }}>
+                              <button
+                                onClick={() => handleOpenEditUnit(u)}
+                                style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', padding: '0.25rem' }}
+                                title="Edit Unit"
+                              >
+                                <Edit size={16} />
+                              </button>
+                              <button
+                                onClick={() => deleteUnit(u.id, u.name)}
+                                style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '0.25rem' }}
+                                title="Delete Unit"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        </>
+                      )}
                     </tr>
                   ))}
                 {units.filter(u => (u.name || '').toLowerCase().includes(unitSearch.toLowerCase())).length === 0 && (

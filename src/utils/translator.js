@@ -172,6 +172,12 @@ export const t = (key) => {
     'of': 'पैकी',
     'Prev': 'मागे',
     'Next': 'पुढे',
+    'Other (Add New Item)': 'इतर (नवीन वस्तू जोडा)',
+    'Other / Add New Item': 'इतर / नवीन वस्तू जोडा',
+    'Item not found in master': 'वस्तू मास्टरमध्ये सापडली नाही',
+    'Add Item to Item Master': 'आयटम मास्टरमध्ये नवीन वस्तू जोडा',
+    'Save & Select Item': 'जतन करा आणि निवडा',
+    'Item saved to Item Master and selected!': 'वस्तू आयटम मास्टरमध्ये सेव्ह झाली आणि निवडली गेली!',
   };
 
   return dict[key] || key;

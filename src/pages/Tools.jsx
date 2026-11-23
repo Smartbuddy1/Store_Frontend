@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import RequiredMark, { RequiredField } from '../components/RequiredMark';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PenTool, Clock, Users, Plus, CheckCircle, Search, FileText, FileSpreadsheet, Download, Edit, Trash2, X, Save } from 'lucide-react';
 import { exportToPDF } from '../utils/pdfExport';
@@ -6,6 +7,13 @@ import { exportToExcel } from '../utils/excelExport';
 import { t, formatTime12h } from '../utils/translator';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
+
+const toolClock = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Asia/Kolkata',
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23'
+});
 
 const Tools = () => {
   const location = useLocation();
@@ -40,7 +48,7 @@ const Tools = () => {
   // States for Issue Form
   const [selectedTool, setSelectedTool] = useState('');
   const [selectedHelper, setSelectedHelper] = useState('');
-  const [issueTime, setIssueTime] = useState('');
+  const [issueTime, setIssueTime] = useState(() => toolClock.format(new Date()));
 
   // Edit Modal State
   const [editingLog, setEditingLog] = useState(null);
@@ -68,9 +76,6 @@ const Tools = () => {
 
   useEffect(() => {
     fetchData();
-    const now = new Date();
-    const timeString = now.toTimeString().slice(0, 5);
-    setIssueTime(timeString);
   }, []);
 
   useEffect(() => {
@@ -157,8 +162,7 @@ const Tools = () => {
       await fetchData();
       setSelectedTool('');
       setSelectedHelper('');
-      const now = new Date();
-      setIssueTime(now.toTimeString().slice(0, 5));
+      setIssueTime(toolClock.format(new Date()));
       toast.success('Tool issued successfully!');
     } catch (error) {
       toast.error('Failed to issue tool: ' + error.message);
@@ -167,11 +171,9 @@ const Tools = () => {
 
   // Mark as Returned
   const handleMarkReturned = async (logId) => {
-    const now = new Date();
-    const returnTimeString = now.toTimeString().slice(0, 5);
     try {
-      await api.tools.returnTool(logId, { returnTime: returnTimeString });
-      await fetchData();
+      const { returnTime, status } = await api.tools.returnTool(logId);
+      setToolsLog(logs => logs.map(log => log.id === logId ? { ...log, returnTime, status } : log));
       toast.success('Marked as returned!');
     } catch (error) {
       toast.error('Failed to return tool: ' + error.message);
@@ -203,8 +205,8 @@ const Tools = () => {
         toolCode: editToolCode,
         helperName: editHelperName,
         issueTime: editIssueTime,
-        returnTime: editReturnTime || null,
       };
+      if (editStatus === 'RETURNED') body.returnTime = editReturnTime || null;
       await api.tools.updateLog(editingLog.id, body);
       await fetchData();
       setEditingLog(null);
@@ -275,7 +277,7 @@ const Tools = () => {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', color: 'var(--slate-600)', marginBottom: '0.4rem' }}>{t('Select Tool')}</label>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', color: 'var(--slate-600)', marginBottom: '0.4rem' }}>{t('Select Tool')}<RequiredMark /></label>
                 <select value={editToolCode} onChange={e => setEditToolCode(e.target.value)}
                   style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>
                   {toolsMaster.map(tool => (
@@ -285,7 +287,7 @@ const Tools = () => {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', color: 'var(--slate-600)', marginBottom: '0.4rem' }}>{t('Select Helper')}</label>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', color: 'var(--slate-600)', marginBottom: '0.4rem' }}>{t('Select Helper')}<RequiredMark /></label>
                 <select value={editHelperName} onChange={e => setEditHelperName(e.target.value)}
                   style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>
                   {helpers.map((h, i) => (
@@ -296,7 +298,7 @@ const Tools = () => {
 
               <div style={{ display: 'grid', gridTemplateColumns: editStatus?.toUpperCase() === 'RETURNED' ? '1fr 1fr' : '1fr', gap: '1rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', color: 'var(--slate-600)', marginBottom: '0.4rem' }}>Issue Time</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', color: 'var(--slate-600)', marginBottom: '0.4rem' }}>Issue Time<RequiredMark /></label>
                   <input type="time" value={editIssueTime} onChange={e => setEditIssueTime(e.target.value)}
                     style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', boxSizing: 'border-box' }} />
                 </div>
@@ -351,12 +353,12 @@ const Tools = () => {
       {isAddToolOpen && (
         <div style={{ backgroundColor: '#e0f2fe', padding: '1.5rem', borderRadius: '12px', border: '1px solid #bae6fd', marginBottom: '2rem', display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
           <div style={{ flex: '1' }}>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 'bold', color: '#0369a1', marginBottom: '0.5rem' }}>{t('Tool Code')}</label>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 'bold', color: '#0369a1', marginBottom: '0.5rem' }}>{t('Tool Code')}<RequiredMark /></label>
             <input type="text" value={newToolCode} onChange={e => setNewToolCode(e.target.value)}
               style={{ width: '100%', padding: '0.65rem', borderRadius: '6px', border: '1px solid #7dd3fc', outline: 'none' }} />
           </div>
           <div style={{ flex: '2' }}>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 'bold', color: '#0369a1', marginBottom: '0.5rem' }}>{t('Tool Name')}</label>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 'bold', color: '#0369a1', marginBottom: '0.5rem' }}>{t('Tool Name')}<RequiredMark /></label>
             <input type="text" placeholder="e.g. Angle Grinder" value={newToolName} onChange={e => setNewToolName(e.target.value)}
               style={{ width: '100%', padding: '0.65rem', borderRadius: '6px', border: '1px solid #7dd3fc', outline: 'none' }} />
           </div>
@@ -394,22 +396,26 @@ const Tools = () => {
                     <tr key={tool.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                       <td style={{ padding: '0.75rem 1rem' }}>
                         {editingToolId === tool.id ? (
-                          <input
-                            value={editingToolCode}
-                            onChange={e => setEditingToolCode(e.target.value)}
-                            style={{ width: '80px', padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}
-                          />
+                          <RequiredField>
+                            <input
+                              value={editingToolCode}
+                              onChange={e => setEditingToolCode(e.target.value)}
+                              style={{ width: '80px', padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}
+                            />
+                          </RequiredField>
                         ) : (
                           <span style={{ fontWeight: '600', color: 'var(--slate-700)', fontSize: '0.9rem' }}>{tool.toolCode}</span>
                         )}
                       </td>
                       <td style={{ padding: '0.75rem 1rem' }}>
                         {editingToolId === tool.id ? (
-                          <input
-                            value={editingToolName}
-                            onChange={e => setEditingToolName(e.target.value)}
-                            style={{ width: '100%', padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}
-                          />
+                          <RequiredField>
+                            <input
+                              value={editingToolName}
+                              onChange={e => setEditingToolName(e.target.value)}
+                              style={{ width: '100%', padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}
+                            />
+                          </RequiredField>
                         ) : (
                           <span style={{ color: 'var(--text-primary)', fontSize: '0.9rem' }}>{tool.toolName}</span>
                         )}
@@ -460,7 +466,7 @@ const Tools = () => {
       {/* Issue Tool Form */}
       <div style={{ backgroundColor: 'var(--slate-50)', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '2rem', display: 'flex', gap: '1rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
         <div style={{ flex: '2', minWidth: '200px' }}>
-          <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--slate-600)', marginBottom: '0.5rem' }}>{t('Select Tool')}</label>
+          <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--slate-600)', marginBottom: '0.5rem' }}>{t('Select Tool')}<RequiredMark /></label>
           <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0 0.5rem' }}>
             <PenTool size={18} color='var(--slate-500)' />
             <select value={selectedTool} onChange={(e) => setSelectedTool(e.target.value)}
@@ -474,7 +480,7 @@ const Tools = () => {
         </div>
 
         <div style={{ flex: '2', minWidth: '200px' }}>
-          <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--slate-600)', marginBottom: '0.5rem' }}>{t('Select Helper')}</label>
+          <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--slate-600)', marginBottom: '0.5rem' }}>{t('Select Helper')}<RequiredMark /></label>
           <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0 0.5rem' }}>
             <Users size={18} color='var(--slate-500)' />
             <select value={selectedHelper} onChange={(e) => setSelectedHelper(e.target.value)}
@@ -488,14 +494,11 @@ const Tools = () => {
         </div>
 
         <div style={{ flex: '1', minWidth: '150px' }}>
-          <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--slate-600)', marginBottom: '0.5rem' }}>{t('Issue Time')}</label>
+          <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--slate-600)', marginBottom: '0.5rem' }}>{t('Issue Time')}<RequiredMark /></label>
           <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '0 0.5rem' }}>
             <Clock size={18} color='var(--slate-500)' />
             <input type="time" value={issueTime}
-              onChange={e => {
-                const now = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-                setIssueTime(e.target.value > now ? now : e.target.value);
-              }}
+              onChange={e => setIssueTime(e.target.value)}
               style={{ border: 'none', outline: 'none', padding: '0.65rem', width: '100%', fontSize: '0.95rem' }} />
           </div>
         </div>

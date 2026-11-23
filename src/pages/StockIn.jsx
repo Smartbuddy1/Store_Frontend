@@ -1,11 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import RequiredMark from '../components/RequiredMark';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Plus, Search, Calendar, Clock, Hash, Tag, Layers, ArrowUpDown, Save, X, FileText, FileSpreadsheet, Edit, Trash2, Eye, Download, Camera, Image } from 'lucide-react';
 import { exportToPDF } from '../utils/pdfExport';
 import { exportToExcel } from '../utils/excelExport';
 import { t, formatTime12h } from '../utils/translator';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
+
+const SupplierSelect = ({ id, suppliers, status, selection, onSelect }) => {
+  const placeholder = status === 'loading' ? 'Loading suppliers…' :
+    status === 'error' ? 'Could not load suppliers.' :
+      suppliers.length === 0 && !selection ? 'No suppliers added.' : 'Select supplier';
+
+  return (
+    <div>
+      <label className="form-label" htmlFor={id}>{t('Supplier Name')}</label>
+      <select id={id} className="form-input stock-person-select" value={selection?.id ?? ''}
+        onChange={event => onSelect(suppliers.find(supplier => supplier.id === event.target.value) ?? null)}
+        disabled={status !== 'ready' || (suppliers.length === 0 && !selection)}>
+        <option value="">{t(placeholder)}</option>
+        {selection && !suppliers.some(supplier => supplier.id === selection.id) && (
+          <option value={selection.id}>{selection.name}</option>
+        )}
+        {suppliers.map(supplier => <option key={supplier.id} value={supplier.id}>{supplier.name}</option>)}
+      </select>
+    </div>
+  );
+};
+
 const StockIn = () => {
 
   const parsePhotos = (photoStr) => {
@@ -52,6 +75,8 @@ const StockIn = () => {
   const [selectedSource, setSelectedSource] = useState('');
 
   const [staffList, setStaffList] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
+  const [supplierStatus, setSupplierStatus] = useState('loading');
   const [itemsMaster, setItemsMaster] = useState({});
 
   const [totalRecords, setTotalRecords] = useState(0);
@@ -94,8 +119,7 @@ const StockIn = () => {
 
   const fetchMasters = async () => {
     try {
-      const [staff, items, cats, unitsData] = await Promise.all([
-        api.staff.getAll(),
+      const [items, cats, unitsData] = await Promise.all([
         api.items.getAll(),
         api.categories.getAll(),
         api.units.getAll()
@@ -105,7 +129,6 @@ const StockIn = () => {
         itemMap[item.itemCode] = { name: item.itemName, category: item.categoryName, unit: item.unit };
       });
       setItemsMaster(itemMap);
-      setStaffList(staff);
       if (Array.isArray(cats)) {
         setCategoriesList(cats);
       }
@@ -151,8 +174,11 @@ const StockIn = () => {
         category: entry.category,
         quantity: entry.quantity,
         source: entry.source,
-        unit: itemsMaster[entry.itemCode]?.unit || 'Nos',
-        photoUrl: entry.photoUrl
+        supplierId: entry.supplierId,
+        supplierName: entry.supplierName,
+        unit: entry.item?.unit || itemsMaster[entry.itemCode]?.unit || 'Nos',
+        photoUrl: entry.photoUrl,
+        isSiteOutReturn: Boolean(entry.isSiteOutReturn)
       }));
       setStockEntries(mappedEntries);
       setTotalPages(response.pagination?.totalPages || 1);
@@ -164,11 +190,36 @@ const StockIn = () => {
     }
   };
 
-  useEffect(() => { fetchMasters(); }, []);
+  useEffect(() => {
+    fetchData();
+  }, [currentPage, searchQuery, selectedCategory, selectedSource, filterType, selectedFY, fromDate, toDate]);
 
   useEffect(() => {
-    if (Object.keys(itemsMaster).length > 0) { fetchData(); }
-  }, [currentPage, searchQuery, selectedCategory, selectedSource, filterType, selectedFY, fromDate, toDate, itemsMaster]);
+    let active = true;
+    let supplierRequest = 0;
+    fetchMasters();
+    api.staff.getAll().then(staff => {
+      if (active) setStaffList(staff);
+    }).catch(error => console.error('Failed to fetch staff:', error));
+    const refreshSuppliers = () => {
+      const request = ++supplierRequest;
+      api.suppliers.getAll().then(data => {
+        if (!active || request !== supplierRequest) return;
+        setSuppliers(data);
+        setSupplierStatus('ready');
+      }).catch(error => {
+        if (!active || request !== supplierRequest) return;
+        setSupplierStatus('error');
+        console.error('Failed to fetch suppliers:', error);
+      });
+    };
+    refreshSuppliers();
+    window.addEventListener('focus', refreshSuppliers);
+    return () => {
+      active = false;
+      window.removeEventListener('focus', refreshSuppliers);
+    };
+  }, []);
 
 
   // Form State
@@ -179,6 +230,7 @@ const StockIn = () => {
   const [newCategory, setNewCategory] = useState('');
   const [newQuantity, setNewQuantity] = useState('');
   const [newSource, setNewSource] = useState(localStorage.getItem('lastReceivedFrom') || 'mr. suhas bachhav');
+  const [newSupplier, setNewSupplier] = useState(null);
   const [newSubUnit, setNewSubUnit] = useState('Nos');
   const [editingId, setEditingId] = useState(null);
 
@@ -311,26 +363,20 @@ const StockIn = () => {
         finalQty = finalQty / 1000;
       }
 
+      const stockEntry = {
+        date: newDate,
+        time: newTime,
+        item_code: newItemCode,
+        item_name: newItemName,
+        category: newCategory,
+        quantity: finalQty,
+        source: newSource,
+        supplier_id: newSupplier?.id ?? null
+      };
       if (editingId) {
-        await api.stockIn.update(editingId, {
-          date: newDate,
-          time: newTime,
-          item_code: newItemCode,
-          item_name: newItemName,
-          category: newCategory,
-          quantity: finalQty,
-          source: newSource
-        });
+        await api.stockIn.update(editingId, stockEntry);
       } else {
-        await api.stockIn.create({
-          date: newDate,
-          time: newTime,
-          item_code: newItemCode,
-          item_name: newItemName,
-          category: newCategory,
-          quantity: finalQty,
-          source: newSource
-        });
+        await api.stockIn.create(stockEntry);
         setCurrentPage(1);
       }
 
@@ -343,6 +389,7 @@ const StockIn = () => {
       setNewItemName('');
       setNewCategory('');
       setNewQuantity('');
+      setNewSupplier(null);
 
       localStorage.setItem('lastReceivedFrom', newSource);
 
@@ -362,6 +409,7 @@ const StockIn = () => {
     setNewCategory(entry.category);
     setNewQuantity(entry.quantity.toString());
     setNewSource(entry.source);
+    setNewSupplier(entry.supplierId ? { id: entry.supplierId, name: entry.supplierName } : null);
     setIsModalOpen(true);
   };
 
@@ -393,10 +441,23 @@ const StockIn = () => {
     setNewCategory('');
     setNewQuantity('');
     setNewSource('Supplier');
+    setNewSupplier(null);
     setIsModalOpen(true);
   };
 
   const formRef = React.useRef(null);
+
+  const cancelStockEdit = () => {
+    setEditingId(null);
+    setNewTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
+    setNewItemCode('');
+    setNewItemName('');
+    setNewCategory('');
+    setNewQuantity('');
+    setNewSource('mr. suhas bachhav');
+    setNewSupplier(null);
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     if (location.state?.openAddModal) {
@@ -422,10 +483,13 @@ const StockIn = () => {
 
   const handleExportPDF = async () => {
     const data = await fetchAllFilteredData();
-    const tableColumn = ["DATE & TIME", "ITEM CODE", "ITEM NAME", "CATEGORY", "SOURCE", "QUANTITY"];
+    const tableColumn = ["DATE & TIME", "ITEM CODE", "ITEM NAME", "CATEGORY", "SOURCE", "SUPPLIER NAME", "QUANTITY"];
     const tableRows = [];
     data.forEach(item => {
-      tableRows.push([`${item.date} ${item.time || ''}`, item.itemCode, item.itemName, item.category, item.source, item.quantity]);
+      tableRows.push([
+        `${item.date} ${formatTime12h(item.time)}`.trimEnd(), item.itemCode, item.itemName, item.category,
+        item.source, item.supplierName ?? '', item.quantity
+      ]);
     });
     await exportToPDF("Stock In Report", tableColumn, tableRows, "stock_in.pdf");
   };
@@ -438,10 +502,16 @@ const StockIn = () => {
       "ITEM NAME": item.itemName,
       "CATEGORY": item.category,
       "SOURCE": item.source,
+      "SUPPLIER NAME": item.supplierName ?? '',
       "QUANTITY": item.quantity
     }));
     exportToExcel(excelData, "StockIn", "stock_in.xlsx");
   };
+
+  const sourceOptions = staffList.map(person => (
+    <option key={person.id} value={person.name} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{person.name}</option>
+  ));
+  const savedSourceIsMissing = newSource && !staffList.some(person => person.name === newSource);
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'var(--font-sans)', backgroundColor: 'var(--surface-bg)', minHeight: '100%' }}>
@@ -470,7 +540,7 @@ const StockIn = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}<RequiredMark /></label>
             <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
               <input
                 type="date"
@@ -486,7 +556,7 @@ const StockIn = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Time')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Time')}<RequiredMark /></label>
             <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
               <input
                 type="time"
@@ -506,7 +576,7 @@ const StockIn = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Code')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Code')}<RequiredMark /></label>
             <div
               style={{ position: 'relative' }}
               onBlur={(e) => {
@@ -644,18 +714,20 @@ const StockIn = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Received From')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Received From')}<RequiredMark /></label>
             <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
-              <select value={newSource} onChange={(e) => setNewSource(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }}>
-                {staffList.filter(p => p.type !== 'Helper').map((person, idx) => (
-                  <option key={idx} value={person.name} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{person.name}</option>
-                ))}
+              <select className="stock-person-select" value={newSource} onChange={(e) => setNewSource(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }}>
+                {savedSourceIsMissing && <option value={newSource}>{newSource}</option>}
+                {sourceOptions}
               </select>
             </div>
           </div>
 
+          <SupplierSelect id="stock-in-supplier" suppliers={suppliers} status={supplierStatus}
+            selection={newSupplier} onSelect={setNewSupplier} />
+
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Quantity Added')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Quantity Added')}<RequiredMark /></label>
             <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
               <Layers size={18} color='var(--text-secondary)' />
               <input type="number" step={['nos', 'ml', 'gms'].includes((newSubUnit || '').toLowerCase()) ? "1" : "0.01"} min={['nos', 'ml', 'gms'].includes((newSubUnit || '').toLowerCase()) ? "1" : "0.01"} placeholder="Qty" value={newQuantity} onChange={(e) => {
@@ -686,6 +758,7 @@ const StockIn = () => {
                 setNewCategory('');
                 setNewQuantity('');
                 setNewSource('mr. suhas bachhav');
+                setNewSupplier(null);
               }}
               style={{
                 padding: '0.6rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'transparent',
@@ -726,7 +799,7 @@ const StockIn = () => {
             border: '1px solid var(--border-color)',
             position: 'relative'
           }}>
-            <button onClick={() => setIsModalOpen(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--slate-400)' }}>
+            <button onClick={cancelStockEdit} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--slate-400)' }}>
               <Plus size={24} style={{ transform: 'rotate(45deg)' }} />
             </button>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--slate-900)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -736,7 +809,7 @@ const StockIn = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}<RequiredMark /></label>
                 <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--slate-100)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
                   <input
                     type="date"
@@ -772,7 +845,7 @@ const StockIn = () => {
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Code')}</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Code')}<RequiredMark /></label>
                 <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
                   <Hash size={18} color='var(--text-secondary)' />
                   <input type="text" list="stockin-item-codes" placeholder="e.g. E-001" value={newItemCode} onChange={handleItemCodeChange} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }} />
@@ -793,18 +866,20 @@ const StockIn = () => {
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Received From')}</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Received From')}<RequiredMark /></label>
                 <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
-                  <select value={newSource} onChange={(e) => setNewSource(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }}>
-                    {staffList.filter(p => p.type !== 'Helper').map((person, idx) => (
-                      <option key={idx} value={person.name}>{person.name}</option>
-                    ))}
+                  <select className="stock-person-select" value={newSource} onChange={(e) => setNewSource(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }}>
+                    {savedSourceIsMissing && <option value={newSource}>{newSource}</option>}
+                    {sourceOptions}
                   </select>
                 </div>
               </div>
 
+              <SupplierSelect id="stock-in-edit-supplier" suppliers={suppliers} status={supplierStatus}
+                selection={newSupplier} onSelect={setNewSupplier} />
+
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Quantity Added')}</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Quantity Added')}<RequiredMark /></label>
                 <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
                   <Layers size={18} color='var(--text-secondary)' />
                   <input type="number" step={['nos', 'ml', 'gms', 'pcs', 'box', 'set', 'pairs'].includes((newSubUnit || '').toLowerCase()) ? "1" : "0.01"} min={['nos', 'ml', 'gms', 'pcs', 'box', 'set', 'pairs'].includes((newSubUnit || '').toLowerCase()) ? "1" : "0.01"} placeholder="Qty" value={newQuantity} onChange={(e) => {
@@ -828,16 +903,7 @@ const StockIn = () => {
 
               <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1rem', marginTop: '1rem' }}>
                 <button
-                  onClick={() => {
-                    setEditingId(null);
-                    setNewTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
-                    setNewItemCode('');
-                    setNewItemName('');
-                    setNewCategory('');
-                    setNewQuantity('');
-                    setNewSource('mr. suhas bachhav');
-                    setIsModalOpen(false);
-                  }}
+                  onClick={cancelStockEdit}
                   style={{
                     padding: '0.6rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'transparent',
                     color: 'var(--text-primary)', fontWeight: '600', cursor: 'pointer'
@@ -910,10 +976,11 @@ const StockIn = () => {
         >
           <option value="" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>All Sources</option>
           {[...new Set([
+            selectedSource,
             ...stockEntries.map(e => e.source),
-            ...staffList.filter(s => s.type !== 'Helper').map(s => s.name)
-          ])].filter(src => src && !staffList.filter(s => s.type === 'Helper').map(s => s.name).includes(src)).sort().map((src, idx) => (
-            <option key={idx} value={src} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{src}</option>
+            ...staffList.map(person => person.name)
+          ])].filter(Boolean).sort().map(src => (
+            <option key={src} value={src} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{src}</option>
           ))}
         </select>
       </div>
@@ -992,7 +1059,7 @@ const StockIn = () => {
       </div>
 
       {/* Table Section */}
-      <div style={{ backgroundColor: 'var(--surface-bg)', border: 'none' }}>
+      <div className="stock-in-table-scroll" style={{ backgroundColor: 'var(--surface-bg)', border: 'none' }}>
         {/* Pagination logic */}
         {(() => {
           const currentRecords = stockEntries;
@@ -1022,6 +1089,7 @@ const StockIn = () => {
                     <th style={{ color: 'var(--slate-600)', padding: '1rem', fontWeight: 'bold', fontSize: '0.85rem', letterSpacing: '0.5px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>{t('RECEIVED FROM')}</div>
                     </th>
+                    <th scope="col" className="stock-in-supplier-heading">{t('SUPPLIER NAME')}</th>
                     <th style={{ color: 'var(--slate-600)', padding: '1rem', fontWeight: 'bold', fontSize: '0.85rem', letterSpacing: '0.5px', textAlign: 'right' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'flex-end' }}>{t('QUANTITY ADDED')}</div>
                     </th>
@@ -1042,6 +1110,7 @@ const StockIn = () => {
                             const coverPhoto = getCoverPhoto(entry.photoUrl);
                             return coverPhoto ? (
                               <img
+                                loading="lazy"
                                 src={coverPhoto}
                                 alt={entry.itemName}
                                 onClick={() => setViewingPhoto(entry)}
@@ -1070,6 +1139,7 @@ const StockIn = () => {
                       <td style={{ padding: '1.25rem 1rem', color: 'var(--slate-600)', fontSize: '0.9rem', fontWeight: 'bold' }}>
                         {entry.source}
                       </td>
+                      <td className="stock-in-supplier-cell">{entry.supplierName ?? '—'}</td>
                       <td style={{ padding: '1.25rem 1rem', textAlign: 'right' }}>
                         <span style={{
                           backgroundColor: '#dcfce7', color: '#166534',
@@ -1086,22 +1156,28 @@ const StockIn = () => {
                       <td style={{ padding: '1.25rem 1rem', textAlign: 'right' }}>
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                           <button onClick={() => setViewingItem(entry)} style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10b981' }}><Eye size={16} /></button>
-                          <button onClick={() => handleEditStock(entry)} style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--slate-600)' }}><Edit size={16} /></button>
-                          <button onClick={() => handleDeleteStock(entry.id)} style={{ backgroundColor: '#ef4444', border: 'none', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--surface-bg)' }}><Trash2 size={16} /></button>
+                          {entry.isSiteOutReturn ? (
+                            <Link to="/site-out">{t('Site Out Return')}</Link>
+                          ) : (
+                            <>
+                              <button onClick={() => handleEditStock(entry)} style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--slate-600)' }}><Edit size={16} /></button>
+                              <button onClick={() => handleDeleteStock(entry.id)} style={{ backgroundColor: '#ef4444', border: 'none', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--surface-bg)' }}><Trash2 size={16} /></button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>
                   ))}
                   {stockEntries.length === 0 && !loading && (
                     <tr>
-                      <td colSpan="8" style={{ padding: '2rem', textAlign: 'center', color: 'var(--slate-400)' }}>
+                      <td colSpan="10" style={{ padding: '2rem', textAlign: 'center', color: 'var(--slate-400)' }}>
                         No stock entries match the current filters.
                       </td>
                     </tr>
                   )}
                   {loading && (
                     <tr>
-                      <td colSpan="8" style={{ padding: '2rem', textAlign: 'center', color: 'var(--slate-500)' }}>
+                      <td colSpan="10" style={{ padding: '2rem', textAlign: 'center', color: 'var(--slate-500)' }}>
                         Loading records...
                       </td>
                     </tr>
@@ -1183,6 +1259,12 @@ const StockIn = () => {
                 <span style={{ color: 'var(--slate-500)', fontWeight: '600' }}>Received From:</span>
                 <span style={{ color: 'var(--slate-900)' }}>{viewingItem.source}</span>
               </div>
+              {viewingItem.supplierName && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
+                  <span style={{ color: 'var(--slate-500)', fontWeight: '600' }}>{t('Supplier Name')}</span>
+                  <span style={{ color: 'var(--slate-900)' }}>{viewingItem.supplierName}</span>
+                </div>
+              )}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem' }}>
                 <span style={{ color: 'var(--slate-500)', fontWeight: '600' }}>Quantity Added:</span>
                 <span style={{ color: '#166534', fontWeight: 'bold' }}>+ {viewingItem.quantity}</span>
@@ -1291,7 +1373,7 @@ const StockIn = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
               <div style={{ gridColumn: '1 / -1' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>
-                  {t('Item Name')} <span style={{ color: '#ef4444' }}>*</span>
+                  {t('Item Name')}<RequiredMark />
                 </label>
                 <input
                   type="text"
@@ -1308,7 +1390,7 @@ const StockIn = () => {
 
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>
-                  {t('Select Category')} <span style={{ color: '#ef4444' }}>*</span>
+                  {t('Select Category')}<RequiredMark />
                 </label>
                 <select
                   value={addModalCategory}
@@ -1329,7 +1411,7 @@ const StockIn = () => {
 
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>
-                  {t('Unit')} <span style={{ color: '#ef4444' }}>*</span>
+                  {t('Unit')}<RequiredMark />
                 </label>
                 <select
                   value={addModalUnit}
@@ -1347,7 +1429,7 @@ const StockIn = () => {
 
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>
-                  {t('Minimum Stock Alert Level')} <span style={{ color: '#ef4444' }}>*</span>
+                  {t('Minimum Stock Alert Level')}<RequiredMark />
                 </label>
                 <input
                   type="number"

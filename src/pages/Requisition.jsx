@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, AlertCircle, Search, FileText, FileSpreadsheet, Download, Loader, CheckSquare, Send, Trash2 } from 'lucide-react';
 import { exportToPDF } from '../utils/pdfExport';
+import { RequiredField } from '../components/RequiredMark';
 import { exportToExcel } from '../utils/excelExport';
 import { t } from '../utils/translator';
 import api from '../utils/api';
+import toast from 'react-hot-toast';
 
 const Requisition = () => {
   const [currentStockData, setCurrentStockData] = useState([]);
@@ -32,9 +34,11 @@ const Requisition = () => {
   const [kitMultiplier, setKitMultiplier] = useState(1);
 
   // State for histories
-  const [regularHistory, setRegularHistory] = useState([]);
-  const [kitHistory, setKitHistory] = useState([]);
+  const [requisitionHistory, setRequisitionHistory] = useState([]);
+  const [historyStatus, setHistoryStatus] = useState('loading');
+  const [historyRefresh, setHistoryRefresh] = useState(0);
   const [selectedHistory, setSelectedHistory] = useState(null);
+  const [exporting, setExporting] = useState(false);
 
   // Pagination state for history (50 per page)
   const HISTORY_PAGE_SIZE = 50;
@@ -45,11 +49,9 @@ const Requisition = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [stockRes, kitsRes, regReqRes, kitReqRes] = await Promise.all([
+        const [stockRes, kitsRes] = await Promise.all([
           api.currentStock.getAll(),
-          api.kits.getAll().catch(() => []), // Fallback in case kits API fails
-          api.requisitions.getAll('REGULAR').catch(() => []),
-          api.requisitions.getAll('KIT').catch(() => [])
+          api.kits.getAll().catch(() => []) // Fallback in case kits API fails
         ]);
         
         const mappedData = stockRes.map(item => ({
@@ -63,8 +65,6 @@ const Requisition = () => {
         }));
         setCurrentStockData(mappedData);
         setKits(kitsRes);
-        setRegularHistory(regReqRes || []);
-        setKitHistory(kitReqRes || []);
       } catch (err) {
         console.error('Failed to fetch requisition data:', err);
       } finally {
@@ -73,6 +73,26 @@ const Requisition = () => {
     };
     fetchData();
   }, []);
+
+  const refreshHistory = () => setHistoryRefresh(previous => previous + 1);
+
+  useEffect(() => {
+    let active = true;
+    setHistoryStatus('loading');
+
+    api.requisitions.getAll().then(records => {
+      if (!active) return;
+      if (!Array.isArray(records)) throw new Error('Unexpected requisition history response.');
+      setRequisitionHistory(records);
+      setHistoryStatus('ready');
+    }).catch(error => {
+      if (!active) return;
+      console.error('Failed to load requisition history:', error);
+      setHistoryStatus('error');
+    });
+
+    return () => { active = false; };
+  }, [historyRefresh]);
 
   const uniqueCategories = [...new Set(currentStockData.map(item => item.category))].filter(c => c !== 'N/A').sort();
 
@@ -197,114 +217,82 @@ const Requisition = () => {
   };
 
   const saveRequisitionHistory = async (format, itemsToExport) => {
-    try {
-      const payload = {
-        type: activeTab,
-        exportFormat: format,
-        items: itemsToExport.map(item => ({
-          code: item.code,
-          name: item.name,
-          category: item.category,
-          currentQty: Number(item.currentQty) || 0,
-          reqQty: Number(item.reqQty) || 0
-        }))
-      };
-      
-      if (activeTab === 'KIT') {
-        const kit = kits.find(k => k.id === selectedKitId);
-        payload.kitName = kit ? kit.kitName : null;
-        payload.kitMultiplier = kitMultiplier ? Number(kitMultiplier) : 1;
-      }
-      
-      const newReq = await api.requisitions.create(payload);
-      
-      if (activeTab === 'REGULAR') {
-        setRegularHistory(prev => [newReq, ...prev]);
-      } else {
-        setKitHistory(prev => [newReq, ...prev]);
-      }
-    } catch (err) {
-      console.error('Failed to save requisition history:', err);
+    const payload = {
+      type: activeTab,
+      exportFormat: format,
+      items: itemsToExport.map(item => ({
+        code: item.code,
+        name: item.name,
+        category: item.category,
+        currentQty: Number(item.currentQty) || 0,
+        reqQty: Number(item.reqQty) || 0
+      }))
+    };
+
+    if (activeTab === 'KIT') {
+      payload.kitName = kits.find(kit => kit.id === selectedKitId)?.kitName;
+      payload.kitMultiplier = Number(kitMultiplier) || 1;
     }
+
+    await api.requisitions.create(payload);
+    const setHistoryPage = activeTab === 'KIT' ? setKitHistoryPage : setRegularHistoryPage;
+    setHistoryPage(1);
+    refreshHistory();
   };
 
   // Delete requisition history record
-  const handleDeleteRequisition = async (id, type) => {
+  const handleDeleteRequisition = async (id) => {
     if (!window.confirm('Are you sure you want to delete this requisition record?')) return;
     try {
       await api.requisitions.delete(id);
-      if (type === 'REGULAR') {
-        setRegularHistory(prev => prev.filter(r => r.id !== id));
-      } else {
-        setKitHistory(prev => prev.filter(r => r.id !== id));
-      }
+      refreshHistory();
     } catch (err) {
       console.error('Failed to delete requisition:', err);
       alert('Delete failed: ' + err.message);
     }
   };
 
-  const handleExportPDF = async () => {
+  const handleExport = async (format) => {
     const itemsToExport = getExportData();
     if (itemsToExport.length === 0) {
       alert("No items selected or available to export.");
       return;
     }
     
-    // Filter out items that have sufficient stock (Order Qty <= 0)
-    const validItemsToExport = itemsToExport.filter(item => {
-      return Math.max(0, (item.reqQty || 0) - (item.currentQty || 0)) > 0;
-    });
+    const validItemsToExport = itemsToExport.map(item => ({
+      ...item,
+      orderQty: item.reqQty - item.currentQty
+    })).filter(item => item.orderQty > 0);
 
     if (validItemsToExport.length === 0) {
       alert(t("All selected items have sufficient stock. Nothing to order."));
       return;
     }
     
-    const tableColumn = ["ITEM CODE", "ITEM NAME", "CATEGORY", "ORDER QTY"];
-    const rows = validItemsToExport.map(item => {
-      const orderQty = Math.max(0, (item.reqQty || 0) - (item.currentQty || 0));
-      return [
-        item.code, 
-        item.name, 
-        item.category, 
-        orderQty
-      ];
-    });
-    
-    await exportToPDF("Material Requisition Request", tableColumn, rows, "requisition.pdf");
-    await saveRequisitionHistory('PDF', validItemsToExport);
-  };
-
-  const handleExportExcel = () => {
-    const itemsToExport = getExportData();
-    if (itemsToExport.length === 0) {
-      alert("No items selected or available to export.");
-      return;
+    setExporting(true);
+    let saved = false;
+    try {
+      await saveRequisitionHistory(format, validItemsToExport);
+      saved = true;
+      if (format === 'PDF') {
+        const columns = ['ITEM CODE', 'ITEM NAME', 'CATEGORY', 'ORDER QTY'];
+        const rows = validItemsToExport.map(item => [item.code, item.name, item.category, item.orderQty]);
+        await exportToPDF('Material Requisition Request', columns, rows, 'requisition.pdf');
+      } else {
+        const rows = validItemsToExport.map(item => ({
+          'ITEM CODE': item.code,
+          'ITEM NAME': item.name,
+          'CATEGORY': item.category,
+          'ORDER QTY': item.orderQty
+        }));
+        exportToExcel(rows, 'Requisition', 'requisition.xlsx');
+      }
+    } catch (error) {
+      console.error('Failed to export requisition:', error);
+      toast.error(t(saved ? 'Requisition saved. Download failed.' : 'Could not save the requisition. Please try again.'));
+    } finally {
+      setExporting(false);
     }
-
-    // Filter out items that have sufficient stock (Order Qty <= 0)
-    const validItemsToExport = itemsToExport.filter(item => {
-      return Math.max(0, (item.reqQty || 0) - (item.currentQty || 0)) > 0;
-    });
-
-    if (validItemsToExport.length === 0) {
-      alert(t("All selected items have sufficient stock. Nothing to order."));
-      return;
-    }
-
-    const data = validItemsToExport.map(item => {
-      const orderQty = Math.max(0, (item.reqQty || 0) - (item.currentQty || 0));
-      return {
-        "ITEM CODE": item.code,
-        "ITEM NAME": item.name,
-        "CATEGORY": item.category,
-        "ORDER QTY": orderQty
-      };
-    });
-
-    exportToExcel(data, "Requisition", "requisition.xlsx");
-    saveRequisitionHistory('EXCEL', validItemsToExport);
   };
 
   const renderTable = (records, title) => {
@@ -391,8 +379,14 @@ const Requisition = () => {
     );
   };
 
-  const renderHistory = (history, title, currentPage, setPage) => {
+  const renderHistory = () => {
+    const isKit = activeTab === 'KIT';
+    const title = isKit ? 'Kit Requisition' : 'Regular Requisition';
+    const history = requisitionHistory.filter(record => record.type.trim().toUpperCase() === activeTab);
+    const requestedPage = isKit ? kitHistoryPage : regularHistoryPage;
+    const setPage = isKit ? setKitHistoryPage : setRegularHistoryPage;
     const totalPages = Math.ceil(history.length / HISTORY_PAGE_SIZE);
+    const currentPage = Math.min(requestedPage, Math.max(1, totalPages));
     const startIdx = (currentPage - 1) * HISTORY_PAGE_SIZE;
     const endIdx = startIdx + HISTORY_PAGE_SIZE;
     const pagedHistory = history.slice(startIdx, endIdx);
@@ -400,10 +394,12 @@ const Requisition = () => {
     return (
       <div style={{ backgroundColor: 'var(--surface-bg)', borderRadius: '12px', border: '1px solid var(--border-color)', padding: '1.5rem', marginTop: '2rem', boxShadow: '0 2px 4px -1px rgba(0,0,0,0.05)' }}>
         <h2 style={{ margin: '0 0 1rem 0', color: 'var(--slate-800)', fontSize: '1.1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <FileText size={20} color="var(--primary-color)" /> {title} {t('History')}
-          <span style={{ marginLeft: 'auto', fontSize: '0.82rem', fontWeight: '500', color: 'var(--slate-500)' }}>
-            {history.length} {t('records')}
-          </span>
+          <FileText size={20} color="var(--primary-color)" /> {t(title)} {t('History')}
+          {historyStatus === 'ready' && (
+            <span style={{ marginLeft: 'auto', fontSize: '0.82rem', fontWeight: '500', color: 'var(--slate-500)' }}>
+              {history.length} {t('records')}
+            </span>
+          )}
         </h2>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -411,16 +407,23 @@ const Requisition = () => {
               <tr style={{ backgroundColor: 'var(--table-header-bg)', borderBottom: '1px solid var(--border-color)' }}>
                 <th style={{ color: 'var(--slate-600)', padding: '1rem', fontWeight: 'bold', fontSize: '0.85rem' }}>{t('DATE')}</th>
                 <th style={{ color: 'var(--slate-600)', padding: '1rem', fontWeight: 'bold', fontSize: '0.85rem' }}>{t('EXPORT FORMAT')}</th>
-                {activeTab === 'KIT' && <th style={{ color: 'var(--slate-600)', padding: '1rem', fontWeight: 'bold', fontSize: '0.85rem' }}>{t('KIT NAME')}</th>}
+                {isKit && <th style={{ color: 'var(--slate-600)', padding: '1rem', fontWeight: 'bold', fontSize: '0.85rem' }}>{t('KIT NAME')}</th>}
                 <th style={{ color: 'var(--slate-600)', padding: '1rem', fontWeight: 'bold', fontSize: '0.85rem', textAlign: 'center' }}>{t('ITEMS COUNT')}</th>
                 <th style={{ color: 'var(--slate-600)', padding: '1rem', fontWeight: 'bold', fontSize: '0.85rem', textAlign: 'right' }}>{t('ACTIONS')}</th>
               </tr>
             </thead>
             <tbody>
-              {history.length === 0 ? (
+              {historyStatus !== 'ready' || history.length === 0 ? (
                 <tr>
-                  <td colSpan={activeTab === 'KIT' ? 5 : 4} style={{ padding: '2rem', textAlign: 'center', color: 'var(--slate-500)' }}>
-                    {t('No requisition history found yet. Export a PDF or Excel to save it here.')}
+                  <td colSpan={isKit ? 5 : 4} style={{ padding: '2rem', textAlign: 'center', color: 'var(--slate-500)' }}>
+                    {historyStatus === 'loading' && <span role="status">{t('Loading requisition history…')}</span>}
+                    {historyStatus === 'error' && (
+                      <div role="alert">
+                        {t('Could not load requisition history.')}{' '}
+                        <button type="button" onClick={refreshHistory}>{t('Retry')}</button>
+                      </div>
+                    )}
+                    {historyStatus === 'ready' && t('No requisition history found yet. Export a PDF or Excel to save it here.')}
                   </td>
                 </tr>
               ) : (
@@ -428,7 +431,7 @@ const Requisition = () => {
                   <tr key={req.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                     <td style={{ padding: '1rem', color: 'var(--slate-900)' }}>{new Date(req.createdAt).toLocaleString()}</td>
                     <td style={{ padding: '1rem', color: 'var(--slate-500)', fontWeight: 'bold' }}>{req.exportFormat}</td>
-                    {activeTab === 'KIT' && <td style={{ padding: '1rem', color: 'var(--text-primary)' }}>{req.kitName || 'N/A'} {req.kitMultiplier ? `(x${req.kitMultiplier})` : ''}</td>}
+                    {isKit && <td style={{ padding: '1rem', color: 'var(--text-primary)' }}>{req.kitName || 'N/A'} {req.kitMultiplier ? `(x${req.kitMultiplier})` : ''}</td>}
                     <td style={{ padding: '1rem', color: 'var(--slate-500)', textAlign: 'center' }}>{req.items?.length || 0}</td>
                     <td style={{ padding: '1rem', textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', alignItems: 'center' }}>
@@ -439,7 +442,7 @@ const Requisition = () => {
                           {t('View Items')}
                         </button>
                         <button
-                          onClick={() => handleDeleteRequisition(req.id, req.type)}
+                          onClick={() => handleDeleteRequisition(req.id)}
                           title="Delete"
                           style={{ backgroundColor: 'transparent', color: '#ef4444', border: '1px solid #ef4444', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                         >
@@ -453,20 +456,20 @@ const Requisition = () => {
             </tbody>
           </table>
         </div>
-        {totalPages > 1 && (
+        {historyStatus === 'ready' && totalPages > 1 && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)', flexWrap: 'wrap', gap: '0.5rem' }}>
             <span style={{ color: 'var(--slate-500)', fontSize: '0.85rem' }}>
               {t('Showing')} {startIdx + 1}–{Math.min(endIdx, history.length)} {t('of')} {history.length}
             </span>
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onClick={() => setPage(currentPage - 1)}
                 disabled={currentPage === 1}
                 style={{ padding: '0.35rem 0.9rem', borderRadius: '6px', border: '1px solid var(--border-color)', backgroundColor: currentPage === 1 ? 'var(--slate-100)' : 'var(--surface-bg)', color: currentPage === 1 ? 'var(--slate-400)' : 'var(--primary-color)', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '0.85rem' }}
               >← {t('Prev')}</button>
               <span style={{ fontSize: '0.85rem', color: 'var(--slate-700)', fontWeight: '600' }}>{currentPage} / {totalPages}</span>
               <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                onClick={() => setPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 style={{ padding: '0.35rem 0.9rem', borderRadius: '6px', border: '1px solid var(--border-color)', backgroundColor: currentPage === totalPages ? 'var(--slate-100)' : 'var(--surface-bg)', color: currentPage === totalPages ? 'var(--slate-400)' : 'var(--primary-color)', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '0.85rem' }}
               >{t('Next')} →</button>
@@ -488,10 +491,10 @@ const Requisition = () => {
             <p style={{ color: 'var(--slate-500)', marginTop: '0.25rem' }}>{t('Generate material requisition for out of stock items or kits')}</p>
           </div>
           <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <button onClick={handleExportPDF} style={{ backgroundColor: 'transparent', color: '#dc2626', border: '1.5px solid #dc2626', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
+            <button disabled={exporting} onClick={() => handleExport('PDF')} style={{ backgroundColor: 'transparent', color: '#dc2626', border: '1.5px solid #dc2626', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: exporting ? 'wait' : 'pointer', opacity: exporting ? 0.6 : 1, fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
               <FileText size={18} /> {selectedItems.size > 0 ? `PDF (${selectedItems.size})` : t('PDF')}
             </button>
-            <button onClick={handleExportExcel} style={{ backgroundColor: 'transparent', color: '#059669', border: '1.5px solid #059669', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
+            <button disabled={exporting} onClick={() => handleExport('EXCEL')} style={{ backgroundColor: 'transparent', color: '#059669', border: '1.5px solid #059669', padding: '0.4rem 1.25rem', borderRadius: '8px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: exporting ? 'wait' : 'pointer', opacity: exporting ? 0.6 : 1, fontFamily: 'var(--font-sans)', letterSpacing: '0.5px' }}>
               <FileSpreadsheet size={18} /> {selectedItems.size > 0 ? `Excel (${selectedItems.size})` : t('Excel')}
             </button>
           </div>
@@ -658,8 +661,6 @@ const Requisition = () => {
             </>
           )}
 
-          {/* Regular History */}
-          {renderHistory(regularHistory, "Regular Requisition", regularHistoryPage, setRegularHistoryPage)}
         </>
       )}
 
@@ -670,16 +671,18 @@ const Requisition = () => {
             <p style={{ margin: '0 0 1rem 0', color: 'var(--slate-500)', fontSize: '0.9rem' }}>{t('Select a kit/package to automatically generate a requisition list for its items.')}</p>
             
             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-              <select 
-                value={selectedKitId} 
-                onChange={(e) => setSelectedKitId(e.target.value)}
-                style={{ flex: 1, padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}
-              >
-                <option value="" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{t('-- Select Kit/Package --')}</option>
-                {kits.map(k => (
-                  <option key={k.id} value={k.id} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{k.kitName}</option>
-                ))}
-              </select>
+              <RequiredField style={{ flex: 1 }}>
+                <select
+                  value={selectedKitId}
+                  onChange={(e) => setSelectedKitId(e.target.value)}
+                  style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}
+                >
+                  <option value="" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{t('-- Select Kit/Package --')}</option>
+                  {kits.map(k => (
+                    <option key={k.id} value={k.id} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{k.kitName}</option>
+                  ))}
+                </select>
+              </RequiredField>
               
               <input 
                 type="number" 
@@ -703,10 +706,10 @@ const Requisition = () => {
             </div>
           )}
 
-          {/* Kit History */}
-          {renderHistory(kitHistory, "Kit Requisition", kitHistoryPage, setKitHistoryPage)}
         </>
       )}
+
+      {renderHistory()}
 
       {/* History Items Modal */}
       {selectedHistory && (

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import RequiredMark from '../components/RequiredMark';
 import { Package, Plus, Send, CheckCircle, Tag, Hash, Users, Trash2, ClipboardList, Search, Download, FileSpreadsheet, Edit } from 'lucide-react';
 import api from '../utils/api';
 import { exportToExcel } from '../utils/excelExport';
@@ -278,7 +279,7 @@ const SiteDispatch = () => {
     const tableRows = [];
     filteredHistory.forEach(item => {
       tableRows.push([
-        new Date(item.date).toLocaleDateString() + ' ' + item.time,
+        `${new Date(item.date).toLocaleDateString()} ${formatTime12h(item.time)}`.trimEnd(),
         item.itemName,
         item.quantity,
         item.handoverTo || '-'
@@ -316,7 +317,7 @@ const SiteDispatch = () => {
       }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}<RequiredMark /></label>
             <input
               type="date"
               max={new Date().toISOString().split('T')[0]}
@@ -330,7 +331,7 @@ const SiteDispatch = () => {
             />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Time')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Time')}<RequiredMark /></label>
             <input
               type="time"
               value={time}
@@ -349,7 +350,7 @@ const SiteDispatch = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Select Kit')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Select Kit')}<RequiredMark /></label>
             <select value={selectedKitId} onChange={(e) => setSelectedKitId(e.target.value)} disabled={isGenerated} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>
               <option value="">-- Select --</option>
               {kits.map(k => (
@@ -359,12 +360,12 @@ const SiteDispatch = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Quantity (e.g. 2 Toilets)')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Quantity (e.g. 2 Toilets)')}<RequiredMark /></label>
             <input type="number" min="1" value={kitQuantity} onChange={(e) => setKitQuantity(e.target.value === '' ? '' : Number(e.target.value))} disabled={isGenerated} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }} />
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Handover To')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Handover To')}<RequiredMark /></label>
             <select value={handoverTo} onChange={(e) => setHandoverTo(e.target.value)} disabled={isGenerated} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>
               <option value="">-- Select --</option>
               {staffList.filter(s => s.type !== 'Staff').map(s => (

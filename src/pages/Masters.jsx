@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import RequiredMark, { RequiredField } from '../components/RequiredMark';
 import { Plus, Trash2, Tag, Users, Shield, Briefcase, Search, FileText, FileSpreadsheet, Download, Edit, X, Package, Scale } from 'lucide-react';
 import { exportToPDF } from '../utils/pdfExport';
 import { exportToExcel } from '../utils/excelExport';
 import { t } from '../utils/translator';
 import api from '../utils/api';
+import Modal from '../components/Modal';
+import SupplierMaster from '../components/SupplierMaster';
 import { Link } from 'react-router-dom';
 
 const defaultCategories = [
@@ -26,13 +29,18 @@ const defaultStaff = [
 const Masters = () => {
   const [categories, setCategories] = useState([]);
   const [staff, setStaff] = useState([]);
-  const [roles, setRoles] = useState(['Staff', 'Helper', 'Other']);
+  const [roles, setRoles] = useState([]);
+  const roleNames = roles.map(role => role.name);
   const [units, setUnits] = useState([]);
   const [newUnitName, setNewUnitName] = useState('');
   const [unitSearch, setUnitSearch] = useState('');
-  const [showAddRoleModal, setShowAddRoleModal] = useState(false);
-  const [newRoleName, setNewRoleName] = useState('');
-  const [isAddingRole, setIsAddingRole] = useState(false);
+  const [showRoleManager, setShowRoleManager] = useState(false);
+  const [roleDraft, setRoleDraft] = useState({ id: null, name: '' });
+  const [roleToDelete, setRoleToDelete] = useState(null);
+  const [replacementRoleId, setReplacementRoleId] = useState('');
+  const [roleError, setRoleError] = useState('');
+  const [loadingRoles, setLoadingRoles] = useState(true);
+  const [savingRole, setSavingRole] = useState(false);
 
   // Edit Unit State
   const [editingUnitId, setEditingUnitId] = useState(null);
@@ -50,12 +58,13 @@ const Masters = () => {
 
   // Form states for Staff
   const [newPersonName, setNewPersonName] = useState('');
-  const [newPersonType, setNewPersonType] = useState('Staff');
+  const [newPersonType, setNewPersonType] = useState('');
 
   // Edit Staff State
   const [editingStaffId, setEditingStaffId] = useState(null);
   const [editPersonName, setEditPersonName] = useState('');
-  const [editPersonType, setEditPersonType] = useState('Staff');
+  const [editPersonType, setEditPersonType] = useState('');
+  const currentEditType = staff.find(person => person.id === editingStaffId)?.type || '';
 
   // Search and Pagination States
   const [catSearch, setCatSearch] = useState('');
@@ -80,16 +89,14 @@ const Masters = () => {
   };
 
   const fetchRoles = async () => {
+    setLoadingRoles(true);
+    setRoleError('');
     try {
-      const res = await api.staff.getRoles();
-      const list = Array.isArray(res) ? res : (res && Array.isArray(res.data) ? res.data : []);
-      if (list.length > 0) {
-        const names = list.map(r => (typeof r === 'string' ? r : r.name));
-        const combined = Array.from(new Set(['Staff', 'Helper', 'Other', ...names]));
-        setRoles(combined);
-      }
+      setRoles(await api.staff.getRoles());
     } catch (err) {
-      console.error('Failed to fetch roles:', err);
+      setRoleError(err.message);
+    } finally {
+      setLoadingRoles(false);
     }
   };
 
@@ -110,33 +117,78 @@ const Masters = () => {
     fetchUnits();
   }, []);
 
-  const handleAddRole = async (e) => {
-    if (e) e.preventDefault();
-    const trimmed = newRoleName.trim();
-    if (!trimmed) {
-      alert(t('Please enter a role name.'));
+  const resetRoleDraft = () => {
+    setRoleDraft({ id: null, name: '' });
+    setRoleError('');
+  };
+
+  const openRoleManager = () => {
+    resetRoleDraft();
+    setRoleToDelete(null);
+    setShowRoleManager(true);
+    fetchRoles();
+  };
+
+  const closeRoleManager = () => {
+    if (!savingRole) setShowRoleManager(false);
+  };
+
+  const updateRoleAssignments = (previous, next) => {
+    setStaff(people => people.map(person => person.type === previous ? { ...person, type: next } : person));
+    setNewPersonType(value => value === previous ? next : value);
+    setEditPersonType(value => value === previous ? next : value);
+  };
+
+  const saveRole = async (event) => {
+    event.preventDefault();
+    const name = roleDraft.name.trim();
+    if (!name) {
+      setRoleError(t('Please enter a role name.'));
       return;
     }
-    const exists = roles.some(r => r.toLowerCase() === trimmed.toLowerCase());
-    if (exists) {
-      alert('This role already exists!');
-      const matchingRole = roles.find(r => r.toLowerCase() === trimmed.toLowerCase()) || trimmed;
-      setNewPersonType(matchingRole);
-      setShowAddRoleModal(false);
-      setNewRoleName('');
-      return;
-    }
-    setIsAddingRole(true);
+    setSavingRole(true);
+    setRoleError('');
     try {
-      await api.staff.createRole(trimmed);
-      await fetchRoles();
-      setNewPersonType(trimmed);
-      setShowAddRoleModal(false);
-      setNewRoleName('');
+      const previous = roles.find(role => role.id === roleDraft.id);
+      if (roleDraft.id) {
+        const saved = await api.staff.updateRole(roleDraft.id, name);
+        setRoles(list => list.map(role => role.id === saved.id ? saved : role));
+        updateRoleAssignments(previous?.name, saved.name);
+        await Promise.all([fetchRoles(), fetchStaff()]);
+      } else {
+        const saved = await api.staff.createRole(name);
+        setRoles(list => [...list, saved]);
+        await fetchRoles();
+      }
+      setRoleDraft({ id: null, name: '' });
     } catch (err) {
-      alert('Failed to add role: ' + err.message);
+      setRoleError(err.message);
     } finally {
-      setIsAddingRole(false);
+      setSavingRole(false);
+    }
+  };
+
+  const startRoleDeletion = (role) => {
+    setRoleToDelete(role);
+    setReplacementRoleId('');
+    setRoleError('');
+  };
+
+  const deleteRole = async (event) => {
+    event.preventDefault();
+    setSavingRole(true);
+    setRoleError('');
+    try {
+      const removed = await api.staff.deleteRole(roleToDelete.id, replacementRoleId || null);
+      setRoles(list => list.filter(role => role.id !== removed.id));
+      updateRoleAssignments(removed.name, removed.replacement);
+      setRoleToDelete(null);
+      if (roleDraft.id === removed.id) setRoleDraft({ id: null, name: '' });
+      await Promise.all([fetchRoles(), fetchStaff()]);
+    } catch (err) {
+      setRoleError(err.message);
+    } finally {
+      setSavingRole(false);
     }
   };
 
@@ -252,18 +304,19 @@ const Masters = () => {
       await api.staff.create({ name: newPersonName.trim(), type: newPersonType });
       await fetchStaff();
       setNewPersonName('');
+      setNewPersonType('');
     } catch (err) { alert('Failed: ' + err.message); }
   };
 
   const saveEditStaff = async () => {
-    if (!editPersonName.trim() || !editPersonType) {
+    if (!editPersonName.trim() || (currentEditType && !editPersonType)) {
       alert(t('Please fill all mandatory fields.'));
       return;
     }
     try {
       await api.staff.update(editingStaffId, {
         name: editPersonName.trim(),
-        type: editPersonType
+        ...(editPersonType && { type: editPersonType })
       });
       await fetchStaff();
       setEditingStaffId(null);
@@ -368,20 +421,24 @@ const Masters = () => {
           </div>
           <div style={{ padding: '1.5rem' }}>
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-              <input
-                type="text"
-                placeholder="Category Name (e.g. Electrical)"
-                value={newCatName}
-                onChange={(e) => setNewCatName(e.target.value)}
-                style={{ flex: 2, padding: '0.65rem 1rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' }}
-              />
-              <input
-                type="text"
-                placeholder="Prefix (e.g. EX)"
-                value={newCatPrefix}
-                onChange={(e) => setNewCatPrefix(e.target.value)}
-                style={{ flex: 1, padding: '0.65rem 1rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', textTransform: 'uppercase' }}
-              />
+              <RequiredField style={{ flex: 2 }}>
+                <input
+                  type="text"
+                  placeholder="Category Name (e.g. Electrical)"
+                  value={newCatName}
+                  onChange={(e) => setNewCatName(e.target.value)}
+                  style={{ width: '100%', padding: '0.65rem 1rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' }}
+                />
+              </RequiredField>
+              <RequiredField style={{ flex: 1 }}>
+                <input
+                  type="text"
+                  placeholder="Prefix (e.g. EX)"
+                  value={newCatPrefix}
+                  onChange={(e) => setNewCatPrefix(e.target.value)}
+                  style={{ width: '100%', padding: '0.65rem 1rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', textTransform: 'uppercase' }}
+                />
+              </RequiredField>
               <button
                 onClick={addCategory}
                 style={{ backgroundColor: '#3b82f6', color: 'var(--surface-bg)', border: 'none', borderRadius: '6px', padding: '0 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: 'bold' }}
@@ -431,20 +488,24 @@ const Masters = () => {
                       {editingCatId === cat.id ? (
                         <>
                           <td style={{ padding: '0.75rem 1rem' }}>
-                            <input
-                              type="text"
-                              value={editCatName}
-                              onChange={(e) => setEditCatName(e.target.value)}
-                              style={{ width: '100%', padding: '0.4rem', borderRadius: '4px', border: '1px solid #cbd5e1' }}
-                            />
+                            <RequiredField>
+                              <input
+                                type="text"
+                                value={editCatName}
+                                onChange={(e) => setEditCatName(e.target.value)}
+                                style={{ width: '100%', padding: '0.4rem', borderRadius: '4px', border: '1px solid #cbd5e1' }}
+                              />
+                            </RequiredField>
                           </td>
                           <td style={{ padding: '0.75rem 1rem' }}>
-                            <input
-                              type="text"
-                              value={editCatPrefix}
-                              onChange={(e) => setEditCatPrefix(e.target.value.toUpperCase())}
-                              style={{ width: '100%', padding: '0.4rem', borderRadius: '4px', border: '1px solid #cbd5e1' }}
-                            />
+                            <RequiredField>
+                              <input
+                                type="text"
+                                value={editCatPrefix}
+                                onChange={(e) => setEditCatPrefix(e.target.value.toUpperCase())}
+                                style={{ width: '100%', padding: '0.4rem', borderRadius: '4px', border: '1px solid #cbd5e1' }}
+                              />
+                            </RequiredField>
                           </td>
                           <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
                             <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
@@ -516,26 +577,32 @@ const Masters = () => {
           </div>
           <div style={{ padding: '1.5rem' }}>
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', alignItems: 'stretch' }}>
-              <input
-                type="text"
-                placeholder="Full Name..."
-                value={newPersonName}
-                onChange={(e) => setNewPersonName(e.target.value)}
-                style={{ flex: 2, padding: '0.65rem 1rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' }}
-              />
-              <select
-                value={newPersonType}
-                onChange={(e) => setNewPersonType(e.target.value)}
-                style={{ flex: 1, padding: '0.65rem 1rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', backgroundColor: 'var(--surface-bg)' }}
-              >
-                {roles.map((r) => (
-                  <option key={r} value={r}>{r}</option>
-                ))}
-              </select>
+              <RequiredField style={{ flex: 2 }}>
+                <input
+                  type="text"
+                  placeholder="Full Name..."
+                  value={newPersonName}
+                  onChange={(e) => setNewPersonName(e.target.value)}
+                  style={{ width: '100%', padding: '0.65rem 1rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' }}
+                />
+              </RequiredField>
+              <RequiredField style={{ flex: 1 }}>
+                <select
+                  aria-label={t('Select a role')}
+                  value={newPersonType}
+                  onChange={(e) => setNewPersonType(e.target.value)}
+                  style={{ width: '100%', padding: '0.65rem 1rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', backgroundColor: 'var(--surface-bg)' }}
+                >
+                  <option value="" disabled>{t('Select a role')}</option>
+                  {roleNames.map((r) => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </RequiredField>
               <button
                 type="button"
-                onClick={() => setShowAddRoleModal(true)}
-                title="Add New Role"
+                onClick={openRoleManager}
+                title="Manage Staff Roles"
                 style={{
                   backgroundColor: '#f8fafc',
                   color: '#334155',
@@ -551,7 +618,7 @@ const Masters = () => {
                   whiteSpace: 'nowrap'
                 }}
               >
-                <Plus size={16} /> Role
+                <Users size={16} /> Roles
               </button>
               <button
                 onClick={addStaff}
@@ -607,7 +674,7 @@ const Masters = () => {
                           display: 'inline-flex', alignItems: 'center', gap: '0.25rem'
                         }}>
                           {person.type === 'Staff' ? <Shield size={12} /> : person.type === 'Helper' ? <Briefcase size={12} /> : <Users size={12} />}
-                          {person.type}
+                          {person.type || t('Unassigned')}
                         </span>
                       </td>
                       <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
@@ -664,14 +731,16 @@ const Masters = () => {
           </div>
           <div style={{ padding: '1.5rem' }}>
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-              <input
-                type="text"
-                placeholder="Unit Name (e.g. Mtr, Box, Pcs, Roll)..."
-                value={newUnitName}
-                onChange={(e) => setNewUnitName(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') addUnit(); }}
-                style={{ flex: 1, padding: '0.65rem 1rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' }}
-              />
+              <RequiredField style={{ flex: 1 }}>
+                <input
+                  type="text"
+                  placeholder="Unit Name (e.g. Mtr, Box, Pcs, Roll)..."
+                  value={newUnitName}
+                  onChange={(e) => setNewUnitName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') addUnit(); }}
+                  style={{ width: '100%', padding: '0.65rem 1rem', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none' }}
+                />
+              </RequiredField>
               <button
                 onClick={addUnit}
                 style={{ backgroundColor: '#f59e0b', color: 'white', border: 'none', borderRadius: '6px', padding: '0 1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: 'bold', whiteSpace: 'nowrap' }}
@@ -718,17 +787,19 @@ const Masters = () => {
                       {editingUnitId === u.id ? (
                         <>
                           <td style={{ padding: '0.75rem 1rem' }}>
-                            <input
-                              type="text"
-                              value={editUnitName}
-                              onChange={(e) => setEditUnitName(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') saveEditUnit();
-                                if (e.key === 'Escape') setEditingUnitId(null);
-                              }}
-                              autoFocus
-                              style={{ width: '100%', maxWidth: '250px', padding: '0.4rem 0.6rem', borderRadius: '4px', border: '1px solid #cbd5e1', outline: 'none' }}
-                            />
+                            <RequiredField>
+                              <input
+                                type="text"
+                                value={editUnitName}
+                                onChange={(e) => setEditUnitName(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') saveEditUnit();
+                                  if (e.key === 'Escape') setEditingUnitId(null);
+                                }}
+                                autoFocus
+                                style={{ width: '100%', maxWidth: '250px', padding: '0.4rem 0.6rem', borderRadius: '4px', border: '1px solid #cbd5e1', outline: 'none' }}
+                              />
+                            </RequiredField>
                           </td>
                           <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
                             <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
@@ -789,6 +860,7 @@ const Masters = () => {
           </div>
         </div>
 
+        <SupplierMaster />
       </div>
 
       {/* Edit Staff Modal */}
@@ -803,7 +875,7 @@ const Masters = () => {
             </div>
 
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.875rem', color: 'var(--slate-700)' }}>Name</label>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.875rem', color: 'var(--slate-700)' }}>Name<RequiredMark /></label>
               <input
                 type="text"
                 value={editPersonName}
@@ -813,13 +885,16 @@ const Masters = () => {
             </div>
 
             <div style={{ marginBottom: '2rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.875rem', color: 'var(--slate-700)' }}>Role/Type</label>
+              <label htmlFor="staff-edit-role" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.875rem', color: 'var(--slate-700)' }}>Role/Type{currentEditType && <RequiredMark />}</label>
               <select
+                id="staff-edit-role"
                 value={editPersonType}
                 onChange={(e) => setEditPersonType(e.target.value)}
                 style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', backgroundColor: 'var(--surface-bg)' }}
               >
-                {roles.map((r) => (
+                <option value="" disabled={Boolean(currentEditType)}>{t(currentEditType ? 'Select a role' : 'Unassigned')}</option>
+                {currentEditType && !roleNames.includes(currentEditType) && <option value={currentEditType}>{currentEditType}</option>}
+                {roleNames.map((r) => (
                   <option key={r} value={r}>{r}</option>
                 ))}
               </select>
@@ -843,52 +918,78 @@ const Masters = () => {
         </div>
       )}
 
-      {/* Add Role Modal */}
-      {showAddRoleModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ backgroundColor: 'var(--surface-bg)', padding: '2rem', borderRadius: '12px', width: '100%', maxWidth: '400px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0, color: 'var(--slate-900)' }}>Add New Role</h2>
-              <button
-                onClick={() => { setShowAddRoleModal(false); setNewRoleName(''); }}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--slate-500)' }}>
-                <X size={20} />
+      <Modal isOpen={showRoleManager} onClose={closeRoleManager} title="Manage Staff Roles">
+        {roleToDelete ? (
+          <form className="staff-role-form" onSubmit={deleteRole}>
+            <h4>{t('Delete role')} “{roleToDelete.name}”?</h4>
+            <p>{t('Choose a replacement for assigned staff or leave them unassigned.')}</p>
+            <label className="form-label" htmlFor="staff-role-replacement">{t('Replacement role')}</label>
+            <select id="staff-role-replacement" className="form-input" value={replacementRoleId}
+              onChange={event => setReplacementRoleId(event.target.value)} disabled={savingRole}>
+              <option value="">{t('Leave unassigned')}</option>
+              {roles.filter(role => role.id !== roleToDelete.id).map(role => (
+                <option key={role.id} value={role.id}>{role.name}</option>
+              ))}
+            </select>
+            <div className="staff-role-actions">
+              <button type="button" className="btn btn-secondary" disabled={savingRole}
+                onClick={() => { setRoleToDelete(null); setRoleError(''); }}>{t('Cancel')}</button>
+              <button type="submit" className="btn btn-secondary staff-role-delete" disabled={savingRole}>
+                <Trash2 size={16} aria-hidden="true" /> {t('Delete role')}
               </button>
             </div>
+          </form>
+        ) : (
+          <form className="staff-role-form" onSubmit={saveRole}>
+            <label className="form-label" htmlFor="staff-role-name">Role Name<RequiredMark /></label>
+            <input id="staff-role-name" className="form-input" type="text" placeholder="e.g. Site Supervisor"
+              maxLength={100} value={roleDraft.name} disabled={savingRole} autoFocus
+              onChange={event => setRoleDraft({ ...roleDraft, name: event.target.value })} />
+            <div className="staff-role-actions">
+              {roleDraft.id && <button type="button" className="btn btn-secondary" onClick={resetRoleDraft} disabled={savingRole}>Cancel edit</button>}
+              <button type="submit" className="btn btn-primary" disabled={savingRole}>
+                {roleDraft.id ? 'Save Changes' : 'Add Role'}
+              </button>
+            </div>
+          </form>
+        )}
 
-            <form onSubmit={handleAddRole}>
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.875rem', color: 'var(--slate-700)' }}>Role Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Site Supervisor"
-                  autoFocus
-                  value={newRoleName}
-                  onChange={(e) => setNewRoleName(e.target.value)}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                <button
-                  type="button"
-                  onClick={() => { setShowAddRoleModal(false); setNewRoleName(''); }}
-                  style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: 'var(--surface-bg)', fontWeight: 'bold', cursor: 'pointer', color: 'var(--slate-700)' }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isAddingRole}
-                  style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', border: 'none', backgroundColor: '#10b981', color: 'white', fontWeight: 'bold', cursor: isAddingRole ? 'not-allowed' : 'pointer' }}
-                >
-                  {isAddingRole ? 'Adding...' : 'Add Role'}
-                </button>
-              </div>
-            </form>
+        {roleError && <p className="staff-role-error" role="alert">{roleError}</p>}
+        {loadingRoles ? (
+          <p role="status">Loading roles…</p>
+        ) : roles.length === 0 ? (
+          <p>{t('No roles added.')}</p>
+        ) : (
+          <div className="staff-role-list">
+            <table className="premium-table">
+              <thead><tr><th scope="col">Role</th><th scope="col">Actions</th></tr></thead>
+              <tbody>
+                {roles.map(role => {
+                  const editLabel = `Edit ${role.name}`;
+                  const deleteLabel = `Delete ${role.name}`;
+                  return (
+                    <tr key={role.id}>
+                      <td>{role.name}</td>
+                      <td>
+                        <div className="staff-role-actions">
+                          <button type="button" className="btn btn-secondary" title={editLabel} aria-label={editLabel}
+                            disabled={savingRole} onClick={() => { setRoleToDelete(null); setRoleDraft(role); setRoleError(''); }}>
+                            <Edit size={16} aria-hidden="true" />
+                          </button>
+                          <button type="button" className="btn btn-secondary staff-role-delete" title={deleteLabel} aria-label={deleteLabel}
+                            disabled={savingRole} onClick={() => startRoleDeletion(role)}>
+                            <Trash2 size={16} aria-hidden="true" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 };

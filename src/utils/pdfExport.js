@@ -5,9 +5,8 @@ import newLogo from '../assets/new_logo.png';
 export const exportToPDF = async (title, tableColumn, tableRows, filename, multipleTables = null) => {
   const doc = new jsPDF();
   
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const img = new Image();
-    img.src = newLogo;
     
     const drawContent = () => {
       const pageWidth = doc.internal.pageSize.getWidth();
@@ -146,10 +145,19 @@ export const exportToPDF = async (title, tableColumn, tableRows, filename, multi
       doc.text("Authorized Signatory", pageWidth - 45, sigY + 5, { align: "center" });
 
       doc.save(filename);
-      resolve();
     };
 
-    img.onload = drawContent;
-    img.onerror = drawContent; // If image fails to load, still draw the PDF
+    const generate = () => {
+      try {
+        drawContent();
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    img.onload = generate;
+    img.onerror = generate; // Generate the PDF without the logo if it fails to load
+    img.src = newLogo;
   });
 };

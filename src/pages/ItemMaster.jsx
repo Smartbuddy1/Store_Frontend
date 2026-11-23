@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import RequiredMark from '../components/RequiredMark';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Plus, Search, ArrowUpDown, Edit, Trash2, X, FileText, FileSpreadsheet, Eye, Download, Camera, Image } from 'lucide-react';
 import { exportToPDF } from '../utils/pdfExport';
@@ -14,6 +15,7 @@ const ItemMaster = () => {
   const [viewingItem, setViewingItem] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const previousSearchQuery = useRef(searchQuery);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
@@ -41,6 +43,7 @@ const ItemMaster = () => {
   const [showEditPhotoDropdown, setShowEditPhotoDropdown] = useState(false);
   const [viewingPhoto, setViewingPhoto] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const cameraInputRef = useRef(null);
   const galleryInputRef = useRef(null);
@@ -61,6 +64,11 @@ const ItemMaster = () => {
         search: searchQuery,
         category: selectedCategory
       });
+      const lastPage = Math.max(1, data.pagination.totalPages || 1);
+      if (currentPage > lastPage) {
+        setCurrentPage(lastPage);
+        return;
+      }
       const mapped = data.records.map(item => {
         let photos = [];
         if (item.photoUrl) {
@@ -81,7 +89,7 @@ const ItemMaster = () => {
         };
       });
       setItems(mapped);
-      setTotalPages(data.pagination.totalPages || 1);
+      setTotalPages(lastPage);
       setTotalRecords(data.pagination.total || 0);
     } catch (err) {
       console.error('Failed to fetch items:', err);
@@ -91,10 +99,11 @@ const ItemMaster = () => {
   };
 
   useEffect(() => {
-    // Add debounce for search query
+    const searchChanged = previousSearchQuery.current !== searchQuery;
+    previousSearchQuery.current = searchQuery;
     const delayDebounceFn = setTimeout(() => {
       fetchItems();
-    }, 300);
+    }, searchChanged ? 300 : 0);
     return () => clearTimeout(delayDebounceFn);
   }, [currentPage, searchQuery, selectedCategory]);
 
@@ -131,14 +140,18 @@ const ItemMaster = () => {
   // For rendering, currentRecords is just the items array (since it's already paginated from server)
   const currentRecords = items;
 
-  const handleDeleteItem = async (id) => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
-      try {
-        await api.items.delete(id);
-        await fetchItems();
-      } catch (err) {
-        alert('Delete failed: ' + err.message);
-      }
+  const handleDeleteItem = async (item) => {
+    const message = t('Permanently delete this item and its stock movements, site dispatches, returns, and linked kit and requisition entries?');
+    if (!window.confirm(`${item.code} — ${item.name}\n\n${message}`)) return;
+
+    setDeletingId(item.id);
+    try {
+      await api.items.delete(item.id);
+      await fetchItems();
+    } catch (err) {
+      alert(t(err.message));
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -346,7 +359,7 @@ const ItemMaster = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Name')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Name')}<RequiredMark /></label>
             <input
               type="text"
               value={newItemName}
@@ -360,7 +373,7 @@ const ItemMaster = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Select Category')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Select Category')}<RequiredMark /></label>
             <select
               value={newItemCategory}
               onChange={(e) => setNewItemCategory(e.target.value)}
@@ -377,7 +390,7 @@ const ItemMaster = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Unit')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Unit')}<RequiredMark /></label>
             <select
               value={newUnit}
               onChange={(e) => setNewUnit(e.target.value)}
@@ -393,7 +406,7 @@ const ItemMaster = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Minimum Stock Alert Level')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Minimum Stock Alert Level')}<RequiredMark /></label>
             <input
               type="number"
               min="0"
@@ -542,7 +555,7 @@ const ItemMaster = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Name')}</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Name')}<RequiredMark /></label>
                 <input
                   type="text"
                   value={editItemName}
@@ -556,7 +569,7 @@ const ItemMaster = () => {
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Select Category')}</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Select Category')}<RequiredMark /></label>
                 <select
                   value={editItemCategory}
                   onChange={(e) => setEditItemCategory(e.target.value)}
@@ -573,7 +586,7 @@ const ItemMaster = () => {
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Unit')}</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Unit')}<RequiredMark /></label>
                 <select
                   value={editUnit}
                   onChange={(e) => setEditUnit(e.target.value)}
@@ -589,7 +602,7 @@ const ItemMaster = () => {
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Minimum Stock Alert Level')}</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--slate-600)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Minimum Stock Alert Level')}<RequiredMark /></label>
                 <input
                   type="number"
                   min="0"
@@ -805,6 +818,7 @@ const ItemMaster = () => {
                         <img
                           src={item.photos[0]}
                           alt={item.name}
+                          loading="lazy"
                           style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', cursor: 'pointer', border: '1px solid var(--border-color)', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
                         />
                       </div>
@@ -826,7 +840,9 @@ const ItemMaster = () => {
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                     <button onClick={() => setViewingItem(item)} style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10b981' }}><Eye size={16} /></button>
                     <button onClick={() => handleEditItem(item)} style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--slate-600)' }}><Edit size={16} /></button>
-                    <button onClick={() => handleDeleteItem(item.id)} style={{ backgroundColor: '#ef4444', border: 'none', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--surface-bg)' }}><Trash2 size={16} /></button>
+                    <button type="button" onClick={() => handleDeleteItem(item)} disabled={deletingId !== null}
+                      aria-label={`${t('Delete')} ${item.code}`} title={t('Delete')}
+                      style={{ backgroundColor: '#ef4444', border: 'none', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--surface-bg)' }}><Trash2 size={16} /></button>
                   </div>
                 </td>
               </tr>

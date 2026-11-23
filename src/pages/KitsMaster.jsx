@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import RequiredMark from '../components/RequiredMark';
 import { Package, Plus, Trash2, Edit, Save, X, Search } from 'lucide-react';
 import api from '../utils/api';
 
@@ -202,7 +203,7 @@ const KitsMaster = () => {
             
             <div style={{ marginBottom: '2rem' }}>
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Kit Name</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Kit Name<RequiredMark /></label>
                 <input type="text" value={kitName} onChange={e => setKitName(e.target.value)} placeholder="e.g. Toilet Assembly" style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
               </div>
             </div>
@@ -217,8 +218,8 @@ const KitsMaster = () => {
             <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '2rem' }}>
               <thead>
                 <tr style={{ backgroundColor: 'var(--slate-50)' }}>
-                  <th style={{ padding: '0.75rem', textAlign: 'left' }}>Item Code / Name</th>
-                  <th style={{ padding: '0.75rem', textAlign: 'left', width: '220px' }}>Quantity</th>
+                  <th style={{ padding: '0.75rem', textAlign: 'left' }}>Item Code / Name<RequiredMark /></th>
+                  <th style={{ padding: '0.75rem', textAlign: 'left', width: '220px' }}>Quantity<RequiredMark /></th>
                   <th style={{ padding: '0.75rem', textAlign: 'center', width: '80px' }}>Action</th>
                 </tr>
               </thead>

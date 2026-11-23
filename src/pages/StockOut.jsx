@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import RequiredMark from '../components/RequiredMark';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Plus, Search, Calendar, Clock, Hash, Tag, Layers, ArrowUpDown, Send, Users, Save, X, FileText, FileSpreadsheet, Edit, Trash2, Eye, Download } from 'lucide-react';
 import { exportToPDF } from '../utils/pdfExport';
 import { exportToExcel } from '../utils/excelExport';
@@ -96,23 +97,15 @@ const StockOut = () => {
 
   const fetchMasters = async () => {
     try {
-      const [staff, items, currentStockData] = await Promise.all([
-        api.staff.getAll(),
-        api.items.getAll(),
-        api.currentStock.getAll()
-      ]);
+      const currentStockData = await api.currentStock.getAll();
       const itemMap = {};
-      items.forEach(item => {
-        itemMap[item.itemCode] = { name: item.itemName, category: item.categoryName, unit: item.unit };
-      });
-      setItemsMaster(itemMap);
-
       const stockMap = {};
-      (currentStockData || []).forEach(item => {
+      currentStockData.forEach(item => {
+        itemMap[item.item_code] = { name: item.item_name, category: item.category, unit: item.unit };
         stockMap[item.item_code] = item.current_qty;
       });
+      setItemsMaster(itemMap);
       setCurrentStockMap(stockMap);
-      setStaffList(staff);
     } catch (err) { console.error('Failed to fetch masters:', err); }
   };
 
@@ -150,8 +143,9 @@ const StockOut = () => {
         category: entry.category,
         quantity: entry.quantity,
         handoverTo: entry.handoverTo,
-        unit: itemsMaster[entry.itemCode]?.unit || 'Nos',
-        photoUrl: entry.photoUrl
+        unit: entry.item?.unit || itemsMaster[entry.itemCode]?.unit || 'Nos',
+        photoUrl: entry.photoUrl,
+        isSiteOut: Boolean(entry.isSiteOut)
       }));
       setStockEntries(mappedEntries);
       setTotalPages(response.pagination?.totalPages || 1);
@@ -163,11 +157,18 @@ const StockOut = () => {
     }
   };
 
-  useEffect(() => { fetchMasters(); }, []);
+  useEffect(() => {
+    fetchData();
+  }, [currentPage, searchQuery, selectedCategory, selectedHandover, filterType, selectedFY, fromDate, toDate]);
 
   useEffect(() => {
-    if (Object.keys(itemsMaster).length > 0) { fetchData(); }
-  }, [currentPage, searchQuery, selectedCategory, selectedHandover, filterType, selectedFY, fromDate, toDate, itemsMaster]);
+    let active = true;
+    fetchMasters();
+    api.staff.getAll().then(staff => {
+      if (active) setStaffList(staff);
+    }).catch(error => console.error('Failed to fetch staff:', error));
+    return () => { active = false; };
+  }, []);
 
   // Form State
   const [newDate, setNewDate] = useState(new Date().toISOString().split('T')[0]);
@@ -369,7 +370,7 @@ const StockOut = () => {
     const tableColumn = ["DATE & TIME", "ITEM CODE", "ITEM NAME", "CATEGORY", "HANDOVER TO", "QUANTITY"];
     const tableRows = [];
     data.forEach(item => {
-      tableRows.push([`${item.date} ${item.time || ''}`, item.itemCode, item.itemName, item.category, item.handoverTo, item.quantity]);
+      tableRows.push([`${item.date} ${formatTime12h(item.time)}`.trimEnd(), item.itemCode, item.itemName, item.category, item.handoverTo, item.quantity]);
     });
     await exportToPDF("Stock Out Report", tableColumn, tableRows, "stock_out.pdf");
   };
@@ -386,6 +387,11 @@ const StockOut = () => {
     }));
     exportToExcel(excelData, "StockOut", "stock_out.xlsx");
   };
+
+  const handoverOptions = staffList.map(person => (
+    <option key={person.id} value={person.name} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{person.name}</option>
+  ));
+  const savedHandoverIsMissing = newHandoverTo && !staffList.some(person => person.name === newHandoverTo);
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'var(--font-sans)', backgroundColor: 'var(--surface-bg)', minHeight: '100%' }}>
@@ -414,7 +420,7 @@ const StockOut = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}<RequiredMark /></label>
             <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
               <input
                 type="date"
@@ -430,7 +436,7 @@ const StockOut = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Time')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Time')}<RequiredMark /></label>
             <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
               <input
                 type="time"
@@ -450,7 +456,7 @@ const StockOut = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Code')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Code')}<RequiredMark /></label>
             <div
               style={{ position: 'relative' }}
               onBlur={(e) => {
@@ -532,20 +538,19 @@ const StockOut = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Handover To')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Handover To')}<RequiredMark /></label>
             <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
               <Users size={18} color='var(--text-secondary)' />
-              <select value={newHandoverTo} onChange={(e) => setNewHandoverTo(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }}>
+              <select className="stock-person-select" value={newHandoverTo} onChange={(e) => setNewHandoverTo(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }}>
                 <option value="" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>-- Select --</option>
-                {staffList.filter(p => p.type !== 'Staff').map((person, idx) => (
-                  <option key={idx} value={person.name} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{person.name}</option>
-                ))}
+                {savedHandoverIsMissing && <option value={newHandoverTo}>{newHandoverTo}</option>}
+                {handoverOptions}
               </select>
             </div>
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Quantity Dispatched')}</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Quantity Dispatched')}<RequiredMark /></label>
             <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
               <Layers size={18} color='var(--text-secondary)' />
               <input type="number" step={['nos', 'ml', 'gms'].includes((newSubUnit || '').toLowerCase()) ? "1" : "0.01"} min={['nos', 'ml', 'gms'].includes((newSubUnit || '').toLowerCase()) ? "1" : "0.01"} placeholder="Qty" value={newQuantity} onChange={(e) => {
@@ -626,7 +631,7 @@ const StockOut = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Date')}<RequiredMark /></label>
                 <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--slate-100)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
                   <input
                     type="date"
@@ -662,7 +667,7 @@ const StockOut = () => {
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Code')}</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Item Code')}<RequiredMark /></label>
                 <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
                   <Hash size={18} color='var(--text-secondary)' />
                   <input type="text" list="stockout-item-codes" placeholder="e.g. E-001" value={newItemCode} onChange={handleItemCodeChange} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }} />
@@ -691,20 +696,19 @@ const StockOut = () => {
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Handover To')}</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Handover To')}<RequiredMark /></label>
                 <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
                   <Users size={18} color='var(--text-secondary)' />
-                  <select value={newHandoverTo} onChange={(e) => setNewHandoverTo(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }}>
+                  <select className="stock-person-select" value={newHandoverTo} onChange={(e) => setNewHandoverTo(e.target.value)} style={{ border: 'none', outline: 'none', padding: '0.75rem', width: '100%', fontSize: '0.95rem', backgroundColor: 'transparent', color: 'var(--text-primary)' }}>
                     <option value="">-- Select --</option>
-                    {staffList.filter(p => p.type !== 'Staff').map((person, idx) => (
-                      <option key={idx} value={person.name}>{person.name}</option>
-                    ))}
+                    {savedHandoverIsMissing && <option value={newHandoverTo}>{newHandoverTo}</option>}
+                    {handoverOptions}
                   </select>
                 </div>
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Quantity Dispatched')}</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontWeight: '600', fontSize: '0.875rem' }}>{t('Quantity Dispatched')}<RequiredMark /></label>
                 <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0 0.5rem' }}>
                   <Layers size={18} color='var(--text-secondary)' />
                   <input type="number" step={['nos', 'ml', 'gms', 'pcs', 'box', 'set', 'pairs'].includes((newSubUnit || '').toLowerCase()) ? "1" : "0.01"} min={['nos', 'ml', 'gms', 'pcs', 'box', 'set', 'pairs'].includes((newSubUnit || '').toLowerCase()) ? "1" : "0.01"} placeholder="Qty" value={newQuantity} onChange={(e) => {
@@ -804,10 +808,11 @@ const StockOut = () => {
         >
           <option value="" style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>All Staff/Helpers</option>
           {[...new Set([
+            selectedHandover,
             ...stockEntries.map(e => e.handoverTo),
-            ...staffList.filter(s => s.type !== 'Staff').map(s => s.name)
-          ])].filter(person => person && !staffList.filter(s => s.type === 'Staff').map(s => s.name).includes(person)).sort().map((person, idx) => (
-            <option key={idx} value={person} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{person}</option>
+            ...staffList.map(person => person.name)
+          ])].filter(Boolean).sort().map(person => (
+            <option key={person} value={person} style={{ backgroundColor: 'var(--surface-bg)', color: 'var(--text-primary)' }}>{person}</option>
           ))}
         </select>
       </div>
@@ -935,6 +940,7 @@ const StockOut = () => {
                             const coverPhoto = getCoverPhoto(entry.photoUrl);
                             return coverPhoto ? (
                               <img
+                                loading="lazy"
                                 src={coverPhoto}
                                 alt={entry.itemName}
                                 onClick={() => setViewingPhoto(entry)}
@@ -986,8 +992,14 @@ const StockOut = () => {
                       <td style={{ padding: '1.25rem 1rem', textAlign: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                           <button onClick={() => setViewingItem(entry)} style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10b981' }}><Eye size={16} /></button>
-                          <button onClick={() => handleEditDispatch(entry)} style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--slate-600)' }}><Edit size={16} /></button>
-                          <button onClick={() => handleDeleteDispatch(entry.id)} style={{ backgroundColor: '#ef4444', border: 'none', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--surface-bg)' }}><Trash2 size={16} /></button>
+                          {entry.isSiteOut ? (
+                            <Link to="/site-out">{t('Site Out')}</Link>
+                          ) : (
+                            <>
+                              <button onClick={() => handleEditDispatch(entry)} style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--slate-600)' }}><Edit size={16} /></button>
+                              <button onClick={() => handleDeleteDispatch(entry.id)} style={{ backgroundColor: '#ef4444', border: 'none', borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--surface-bg)' }}><Trash2 size={16} /></button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>

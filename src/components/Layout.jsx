@@ -3,7 +3,7 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LayoutDashboard, Users, Folder, Monitor, LogOut, FileText, Sun, Moon, Settings, User, Phone, Shield, Menu, Activity, PieChart, Tag, ClipboardList, Radio, Wrench, Bell, Globe } from 'lucide-react';
 import Footer from './Footer';
-import excelData from '../assets/data.json';
+import api from '../utils/api';
 import newLogo from '../assets/new_logo.png';
 
 const Layout = () => {
@@ -56,6 +56,7 @@ const Layout = () => {
       'Item Master': 'वस्तूंची यादी',
       'Stock In': 'माल आवक (In)',
       'Stock Out': 'माल जावक (Out)',
+      'Site Out': 'साईट जावक (Site Out)',
       'Site Dispatch': 'साईट डिस्पॅच (Kits)',
       'Current Stock': 'शिल्लक माल (Stock)',
       'Alerts': 'अलर्ट्स (Alerts)',
@@ -79,7 +80,7 @@ const Layout = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const stats = await import('../utils/api').then(m => m.default.currentStock.getDashboardStats());
+        const stats = await api.currentStock.getDashboardStats();
         setOutOfStockCount(stats.outOfStock);
       } catch (err) {
         console.error('Failed to fetch out of stock count', err);
@@ -93,6 +94,7 @@ const Layout = () => {
     { name: 'Item Master', href: '/item-master', icon: Tag },
     { name: 'Stock In', href: '/stock-in', icon: Activity },
     { name: 'Stock Out', href: '/stock-out', icon: LogOut },
+    { name: 'Site Out', href: '/site-out', icon: Radio },
     { name: 'Site Dispatch', href: '/site-dispatch', icon: FileText },
     { name: 'Current Stock', href: '/current-stock', icon: ClipboardList },
     { name: 'Alerts', href: '/alerts', icon: Bell },
@@ -121,7 +123,7 @@ const Layout = () => {
           margin: 0
         }}>
           <div style={{ 
-            backgroundColor: 'var(--surface-bg)', 
+            backgroundColor: '#ffffff', // Match the logo image's opaque white background.
             padding: '0.25rem', 
             borderRadius: '12px', 
             display: 'flex', 

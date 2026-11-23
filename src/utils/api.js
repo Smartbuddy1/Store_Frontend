@@ -23,48 +23,39 @@ const getAuthHeaders = (extra = {}) => {
 };
 
 const cache = new Map();
+const pendingReads = new Map();
+let cacheGeneration = 0;
 
-const fetchWithCache = async (url, options = {}, cacheDuration = 5 * 60 * 1000) => {
-  const isCacheable = !options.method || options.method === 'GET';
-  
-  if (!isCacheable) {
-    // If it's a mutation (POST, PUT, DELETE), clear the entire cache
-    // so subsequent GET requests fetch fresh data.
-    cache.clear();
+const invalidateCache = () => {
+  cacheGeneration++;
+  cache.clear();
+  pendingReads.clear();
+};
+
+const fetchWithCache = (url, options = {}, cacheDuration = 5 * 60 * 1000) => {
+  if (options.signal) return fetch(url, options).then(handleResponse);
+
+  const key = `${options.headers?.Authorization ?? ''}\n${url}`;
+  let request = pendingReads.get(key);
+  if (!request) {
+    const generation = cacheGeneration;
+    request = fetch(url, options).then(handleResponse).then(data => {
+      if (cacheDuration > 0 && cacheGeneration === generation) {
+        cache.set(key, { data, timestamp: Date.now() });
+      }
+      return data;
+    }).finally(() => {
+      if (pendingReads.get(key) === request) pendingReads.delete(key);
+    });
+    pendingReads.set(key, request);
   }
 
-  if (isCacheable) {
-    const cached = cache.get(url);
-    if (cached && (Date.now() - cached.timestamp < cacheDuration)) {
-      // Trigger background refetch to keep data fresh
-      fetch(url, options)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            cache.set(url, { data: data.data, timestamp: Date.now() });
-          }
-        }).catch(() => {});
-      return cached.data; // Return cached instantly
-    }
+  const cached = cacheDuration > 0 && cache.get(key);
+  if (cached && Date.now() - cached.timestamp < cacheDuration) {
+    request.catch(() => {});
+    return Promise.resolve(cached.data);
   }
-
-  const res = await fetch(url, options);
-  if (res.status === 401) {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = '/login';
-    throw new Error('Session expired. Please login again.');
-  }
-  const data = await res.json();
-  if (!res.ok || !data.success) {
-    throw new Error(data.message || 'Something went wrong');
-  }
-
-  if (isCacheable) {
-    cache.set(url, { data: data.data, timestamp: Date.now() });
-  }
-
-  return data.data;
+  return request;
 };
 
 const handleResponse = async (res) => {
@@ -82,10 +73,12 @@ const handleResponse = async (res) => {
 };
 
 const apiFetch = async (url, options = {}) => {
-  if (options.method && ['POST', 'PUT', 'DELETE'].includes(options.method.toUpperCase())) {
-    cache.clear();
+  invalidateCache();
+  try {
+    return await fetch(url, options);
+  } finally {
+    invalidateCache();
   }
-  return fetch(url, options);
 };
 
 const api = {
@@ -121,11 +114,17 @@ const api = {
   // STAFF
   // ========================
   staff: {
-    getAll: () => fetchWithCache(`${BASE_URL}/staff`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }),
-    getRoles: () => fetchWithCache(`${BASE_URL}/staff/roles`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }),
+    getAll: () => fetchWithCache(`${BASE_URL}/staff`, { headers: getAuthHeaders(), cache: 'no-store' }, 0),
+    getRoles: () => fetchWithCache(`${BASE_URL}/staff/roles`, { headers: getAuthHeaders(), cache: 'no-store' }, 0),
     createRole: (name) => apiFetch(`${BASE_URL}/staff/roles`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify({ name })
-    }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),
+    }).then(handleResponse),
+    updateRole: (id, name) => apiFetch(`${BASE_URL}/staff/roles/${id}`, {
+      method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify({ name })
+    }).then(handleResponse),
+    deleteRole: (id, replacementRoleId) => apiFetch(`${BASE_URL}/staff/roles/${id}`, {
+      method: 'DELETE', headers: getAuthHeaders(), body: JSON.stringify({ replacementRoleId })
+    }).then(handleResponse),
     create: (body) => apiFetch(`${BASE_URL}/staff`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(res => res.json()).then(d => { if(!d.success) throw new Error(d.message); return d.data; }),
@@ -133,6 +132,17 @@ const api = {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
     delete: (id) => apiFetch(`${BASE_URL}/staff/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
+  },
+
+  suppliers: {
+    getAll: () => fetchWithCache(`${BASE_URL}/suppliers`, { headers: getAuthHeaders(), cache: 'no-store' }, 0),
+    create: (name) => apiFetch(`${BASE_URL}/suppliers`, {
+      method: 'POST', headers: getAuthHeaders(), body: JSON.stringify({ name })
+    }).then(handleResponse),
+    update: (id, name) => apiFetch(`${BASE_URL}/suppliers/${id}`, {
+      method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify({ name })
+    }).then(handleResponse),
+    delete: (id) => apiFetch(`${BASE_URL}/suppliers/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse)
   },
 
   // ========================
@@ -199,34 +209,58 @@ const api = {
     delete: (id) => apiFetch(`${BASE_URL}/stock-out/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
   },
 
+  siteOut: {
+    getAll: (params = {}) => {
+      const query = new URLSearchParams(params);
+      return fetchWithCache(`${BASE_URL}/site-out?${query}`, { headers: getAuthHeaders(), cache: 'no-store' }, 0);
+    },
+    create: (body) => apiFetch(`${BASE_URL}/site-out`, {
+      method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
+    }).then(handleResponse),
+    update: (id, body) => apiFetch(`${BASE_URL}/site-out/${id}`, {
+      method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
+    }).then(handleResponse),
+    delete: id => apiFetch(`${BASE_URL}/site-out/${id}`, {
+      method: 'DELETE', headers: getAuthHeaders()
+    }).then(handleResponse),
+    createReturn: (id, body) => apiFetch(`${BASE_URL}/site-out/${id}/returns`, {
+      method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
+    }).then(handleResponse)
+  },
+
   // ========================
   // CURRENT STOCK
   // ========================
   currentStock: {
     getAll: (params = {}) => {
       const query = new URLSearchParams(params).toString();
-      return fetchWithCache(`${BASE_URL}/current-stock${query ? `?${query}` : ''}`, { headers: getAuthHeaders() }, 30000);
+      return fetchWithCache(`${BASE_URL}/current-stock${query ? `?${query}` : ''}`, {
+        headers: getAuthHeaders(), cache: 'no-store'
+      }, 0);
     },
     getDashboardStats: () => fetchWithCache(`${BASE_URL}/current-stock/dashboard`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }, 30000),
+    getDashboardCards: (period, signal) => fetchWithCache(`${BASE_URL}/current-stock/dashboard?${new URLSearchParams({ period })}`, {
+      headers: getAuthHeaders(), cache: 'no-store', signal
+    }, 0),
   },
 
   // ========================
   // TOOLS
   // ========================
   tools: {
-    getAllTools: () => apiFetch(`${BASE_URL}/tools`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse),
+    getAllTools: () => fetchWithCache(`${BASE_URL}/tools`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }, 0),
     createTool: (body) => apiFetch(`${BASE_URL}/tools`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
     deleteTool: (id) => apiFetch(`${BASE_URL}/tools/${id}`, { method: 'DELETE', headers: getAuthHeaders() }).then(handleResponse),
     updateTool: (id, body) => apiFetch(`${BASE_URL}/tools/${id}`, { method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body) }).then(handleResponse),
 
-    getAllLogs: () => apiFetch(`${BASE_URL}/tools/logs`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse),
+    getAllLogs: () => fetchWithCache(`${BASE_URL}/tools/logs`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }, 0),
     issueTool: (body) => apiFetch(`${BASE_URL}/tools/issue`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
-    returnTool: (id, body) => apiFetch(`${BASE_URL}/tools/return/${id}`, {
-      method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
+    returnTool: (id) => apiFetch(`${BASE_URL}/tools/return/${id}`, {
+      method: 'PUT', headers: getAuthHeaders()
     }).then(handleResponse),
     updateLog: (id, body) => apiFetch(`${BASE_URL}/tools/logs/${id}`, {
       method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(body)
@@ -238,8 +272,8 @@ const api = {
   // KITS / PACKAGES
   // ========================
   kits: {
-    getAll: () => apiFetch(`${BASE_URL}/kits`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse),
-    getById: (id) => apiFetch(`${BASE_URL}/kits/${id}`, { headers: getAuthHeaders() }).then(handleResponse),
+    getAll: () => fetchWithCache(`${BASE_URL}/kits`, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }, 0),
+    getById: (id) => fetchWithCache(`${BASE_URL}/kits/${id}`, { headers: getAuthHeaders() }, 0),
     create: (body) => apiFetch(`${BASE_URL}/kits`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)
     }).then(handleResponse),
@@ -255,7 +289,7 @@ const api = {
   requisitions: {
     getAll: (type) => {
       const url = type ? `${BASE_URL}/requisitions?type=${type}` : `${BASE_URL}/requisitions`;
-      return apiFetch(url, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }).then(handleResponse);
+      return fetchWithCache(url, { headers: getAuthHeaders({ 'Cache-Control': 'no-cache' }) }, 0);
     },
     create: (body) => apiFetch(`${BASE_URL}/requisitions`, {
       method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body)

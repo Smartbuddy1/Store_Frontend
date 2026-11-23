@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import ItemMaster from './pages/ItemMaster';
 import StockIn from './pages/StockIn';
 import StockOut from './pages/StockOut';
+import SiteOut from './pages/SiteOut';
 import CurrentStock from './pages/CurrentStock';
 import Masters from './pages/Masters';
 import Tools from './pages/Tools';
@@ -48,6 +49,7 @@ function App() {
             <Route path="item-master" element={<ItemMaster />} />
             <Route path="stock-in" element={<StockIn />} />
             <Route path="stock-out" element={<StockOut />} />
+            <Route path="site-out" element={<SiteOut />} />
             <Route path="site-dispatch" element={<SiteDispatch />} />
             <Route path="current-stock" element={<CurrentStock />} />
             <Route path="tools" element={<Tools />} />

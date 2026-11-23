@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { AlertTriangle, Package, AlertCircle, XCircle, ArrowDownCircle, ArrowUpCircle, Tag, Activity, FileText, FileSpreadsheet, ClipboardList, ArrowRight, TrendingUp, TrendingDown, Wrench } from 'lucide-react';
+import { AlertTriangle, Package, AlertCircle, XCircle, ArrowDownCircle, ArrowUpCircle, Tag, Activity, FileText, FileSpreadsheet, ClipboardList, ArrowRight, TrendingUp, TrendingDown, Wrench, CalendarDays, ChevronDown } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { t } from '../utils/translator';
 import api from '../utils/api';
+
+const cardPeriods = { today: 'Today', yesterday: 'Yesterday', all: 'All' };
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -15,79 +17,74 @@ const Dashboard = () => {
     goodStock: 0
   });
   
-  const [recentStockIn, setRecentStockIn] = useState([]);
-  const [recentStockOut, setRecentStockOut] = useState([]);
+  const [recentStockIn, setRecentStockIn] = useState(null);
+  const [recentStockOut, setRecentStockOut] = useState(null);
   const [barChartData, setBarChartData] = useState([]);
   const [pieChartData, setPieChartData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cardPeriod, setCardPeriod] = useState('today');
+  const [filteredCards, setFilteredCards] = useState(null);
+  const [cardRetry, setCardRetry] = useState(0);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        
-        // Calculate date 7 days ago for chart data
-        const d7 = new Date();
-        d7.setDate(d7.getDate() - 6);
-        const fromDateStr = d7.toISOString().split('T')[0];
+    if (cardPeriod === 'all') return;
 
-        const [dashStats, recentInRes, recentOutRes] = await Promise.all([
-          api.currentStock.getDashboardStats(),
-          api.stockIn.getAllPaginated({ page: 1, limit: 10 }),
-          api.stockOut.getAllPaginated({ page: 1, limit: 10 })
-        ]);
+    const controller = new AbortController();
+    api.currentStock.getDashboardCards(cardPeriod, controller.signal).then(data => {
+      if (!controller.signal.aborted) setFilteredCards({ data });
+    }).catch(() => {
+      if (!controller.signal.aborted) setFilteredCards({ error: true });
+    });
+    return () => controller.abort();
+  }, [cardPeriod, cardRetry]);
 
-        setStats(dashStats);
-        
-        const recentIn = recentInRes.records || [];
-        const recentOut = recentOutRes.records || [];
-        
-        setRecentStockIn(recentIn.map(item => ({
-          date: new Date(item.date).toISOString().split('T')[0],
-          itemCode: item.itemCode,
-          itemName: item.itemName,
-          quantity: item.quantity
+  useEffect(() => {
+    let active = true;
+
+    api.currentStock.getDashboardStats().then(stats => {
+      if (!active) return;
+      setStats(stats);
+      setBarChartData(stats.chartData || []);
+      setPieChartData(Object.entries(stats.categoriesCount || {}).map(([name, value]) => ({ name, value })));
+    }).catch(error => {
+      console.error('Failed to fetch dashboard data:', error);
+    }).finally(() => {
+      if (active) setLoading(false);
+    });
+
+    const loadRecent = (request, setEntries) => {
+      request.then(data => {
+        if (!active) return;
+        setEntries((data.records || []).map(item => ({
+          itemCode: item.itemCode, itemName: item.itemName, quantity: item.quantity
         })));
-        
-        setRecentStockOut(recentOut.map(item => ({
-          date: new Date(item.date).toISOString().split('T')[0],
-          itemCode: item.itemCode,
-          itemName: item.itemName,
-          quantity: item.quantity
-        })));
-        
-        // Use aggregated chart data from dashboard stats
-        const last7DaysData = dashStats.chartData || [];
-        setBarChartData(last7DaysData);
-
-        // Process Pie Chart (Items per Category)
-        const categoriesCount = dashStats.categoriesCount || {};
-        const pieData = Object.keys(categoriesCount).map(key => ({ name: key, value: categoriesCount[key] }));
-        setPieChartData(pieData);
-
-      } catch (err) {
-        console.error('Failed to fetch dashboard data:', err);
-      } finally {
-        setLoading(false);
-      }
+      }).catch(error => {
+        console.error('Failed to fetch recent movements:', error);
+        if (active) setEntries([]);
+      });
     };
+    loadRecent(api.stockIn.getAllPaginated({ page: 1, limit: 10 }), setRecentStockIn);
+    loadRecent(api.stockOut.getAllPaginated({ page: 1, limit: 10 }), setRecentStockOut);
 
-    fetchDashboardData();
+    return () => { active = false; };
   }, []);
 
+  const cardData = cardPeriod === 'all' ? stats : filteredCards?.data;
+  const movementDay = barChartData.find(day => day.date === cardData?.movementDate);
+  const movementPeriod = t(cardPeriod === 'all' ? 'All time' : cardPeriods[cardPeriod]);
   const statCards = [
-    { label: t('Total Items'), value: stats.totalItems, icon: Package, color: '#3b82f6', badgeText: t('Active'), badgeType: 'success', link: '/item-master', state: {} },
-    { label: t('Low Stock'), value: stats.lowStock, icon: AlertTriangle, color: '#f59e0b', badgeText: t('Warning'), badgeType: 'warning', link: '/alerts', state: { selectedStatus: 'LOW STOCK' } },
-    { label: t('Out of Stock'), value: stats.outOfStock, icon: XCircle, color: '#ef4444', badgeText: t('Critical'), badgeType: 'danger', link: '/alerts', state: { selectedStatus: 'OUT OF STOCK' } },
-    { label: t('Items IN'), value: stats.totalQtyIn, icon: ArrowDownCircle, color: '#10b981', badgeText: t('All time'), badgeType: 'success', link: '/stock-in', state: {} },
-    { label: t('Items OUT'), value: stats.totalQtyOut, icon: ArrowUpCircle, color: '#8b5cf6', badgeText: t('All time'), badgeType: 'success', link: '/stock-out', state: {} }
+    { label: t('Total Items'), value: cardData?.totalItems, icon: Package, color: '#3b82f6', badgeText: t('Active'), badgeType: 'success', link: '/item-master', state: {} },
+    { label: t('Low Stock'), value: cardData?.lowStock, icon: AlertTriangle, color: '#f59e0b', badgeText: t('Warning'), badgeType: 'warning', link: '/alerts', state: { selectedStatus: 'LOW STOCK' } },
+    { label: t('Out of Stock'), value: cardData?.outOfStock, icon: XCircle, color: '#ef4444', badgeText: t('Critical'), badgeType: 'danger', link: '/alerts', state: { selectedStatus: 'OUT OF STOCK' } },
+    { label: t('Items IN'), value: movementDay?.In ?? cardData?.totalQtyIn, icon: ArrowDownCircle, color: '#10b981', badgeText: movementPeriod, badgeType: 'success', link: '/stock-in', state: {} },
+    { label: t('Items OUT'), value: movementDay?.Out ?? cardData?.totalQtyOut, icon: ArrowUpCircle, color: '#8b5cf6', badgeText: movementPeriod, badgeType: 'success', link: '/stock-out', state: {} }
   ];
 
   return (
     <div style={{ padding: '0 2rem 2rem 2rem', fontFamily: 'var(--font-sans)', minHeight: '100%', backgroundColor: 'var(--slate-50)' }}>
       
       {/* Header Section */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
         <div>
           <h1 style={{ fontSize: '2.2rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: 0, fontFamily: 'var(--font-heading)' }}>
             {t('Welcome to')} <span style={{ color: 'var(--primary-color)' }}>{t('Dashboard')}</span>
@@ -96,7 +93,14 @@ const Dashboard = () => {
             {t('Hello Admin, here is your system overview.')}
           </p>
         </div>
-
+        <div className="dashboard-card-period-control no-print">
+          <CalendarDays className="dashboard-card-period-icon" size={30} aria-hidden="true" />
+          <select className="form-input dashboard-card-period" aria-label={t('Summary card period')} value={cardPeriod}
+            onChange={event => { setFilteredCards(null); setCardPeriod(event.target.value); }}>
+            {Object.entries(cardPeriods).map(([value, label]) => <option key={value} value={value}>{t(label)}</option>)}
+          </select>
+          <ChevronDown className="dashboard-card-period-chevron" size={16} aria-hidden="true" />
+        </div>
       </div>
       
       {loading ? (
@@ -111,7 +115,17 @@ const Dashboard = () => {
       ) : (
         <>
           {/* Stats Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+      {filteredCards?.error && (
+        <div className="dashboard-card-error" role="alert">
+          <span>{t('Could not load summary cards.')}</span>
+          <button type="button" className="btn btn-secondary" onClick={() => {
+            setFilteredCards(null);
+            setCardRetry(previous => previous + 1);
+          }}>{t('Retry')}</button>
+        </div>
+      )}
+      <div className="dashboard-summary-cards" aria-busy={cardPeriod !== 'all' && !filteredCards}
+        style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
@@ -129,7 +143,7 @@ const Dashboard = () => {
               {/* Left Side: Label, Number, Badge */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 <p style={{ color: 'var(--slate-500)', fontSize: '0.9rem', fontWeight: '500', margin: 0 }}>{stat.label}</p>
-                <h3 style={{ color: 'var(--slate-900)', fontSize: '2.2rem', fontWeight: 'bold', margin: 0, lineHeight: '1' }}>{stat.value}</h3>
+                <h3 style={{ color: 'var(--slate-900)', fontSize: '2.2rem', fontWeight: 'bold', margin: 0, lineHeight: '1' }}>{stat.value ?? '—'}</h3>
                 
                 <div style={{
                   display: 'inline-flex',
@@ -345,7 +359,7 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {recentStockIn.length > 0 ? recentStockIn.map((item, idx) => (
+                {recentStockIn?.length > 0 ? recentStockIn.map((item, idx) => (
                   <tr key={idx} style={{ borderBottom: '1px solid var(--slate-100)' }}>
                     <td style={{ padding: '0.85rem 0', fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600' }}>{item.itemCode}</td>
                     <td style={{ padding: '0.85rem 0', fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500' }}>{item.itemName}</td>
@@ -353,7 +367,7 @@ const Dashboard = () => {
                   </tr>
                 )) : (
                   <tr>
-                    <td colSpan="3" style={{ padding: '2rem 0', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No recent entries found.</td>
+                    <td colSpan="3" style={{ padding: '2rem 0', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{recentStockIn === null ? t('Loading recent entries…') : 'No recent entries found.'}</td>
                   </tr>
                 )}
               </tbody>
@@ -379,7 +393,7 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {recentStockOut.length > 0 ? recentStockOut.map((item, idx) => (
+                {recentStockOut?.length > 0 ? recentStockOut.map((item, idx) => (
                   <tr key={idx} style={{ borderBottom: '1px solid var(--slate-100)' }}>
                     <td style={{ padding: '0.85rem 0', fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600' }}>{item.itemCode}</td>
                     <td style={{ padding: '0.85rem 0', fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500' }}>{item.itemName}</td>
@@ -387,7 +401,7 @@ const Dashboard = () => {
                   </tr>
                 )) : (
                   <tr>
-                    <td colSpan="3" style={{ padding: '2rem 0', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No recent entries found.</td>
+                    <td colSpan="3" style={{ padding: '2rem 0', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{recentStockOut === null ? t('Loading recent entries…') : 'No recent entries found.'}</td>
                   </tr>
                 )}
               </tbody>

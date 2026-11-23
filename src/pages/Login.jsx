@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import RequiredMark from '../components/RequiredMark';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Smartphone, Lock, Eye, EyeOff, Sun, Moon, AlertCircle, Loader2, CheckCircle2, ArrowRight, LockKeyhole } from 'lucide-react';
@@ -6,7 +7,7 @@ import logoImg from '../assets/logo.png';
 import { t } from '../utils/translator';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -24,10 +25,20 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!/^[0-9]{10}$/.test(mobile)) {
+      setError('Enter a 10-digit mobile number.');
+      return;
+    }
+    if (password.length < 6 || password.length > 8) {
+      setError('Password must be 6 to 8 characters.');
+      return;
+    }
+
     setError('');
     setLoading(true);
 
-    const result = await login(username, password);
+    const result = await login(mobile, password);
     if (result.success) {
       if (result.role === 'Field_Tech') {
         navigate('/field-tech');
@@ -84,25 +95,28 @@ const Login = () => {
         {/* Form Section */}
         <div>
           {error && (
-            <div style={{ backgroundColor: 'var(--bg-danger)', borderLeft: '4px solid var(--danger-color)', color: 'var(--danger-color)', padding: '0.6rem 0.85rem', borderRadius: '0 6px 6px 0', fontSize: '0.85rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div className="auth-error" role="alert">
               <AlertCircle size={18} />
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+          <form noValidate onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
             {/* Mobile Number Input */}
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label" style={{ fontWeight: '600', fontSize: '0.85rem', color: 'var(--text-primary)', marginBottom: '0.4rem' }}>Mobile Number</label>
+              <label htmlFor="login-mobile" className="form-label" style={{ fontWeight: '600', fontSize: '0.85rem', color: 'var(--text-primary)', marginBottom: '0.4rem' }}>Mobile Number<RequiredMark /></label>
               <div className="input-with-icon" style={{ position: 'relative' }}>
                 <Smartphone size={18} className="input-icon" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
                 <input
-                  type="text"
+                  id="login-mobile"
+                  type="tel"
+                  inputMode="numeric"
+                  autoComplete="username"
                   className="form-input"
                   style={{ paddingLeft: '2.75rem', height: '3.25rem', fontSize: '1rem', backgroundColor: 'var(--surface-bg)' }}
                   placeholder="Registered mobile"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value)}
                   required
                 />
               </div>
@@ -110,11 +124,13 @@ const Login = () => {
 
             {/* Password Input */}
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label" style={{ fontWeight: '600', fontSize: '0.85rem', color: 'var(--text-primary)', marginBottom: '0.4rem' }}>Password</label>
+              <label htmlFor="login-password" className="form-label" style={{ fontWeight: '600', fontSize: '0.85rem', color: 'var(--text-primary)', marginBottom: '0.4rem' }}>Password<RequiredMark /></label>
               <div className="input-with-icon" style={{ position: 'relative' }}>
                 <Lock size={18} className="input-icon" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
                 <input
+                  id="login-password"
                   type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
                   className="form-input"
                   style={{ paddingLeft: '2.75rem', height: '3.25rem', fontSize: '1rem', backgroundColor: 'var(--surface-bg)' }}
                   placeholder="Password"
